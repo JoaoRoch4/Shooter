@@ -4,16 +4,18 @@
 /Saved
 /Download
 # Ignore everything in the Content directory
-Content/_Game/Mixamo
-Content/_Game/Maps
+
+# Ignorar tudo na pasta Content
 Content/*
 
-
-# Except for the Content_Game directory
+# N�o ignorar a pasta Content/_Game
 !/Content/_Game/
 
-# And everything inside the Content_Game directory
+# N�o ignorar o conte�do dentro de Content/_Game, exceto Mixamo e Maps
 !/Content/_Game/*
+/Content/_Game/Mixamo/
+/Content/_Game/Maps/
+
 .vscode
 .vs
 *.VC.db
@@ -24,3 +26,4 @@ Content/*
 *.suo
 *.xcodeproj
 *.xcworkspace
+*.jar
