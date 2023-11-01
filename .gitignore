@@ -7,10 +7,10 @@
 Content/*
 
 # Except for the Content_Game directory
-!/Content/Content_Game/
+!/Content/_Game/
 
 # And everything inside the Content_Game directory
-!/Content/Content_Game/*
+!/Content/_Game/*
 .vscode
 .vs
 *.VC.db
