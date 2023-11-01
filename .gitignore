@@ -4,7 +4,10 @@
 /Saved
 /Download
 # Ignore everything in the Content directory
+Content/_Game/Mixamo
+Content/_Game/Maps
 Content/*
+
 
 # Except for the Content_Game directory
 !/Content/_Game/
