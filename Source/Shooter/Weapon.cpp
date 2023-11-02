@@ -86,7 +86,21 @@ void AWeapon::ThrowWeapon() {
 	const FVector MeshRight{ GetItemMesh()->GetRightVector() };
 
 	// Direction in which we throw the Weapon
-	FVector ImpulseDirection = MeshRight.RotateAngleAxis(AngleRotation, MeshForward);
+    FVector ImpulseDirection {};
+        
+    if (bNotRandValues) {
+
+		ImpulseDirection = MeshForward.RotateAngleAxis(AngleRotation, MeshRight);
+
+    } else {
+
+        double M_AngleRotation = FMath::RandRange(
+            AngleRotationRandRange.X,
+            AngleRotationRandRange.Y);
+
+        ImpulseDirection = MeshForward.RotateAngleAxis(M_AngleRotation,
+			MeshRight);
+	}
 
     float RandomRotation = (!bNotRandValues) ?
 
@@ -107,7 +121,7 @@ void AWeapon::ThrowWeapon() {
 
     } else {
 
-        MultiplyImpulseRandRange * 1000.f;
+        MultiplyImpulseRandRange *= 1000.f;
         ImpulseDirection *= FMath::RandRange(
 			MultiplyImpulseRandRange.X,
 			MultiplyImpulseRandRange.Y);
