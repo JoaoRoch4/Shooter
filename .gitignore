@@ -8,13 +8,13 @@
 # Ignorar tudo na pasta Content
 Content/*
 
-# N�o ignorar a pasta Content/_Game
 !/Content/_Game/
 
-# N�o ignorar o conte�do dentro de Content/_Game, exceto Mixamo e Maps
 !/Content/_Game/*
+!/Content/_Game/Assets/Curves/*
 /Content/_Game/Mixamo/
 /Content/_Game/Maps/
+/Content/_Game/Assets
 
 .vscode
 .vs
