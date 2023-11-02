@@ -9,76 +9,77 @@
 
 AWeapon::AWeapon() :
 
-    ThrowWeaponTime(0.7f),
-    bFalling(false),
-    bNotRandValues(false),
-    AngleRotation(10.f),
-    AddAdiotionalRotation(90.f),
-    MultiplyImpulse(1'800.f),
-    AddImpulseDirectionRandRotation(FVector2D(0.f, 90.f)),
-    MultiplyImpulseRandRange(FVector2D(1'500.f, 1'800.f)),
-    ThrowWeaponTimer(FTimerHandle()),
-    Ammo(30),
-    MagazineCapacity(30),
-    WeaponType(EWeaponType::EWT_SubmachineGun),
-    AmmoType(EAmmoType::EAT_9mm),
-    ReloadMontageSection(FName(L"Reload SMG")),
-    ClipBoneName(L"smg_clip"),
-    ItemInstance(nullptr)
+	ThrowWeaponTime(0.7f),
+	bFalling(false),
+	bNotRandValues(false),
+	AngleRotation(10.f),
+	AddAdiotionalRotation(90.f),
+	MultiplyImpulse(1'800.f),
+	AngleRotationRandRange(FVector2D(0.f, 90.f)),
+	MultiplyImpulseRandRange(FVector2D(1500.f, 1800.f)),
+	AddImpulseDirectionRandRotation(FVector2D(0.f, 90.f)),
+	ThrowWeaponTimer(FTimerHandle()),
+	Ammo(30),
+	MagazineCapacity(30),
+	WeaponType(EWeaponType::EWT_SubmachineGun),
+	AmmoType(EAmmoType::EAT_9mm),
+	ReloadMontageSection(FName(L"Reload SMG")),
+	ClipBoneName(L"smg_clip"),
+	ItemInstance(nullptr)
 
 {
-    PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = true;
 }
 
 void AWeapon::BeginPlay() {
 
-    Super::BeginPlay();
+	Super::BeginPlay();
 
-    //SyncItemMunition();
+	//SyncItemMunition();
 }
 
 void AWeapon::SyncItemMunition() {
 
-    int32 ItemCapacity { 0 };
+	int32 ItemCapacity { 0 };
 
-    //ItemInstance = Cast<AItem>(UGameplayStatics::GetActorOfClass(
-        //GetWorld(), AWeapon::StaticClass()));
+	//ItemInstance = Cast<AItem>(UGameplayStatics::GetActorOfClass(
+		//GetWorld(), AWeapon::StaticClass()));
 
-    if (ItemInstance) {
+	if (ItemInstance) {
 
-        ItemCapacity = ItemInstance->GetItemCount();
+		ItemCapacity = ItemInstance->GetItemCount();
 
-        if ((Ammo != ItemCapacity)) {
+		if ((Ammo != ItemCapacity)) {
 
-            Ammo = ItemCapacity;
+			Ammo = ItemCapacity;
 
-            ItemInstance->SetItemCount(ItemCapacity);
-        }
+			ItemInstance->SetItemCount(ItemCapacity);
+		}
 
-    } else {
+	} else {
 
-        PrintLogErr("ItemInstance was nullptr");
-    }
+		PrintLogErr("ItemInstance was nullptr");
+	}
 }
 
 void AWeapon::Tick(float DeltaTime) {
 
-    Super::Tick(DeltaTime);
+	Super::Tick(DeltaTime);
 
-    // Keep the weapon upright 
-    if (GetItemState() == EItemState::EIS_Falling && bFalling) {
+	// Keep the weapon upright 
+	if (GetItemState() == EItemState::EIS_Falling && bFalling) {
 
-        const FRotator MeshRotation { 0.f,
-            GetItemMesh()->GetComponentRotation().Yaw, 0.f };
+		const FRotator MeshRotation { 0.f,
+			GetItemMesh()->GetComponentRotation().Yaw, 0.f };
 
-        GetItemMesh()->SetWorldRotation(MeshRotation, false, nullptr,
-            ETeleportType::TeleportPhysics);
-    }
+		GetItemMesh()->SetWorldRotation(MeshRotation, false, nullptr,
+			ETeleportType::TeleportPhysics);
+	}
 }
 
 void AWeapon::ThrowWeapon() {
 
-    FRotator MeshRotation{ 0.f, GetItemMesh()->GetComponentRotation().Yaw, 0.f };
+	FRotator MeshRotation{ 0.f, GetItemMesh()->GetComponentRotation().Yaw, 0.f };
 
 	GetItemMesh()->SetWorldRotation(MeshRotation, false, nullptr, ETeleportType::TeleportPhysics);
 
@@ -86,46 +87,46 @@ void AWeapon::ThrowWeapon() {
 	const FVector MeshRight{ GetItemMesh()->GetRightVector() };
 
 	// Direction in which we throw the Weapon
-    FVector ImpulseDirection {};
-        
-    if (bNotRandValues) {
+	FVector ImpulseDirection {};
+		
+	if (bNotRandValues) {
 
 		ImpulseDirection = MeshForward.RotateAngleAxis(AngleRotation, MeshRight);
 
-    } else {
+	} else {
 
-        double M_AngleRotation = FMath::RandRange(
-            AngleRotationRandRange.X,
-            AngleRotationRandRange.Y);
+		double M_AngleRotation = FMath::RandRange(
+			AngleRotationRandRange.X,
+			AngleRotationRandRange.Y);
 
-        ImpulseDirection = MeshForward.RotateAngleAxis(M_AngleRotation,
+		ImpulseDirection = MeshForward.RotateAngleAxis(M_AngleRotation,
 			MeshRight);
 	}
 
-    float RandomRotation = (!bNotRandValues) ?
+	float RandomRotation = (!bNotRandValues) ?
 
-        FMath::RandRange(
-        AddImpulseDirectionRandRotation.X,
-        AddImpulseDirectionRandRotation.Y) :
+		FMath::RandRange(
+		AddImpulseDirectionRandRotation.X,
+		AddImpulseDirectionRandRotation.Y) :
 
-        AddAdiotionalRotation;
+		AddAdiotionalRotation;
 
-    ImpulseDirection = ImpulseDirection.RotateAngleAxis(RandomRotation,
-        FVector(0.f, 0.f, 1.f));
-       
+	ImpulseDirection = ImpulseDirection.RotateAngleAxis(RandomRotation,
+		FVector(0.f, 0.f, 1.f));
+	   
 
-    if(bNotRandValues){ 
+	if(bNotRandValues){ 
 
-        MultiplyImpulse *= 1000.f;
-        ImpulseDirection *= MultiplyImpulse;
+		MultiplyImpulse *= 1000.f;
+		ImpulseDirection *= MultiplyImpulse;
 
-    } else {
+	} else {
 
-        MultiplyImpulseRandRange *= 1000.f;
-        ImpulseDirection *= FMath::RandRange(
+		MultiplyImpulseRandRange *= 1000.f;
+		ImpulseDirection *= FMath::RandRange(
 			MultiplyImpulseRandRange.X,
 			MultiplyImpulseRandRange.Y);
-    }                
+	}                
 
 	GetItemMesh()->AddImpulse(ImpulseDirection);
 
@@ -137,39 +138,39 @@ void AWeapon::ThrowWeapon() {
 		&AWeapon::StopFalling, 
 		ThrowWeaponTime);
 
-    EnableGlowMaterial();
+	EnableGlowMaterial();
 }
 
 void AWeapon::StopFalling() {
 
-    bFalling = false;
+	bFalling = false;
 
-    SetItemState(EItemState::EIS_Pickup);
+	SetItemState(EItemState::EIS_Pickup);
 
-    StartPulseTimer();
+	StartPulseTimer();
 }
 
 void AWeapon::DecrementAmmo() {
 
-    if (Ammo - 1 <= 0) {
+	if (Ammo - 1 <= 0) {
 
-        Ammo = 0;
+		Ammo = 0;
 
-    } else {
+	} else {
 
-        --Ammo;
-    }
+		--Ammo;
+	}
 }
 
 void AWeapon::ReloadAmmo(int32 Amount) {
 
-    checkf(Ammo + Amount <= MagazineCapacity, L"Attempted to reload with more than magazine capacity!");
-    Ammo += Amount;
+	checkf(Ammo + Amount <= MagazineCapacity, L"Attempted to reload with more than magazine capacity!");
+	Ammo += Amount;
 }
 
 inline bool AWeapon::ClipIsFull() const {
 
-    return Ammo >= MagazineCapacity;
+	return Ammo >= MagazineCapacity;
 }
 
 
