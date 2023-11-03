@@ -12,8 +12,8 @@ enum class EWeaponType : uint8 {
 
 	EWT_SubmachineGun  UMETA(DisplayName = "Sub-machine Gun"),
 	EWT_AssaultRifle   UMETA(DisplayName = "Assault Rifle"),
-    
-    EWT_MAX            UMETA(DisplayName = "DefaultMAX")
+	
+	EWT_MAX            UMETA(DisplayName = "DefaultMAX")
 };
 
 /**
@@ -55,8 +55,8 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		Category = "My Custom Properties|Item|Throw Weapon|Impulse|Static",
 		meta = (AllowPrivateAccess = "true"),
-	    meta = (EditCondition = "bNotRandValues"))
-	float AngleRotation;
+		meta = (EditCondition = "bNotRandValues"))
+	float ThrowHeight;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		Category = "My Custom Properties|Item|Throw Weapon|Impulse|Static",
@@ -72,20 +72,21 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		Category = "My Custom Properties|Item|Throw Weapon|Impulse|Rand Range",
-		meta = (AllowPrivateAccess = "true"))
-	FVector2D AngleRotationRandRange;
+		meta = (AllowPrivateAccess = "true"),
+		meta = (EditCondition = "!bNotRandValues"))
+	FVector2D ThrowHeightRandRange;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+		Category = "My Custom Properties|Item|Throw Weapon|Impulse|Rand Range",
+		meta = (AllowPrivateAccess = "true"),
+		meta = (EditCondition = "!bNotRandValues"))
+	FVector2D AddAdiotionalRotationRandRange;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		Category = "My Custom Properties|Item|Throw Weapon|Impulse|Rand Range",
 		meta = (AllowPrivateAccess = "true"),
 		meta = (EditCondition = "!bNotRandValues"))
 	FVector2D MultiplyImpulseRandRange;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,
-		Category = "My Custom Properties|Item|Throw Weapon|Impulse|Rand Range",
-		meta = (AllowPrivateAccess = "true"),
-		meta = (EditCondition = "!bNotRandValues"))
-	FVector2D AddImpulseDirectionRandRotation;
 
 	UPROPERTY()
 	FTimerHandle ThrowWeaponTimer;
@@ -146,8 +147,8 @@ public:
 	}
 
 	FORCEINLINE int32 GetMagazineCapacity() const {
-        return MagazineCapacity;
-    }
+		return MagazineCapacity;
+	}
 
 	/**
 	 * @brief Called From Character Class when firing
@@ -156,20 +157,20 @@ public:
 	void DecrementAmmo();
 
 	FORCEINLINE EWeaponType GetWeaponType() const {
-        return WeaponType;
-    }
+		return WeaponType;
+	}
 
 	FORCEINLINE EAmmoType GetAmmoType() const {
-        return AmmoType;
-    }
+		return AmmoType;
+	}
 
 	FORCEINLINE FName GetReloadMontageSection() const {
-        return ReloadMontageSection;
-    }
+		return ReloadMontageSection;
+	}
 
 	FORCEINLINE FName GetClipBoneName() const {
-        return ClipBoneName;
-    }
+		return ClipBoneName;
+	}
 
 	void ReloadAmmo(int32 Amount);
 
