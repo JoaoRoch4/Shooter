@@ -5,25 +5,23 @@
 #include "AmmoType.h"
 #include "Weapon.generated.h"
 
-using namespace UP;
-
 UENUM(BlueprintType)
 enum class EWeaponType : uint8 {
 
 	EWT_SubmachineGun  UMETA(DisplayName = "Sub-machine Gun"),
 	EWT_AssaultRifle   UMETA(DisplayName = "Assault Rifle"),
-	
+
 	EWT_MAX            UMETA(DisplayName = "DefaultMAX")
 };
 
 /**
- * 
+ *
  */
 UCLASS()
 class SHOOTER_API AWeapon : public AItem
 {
 	GENERATED_BODY()
-	
+
 public:
 
 	AWeapon();
@@ -31,11 +29,11 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 protected:
-	
+
 	virtual void BeginPlay() override;
 
 	void SyncItemMunition();
-	
+
 	void StopFalling();
 
 private:
@@ -174,8 +172,8 @@ public:
 
 	void ReloadAmmo(int32 Amount);
 
-	FORCEINLINE void SetMovingClip(bool Move) { 
-		bMovingClip = Move; 
+	FORCEINLINE void SetMovingClip(bool Move) {
+		bMovingClip = Move;
 	}
 
 	FORCEINLINE bool ClipIsFull() const;
