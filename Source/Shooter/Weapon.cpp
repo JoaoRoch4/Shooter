@@ -12,15 +12,15 @@ AWeapon::AWeapon() :
 	ThrowWeaponTime(0.7f),
 	bFalling(false),
 	bNotRandValues(false),
-	ThrowHeight(10.f),
-	AddAdiotionalRotation(120.f),
+	AngleRotation(10.f),
+	AddAdiotionalRotation(90.f),
 	MultiplyImpulse(1'800.f),
-	ThrowHeightRandRange(FVector2D(90.f, 180.f)),
-	AddAdiotionalRotationRandRange(FVector2D(90.f, 180.f)),
+	AngleRotationRandRange(FVector2D(0.f, 90.f)),
 	MultiplyImpulseRandRange(FVector2D(1500.f, 1800.f)),
+	AddImpulseDirectionRandRotation(FVector2D(0.f, 90.f)),
 	ThrowWeaponTimer(FTimerHandle()),
-	Ammo(40),
-	MagazineCapacity(120),
+	Ammo(30),
+	MagazineCapacity(30),
 	WeaponType(EWeaponType::EWT_SubmachineGun),
 	AmmoType(EAmmoType::EAT_9mm),
 	ReloadMontageSection(FName(L"Reload SMG")),
@@ -91,28 +91,29 @@ void AWeapon::ThrowWeapon() {
 		
 	if (bNotRandValues) {
 
-		ImpulseDirection = MeshForward.RotateAngleAxis(ThrowHeight * -1.f, MeshRight);
+		ImpulseDirection = MeshForward.RotateAngleAxis(AngleRotation, MeshRight);
 
 	} else {
 
-		double RandThrowHeight = FMath::RandRange(
-			ThrowHeightRandRange.X,
-			ThrowHeightRandRange.Y);
+		double M_AngleRotation = FMath::RandRange(
+			AngleRotationRandRange.X,
+			AngleRotationRandRange.Y);
 
-		RandThrowHeight *= -1.f;
-
-		ImpulseDirection = MeshForward.RotateAngleAxis(RandThrowHeight,
+		ImpulseDirection = MeshForward.RotateAngleAxis(M_AngleRotation,
 			MeshRight);
 	}
 
-	float RandAddAdiotionalRotation = FMath::RandRange(
-		AddAdiotionalRotationRandRange.X,
-		AddAdiotionalRotationRandRange.Y);
+	float RandomRotation = (!bNotRandValues) ?
 
-	float RandomRotation = bNotRandValues ? AddAdiotionalRotation : RandAddAdiotionalRotation;
+		FMath::RandRange(
+		AddImpulseDirectionRandRotation.X,
+		AddImpulseDirectionRandRotation.Y) :
+
+		AddAdiotionalRotation;
 
 	ImpulseDirection = ImpulseDirection.RotateAngleAxis(RandomRotation,
-		FVector(0.f, 0.f, 1.f));	   
+		FVector(0.f, 0.f, 1.f));
+	   
 
 	if(bNotRandValues){ 
 
@@ -122,19 +123,20 @@ void AWeapon::ThrowWeapon() {
 	} else {
 
 		MultiplyImpulseRandRange *= 1000.f;
-		double RandMultiplyImpulse = FMath::RandRange(
+		ImpulseDirection *= FMath::RandRange(
 			MultiplyImpulseRandRange.X,
 			MultiplyImpulseRandRange.Y);
-
-		ImpulseDirection *= RandMultiplyImpulse;
 	}                
 
 	GetItemMesh()->AddImpulse(ImpulseDirection);
 
 	bFalling = true;
 
-	GetWorldTimerManager().SetTimer(ThrowWeaponTimer, this,
-		&AWeapon::StopFalling, ThrowWeaponTime);
+	GetWorldTimerManager().SetTimer(
+		ThrowWeaponTimer, 
+		this, 
+		&AWeapon::StopFalling, 
+		ThrowWeaponTime);
 
 	EnableGlowMaterial();
 }
