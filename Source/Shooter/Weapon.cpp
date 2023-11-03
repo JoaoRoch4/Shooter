@@ -11,32 +11,45 @@ AWeapon::AWeapon() :
 
 	ThrowWeaponTime(0.7f),
 	bFalling(false),
+
 	bNotRandValues(false),
+
 	ThrowHeight(10.f),
+
 	ThrowDirection(FVector(0.f, 0.f, 0.f)),
+
 	MultiplyImpulse(180.f),
+
 	ThrowHeightRandRange(FVector2D(90.f, 180.f)),
 	ThrowDirectionRandRange(FVector2D(90.f, 180.f)),
+
 	ThrowDirection_X_RandRange(FVector2D(0.f, 0.f)),
 	ThrowDirection_Y_RandRange(FVector2D(0.f, 0.f)),
 	ThrowDirection_Z_RandRange(FVector2D(0.f, 0.f)),
+
 	ThrowDirectionArray(TMap<FString, FVector2D>()),
 	MultiplyImpulseRandRange(FVector2D(150.f, 180.f)),
+
 	ThrowWeaponTimer(FTimerHandle()),
+
 	Ammo(40),
 	MagazineCapacity(120),
 	WeaponType(EWeaponType::EWT_SubmachineGun),
 	AmmoType(EAmmoType::EAT_9mm),
 	ReloadMontageSection(FName(L"Reload SMG")),
 	ClipBoneName(FName(L"smg_clip")),
+
 	ItemInstance(nullptr)
 
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	ThrowDirectionArray.Add(FString(L"X"), ThrowDirection_X_RandRange);
-	ThrowDirectionArray.Add(FString(L"Y"), ThrowDirection_Y_RandRange);
-	ThrowDirectionArray.Add(FString(L"Z"), ThrowDirection_Z_RandRange);
+	ThrowDirectionArray.Add(FString(L"X Throw Direction Rand Range"),
+		ThrowDirection_X_RandRange);
+	ThrowDirectionArray.Add(FString(L"Y Throw Direction Rand Range"),
+		ThrowDirection_Y_RandRange);
+	ThrowDirectionArray.Add(FString(L"Z Throw Direction Rand Range"),
+		ThrowDirection_Z_RandRange);
 
 }
 
@@ -100,16 +113,40 @@ void AWeapon::ThrowWeapon() {
 	// TODO: Finish the implementation of the ThrowDirectionArray Tmap
 
 	FVector ImpulseDirection {};
-	double ThrowDirectionX {ThrowDirection.X};
-	double ThrowDirectionY {ThrowDirection.Y};
-	double ThrowDirectionZ {ThrowDirection.Z};
+	double ThrowDirectionX {};
+	double ThrowDirectionY {};
+	double ThrowDirectionZ {};
 		
 	if (bNotRandValues) {
 
+		ThrowDirectionX = ThrowDirection.X;
+		ThrowDirectionY = ThrowDirection.Y;
+		ThrowDirectionZ = ThrowDirection.Z;
 		ImpulseDirection = MeshForward.RotateAngleAxis(
 			ThrowHeight * -1.f, MeshRight);
 
 	} else {
+
+		double RandThrowDirectionX {FMath::RandRange(
+			ThrowDirection_X_RandRange.X,
+			ThrowDirection_X_RandRange.Y)
+		};
+
+		ThrowDirectionX = RandThrowDirectionX;
+
+		double RandThrowDirectionY {FMath::RandRange(
+			ThrowDirection_Y_RandRange.X,
+			ThrowDirection_Y_RandRange.Y)
+		};
+
+		ThrowDirectionY = RandThrowDirectionY;
+
+		double RandThrowDirectionZ {FMath::RandRange(
+			ThrowDirection_Z_RandRange.X,
+			ThrowDirection_Z_RandRange.Y)
+		};
+
+		ThrowDirectionZ = RandThrowDirectionZ;
 
 		double RandThrowHeight {FMath::RandRange(
 			ThrowHeightRandRange.X,
@@ -121,12 +158,7 @@ void AWeapon::ThrowWeapon() {
 		ImpulseDirection = MeshForward.RotateAngleAxis(RandThrowHeight,
 			MeshRight);
 
-		double RandAddAdiotionalRotation {FMath::RandRange(
-		ThrowDirectionRandRange.X,
-		ThrowDirectionRandRange.Y)
-		}; 
-
-		ThrowDirectionZ = RandAddAdiotionalRotation;
+		
 	}
 
 	ImpulseDirection = ImpulseDirection.RotateAngleAxis(
