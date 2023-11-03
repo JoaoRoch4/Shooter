@@ -16,7 +16,7 @@ AWeapon::AWeapon() :
 	ThrowDirection(FVector(0.f, 0.f, 0.f)),
 	MultiplyImpulse(180.f),
 	ThrowHeightRandRange(FVector2D(90.f, 180.f)),
-	AddAdiotionalRotationRandRange(FVector2D(90.f, 180.f)),
+	ThrowDirectionRandRange(FVector2D(90.f, 180.f)),
 	MultiplyImpulseRandRange(FVector2D(150.f, 180.f)),
 	ThrowWeaponTimer(FTimerHandle()),
 	Ammo(40),
@@ -110,8 +110,8 @@ void AWeapon::ThrowWeapon() {
 			MeshRight);
 
 		double RandAddAdiotionalRotation {FMath::RandRange(
-		AddAdiotionalRotationRandRange.X,
-		AddAdiotionalRotationRandRange.Y)
+		ThrowDirectionRandRange.X,
+		ThrowDirectionRandRange.Y)
 		}; 
 
 		ThrowDirectionZ = RandAddAdiotionalRotation;
@@ -127,9 +127,8 @@ void AWeapon::ThrowWeapon() {
 		ThrowDirectionZ, FVector(0.f, 0.f, 1.f));
 
 	if (bNotRandValues) {
-
-		MultiplyImpulse *= 10000.f;
-		ImpulseDirection *= MultiplyImpulse;
+				
+		ImpulseDirection = (ImpulseDirection *= (MultiplyImpulse *= 10000.f));
 
 	} else {
 
@@ -139,7 +138,8 @@ void AWeapon::ThrowWeapon() {
 			MultiplyImpulseRandRange.Y)};
 
 		ImpulseDirection *= RandMultiplyImpulse;
-	}                
+	}            
+	
 
 	GetItemMesh()->AddImpulse(ImpulseDirection);
 
