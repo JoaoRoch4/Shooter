@@ -88,31 +88,34 @@ void AWeapon::ThrowWeapon() {
 
 	// Direction in which we throw the Weapon
 	FVector ImpulseDirection {};
+	double RandomRotation {};
 		
 	if (bNotRandValues) {
 
 		ImpulseDirection = MeshForward.RotateAngleAxis(ThrowHeight * -1.f, MeshRight);
+		 RandomRotation = AddAdiotionalRotation;
 
 	} else {
 
-		double RandThrowHeight = FMath::RandRange(
+		double RandThrowHeight {FMath::RandRange(
 			ThrowHeightRandRange.X,
-			ThrowHeightRandRange.Y);
+			ThrowHeightRandRange.Y)
+		};
 
 		RandThrowHeight *= -1.f;
 
 		ImpulseDirection = MeshForward.RotateAngleAxis(RandThrowHeight,
 			MeshRight);
+
+		double RandAddAdiotionalRotation {FMath::RandRange(
+		AddAdiotionalRotationRandRange.X,
+		AddAdiotionalRotationRandRange.Y)
+		}; 
+
+		RandomRotation = RandAddAdiotionalRotation;
 	}
 
-	float RandAddAdiotionalRotation = FMath::RandRange(
-		AddAdiotionalRotationRandRange.X,
-		AddAdiotionalRotationRandRange.Y);
-
-	float RandomRotation = bNotRandValues ? AddAdiotionalRotation : RandAddAdiotionalRotation;
-
-	ImpulseDirection = ImpulseDirection.RotateAngleAxis(RandomRotation,
-		FVector(0.f, 0.f, 1.f));	   
+	ImpulseDirection = ImpulseDirection.RotateAngleAxis(RandomRotation, FVector(0.f, 0.f, 1.f));
 
 	if(bNotRandValues){ 
 
@@ -122,9 +125,9 @@ void AWeapon::ThrowWeapon() {
 	} else {
 
 		MultiplyImpulseRandRange *= 1000.f;
-		double RandMultiplyImpulse = FMath::RandRange(
+		double RandMultiplyImpulse {FMath::RandRange(
 			MultiplyImpulseRandRange.X,
-			MultiplyImpulseRandRange.Y);
+			MultiplyImpulseRandRange.Y)};
 
 		ImpulseDirection *= RandMultiplyImpulse;
 	}                
