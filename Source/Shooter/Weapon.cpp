@@ -17,6 +17,10 @@ AWeapon::AWeapon() :
 	MultiplyImpulse(180.f),
 	ThrowHeightRandRange(FVector2D(90.f, 180.f)),
 	ThrowDirectionRandRange(FVector2D(90.f, 180.f)),
+	ThrowDirection_X_RandRange(FVector2D(0.f, 0.f)),
+	ThrowDirection_Y_RandRange(FVector2D(0.f, 0.f)),
+	ThrowDirection_Z_RandRange(FVector2D(0.f, 0.f)),
+	ThrowDirectionArray(TMap<FString, FVector2D>()),
 	MultiplyImpulseRandRange(FVector2D(150.f, 180.f)),
 	ThrowWeaponTimer(FTimerHandle()),
 	Ammo(40),
@@ -29,6 +33,11 @@ AWeapon::AWeapon() :
 
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	ThrowDirectionArray.Add(FString(L"X"), ThrowDirection_X_RandRange);
+	ThrowDirectionArray.Add(FString(L"Y"), ThrowDirection_Y_RandRange);
+	ThrowDirectionArray.Add(FString(L"Z"), ThrowDirection_Z_RandRange);
+
 }
 
 void AWeapon::BeginPlay() {
@@ -87,6 +96,9 @@ void AWeapon::ThrowWeapon() {
 	const FVector MeshRight{ GetItemMesh()->GetRightVector() };
 
 	// Direction in which we throw the Weapon
+
+	// TODO: Finish the implementation of the ThrowDirectionArray Tmap
+
 	FVector ImpulseDirection {};
 	double ThrowDirectionX {ThrowDirection.X};
 	double ThrowDirectionY {ThrowDirection.Y};
