@@ -27,7 +27,6 @@ AWeapon::AWeapon() :
 	ThrowDirection_Y_RandRange(FVector2D(0.f, 0.f)),
 	ThrowDirection_Z_RandRange(FVector2D(0.f, 0.f)),
 
-	ThrowDirectionArray(TMap<FString, FVector2D>()),
 	MultiplyImpulseRandRange(FVector2D(150.f, 180.f)),
 
 	ThrowWeaponTimer(FTimerHandle()),
@@ -44,12 +43,7 @@ AWeapon::AWeapon() :
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	ThrowDirectionArray.Add(FString(L"X Throw Direction Rand Range"),
-		ThrowDirection_X_RandRange);
-	ThrowDirectionArray.Add(FString(L"Y Throw Direction Rand Range"),
-		ThrowDirection_Y_RandRange);
-	ThrowDirectionArray.Add(FString(L"Z Throw Direction Rand Range"),
-		ThrowDirection_Z_RandRange);
+	
 
 }
 
@@ -110,8 +104,7 @@ void AWeapon::ThrowWeapon() {
 
 	// Direction in which we throw the Weapon
 
-	// TODO: Finish the implementation of the ThrowDirectionArray Tmap
-
+	
 	FVector ImpulseDirection {};
 	double ThrowDirectionX {};
 	double ThrowDirectionY {};
@@ -126,6 +119,7 @@ void AWeapon::ThrowWeapon() {
 			ThrowHeight * -1.f, MeshRight);
 
 	} else {
+
 
 		double RandThrowDirectionX {FMath::RandRange(
 			ThrowDirection_X_RandRange.X,

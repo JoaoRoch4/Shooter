@@ -80,29 +80,23 @@ private:
 		meta = (EditCondition = "!bNotRandValues"))
 	FVector2D ThrowDirectionRandRange;
 
-	UPROPERTY(BlueprintReadWrite,
-		Category = "My Custom Properties|Item|Throw Weapon|Impulse|Rand Range",
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+		Category = "My Custom Properties|Item|Throw Weapon|Impulse|Rand Range|ThrowDirection",
 		meta = (AllowPrivateAccess = "true"),
 		meta = (EditCondition = "!bNotRandValues"))
 	FVector2D ThrowDirection_X_RandRange;
 
-	UPROPERTY(BlueprintReadWrite,
-		Category = "My Custom Properties|Item|Throw Weapon|Impulse|Rand Range",
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+		Category = "My Custom Properties|Item|Throw Weapon|Impulse|Rand Range|ThrowDirection",
 		meta = (AllowPrivateAccess = "true"),
 		meta = (EditCondition = "!bNotRandValues"))
 	FVector2D ThrowDirection_Y_RandRange;
 
-	UPROPERTY( BlueprintReadWrite,
-		Category = "My Custom Properties|Item|Throw Weapon|Impulse|Rand Range",
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+		Category = "My Custom Properties|Item|Throw Weapon|Impulse|Rand Range|ThrowDirection",
 		meta = (AllowPrivateAccess = "true"),
 		meta = (EditCondition = "!bNotRandValues"))
 	FVector2D ThrowDirection_Z_RandRange;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,
-		Category = "My Custom Properties|Item|Throw Weapon|Impulse|Rand Range",
-		meta = (AllowPrivateAccess = "true"),
-		meta = (EditCondition = "!bNotRandValues"))
-	TMap<FString, FVector2D>ThrowDirectionArray;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		Category = "My Custom Properties|Item|Throw Weapon|Impulse|Rand Range",
