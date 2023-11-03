@@ -60,7 +60,7 @@ private:
 		Category = "My Custom Properties|Item|Throw Weapon|Impulse|Static",
 		meta = (AllowPrivateAccess = "true"),
 		meta = (EditCondition = "bNotRandValues"))
-	float AddAdiotionalRotation;
+	FVector ThrowDirection;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		Category = "My Custom Properties|Item|Throw Weapon|Impulse|Static",

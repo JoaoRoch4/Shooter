@@ -13,18 +13,18 @@ AWeapon::AWeapon() :
 	bFalling(false),
 	bNotRandValues(false),
 	ThrowHeight(10.f),
-	AddAdiotionalRotation(120.f),
-	MultiplyImpulse(1'800.f),
+	ThrowDirection(FVector(0.f, 0.f, 0.f)),
+	MultiplyImpulse(180.f),
 	ThrowHeightRandRange(FVector2D(90.f, 180.f)),
 	AddAdiotionalRotationRandRange(FVector2D(90.f, 180.f)),
-	MultiplyImpulseRandRange(FVector2D(1500.f, 1800.f)),
+	MultiplyImpulseRandRange(FVector2D(150.f, 180.f)),
 	ThrowWeaponTimer(FTimerHandle()),
 	Ammo(40),
 	MagazineCapacity(120),
 	WeaponType(EWeaponType::EWT_SubmachineGun),
 	AmmoType(EAmmoType::EAT_9mm),
 	ReloadMontageSection(FName(L"Reload SMG")),
-	ClipBoneName(L"smg_clip"),
+	ClipBoneName(FName(L"smg_clip")),
 	ItemInstance(nullptr)
 
 {
@@ -88,12 +88,14 @@ void AWeapon::ThrowWeapon() {
 
 	// Direction in which we throw the Weapon
 	FVector ImpulseDirection {};
-	double RandomRotation {};
+	double ThrowDirectionX {ThrowDirection.X};
+	double ThrowDirectionY {ThrowDirection.Y};
+	double ThrowDirectionZ {ThrowDirection.Z};
 		
 	if (bNotRandValues) {
 
-		ImpulseDirection = MeshForward.RotateAngleAxis(ThrowHeight * -1.f, MeshRight);
-		 RandomRotation = AddAdiotionalRotation;
+		ImpulseDirection = MeshForward.RotateAngleAxis(
+			ThrowHeight * -1.f, MeshRight);
 
 	} else {
 
@@ -112,19 +114,26 @@ void AWeapon::ThrowWeapon() {
 		AddAdiotionalRotationRandRange.Y)
 		}; 
 
-		RandomRotation = RandAddAdiotionalRotation;
+		ThrowDirectionZ = RandAddAdiotionalRotation;
 	}
 
-	ImpulseDirection = ImpulseDirection.RotateAngleAxis(RandomRotation, FVector(0.f, 0.f, 1.f));
+	ImpulseDirection = ImpulseDirection.RotateAngleAxis(
+		ThrowDirectionX, FVector(1.f, 0.f, 0.f));
 
-	if(bNotRandValues){ 
+	ImpulseDirection = ImpulseDirection.RotateAngleAxis(
+		ThrowDirectionY, FVector(0.f, 1.f, 1.f));
 
-		MultiplyImpulse *= 1000.f;
+	ImpulseDirection = ImpulseDirection.RotateAngleAxis(
+		ThrowDirectionZ, FVector(0.f, 0.f, 1.f));
+
+	if (bNotRandValues) {
+
+		MultiplyImpulse *= 10000.f;
 		ImpulseDirection *= MultiplyImpulse;
 
 	} else {
 
-		MultiplyImpulseRandRange *= 1000.f;
+		MultiplyImpulseRandRange *= 10000.f;
 		double RandMultiplyImpulse {FMath::RandRange(
 			MultiplyImpulseRandRange.X,
 			MultiplyImpulseRandRange.Y)};
