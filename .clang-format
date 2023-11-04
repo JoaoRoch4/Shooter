@@ -86,7 +86,7 @@ BraceWrapping:
 BreakAfterAttributes: Never 
 BreakAfterJavaFieldAnnotations: false
 BreakArrays: false
-BreakBeforeBinaryOperators: None
+BreakBeforeBinaryOperators: All
 BreakBeforeBraces: Attach
 BreakBeforeConceptDeclarations: false
 BreakBeforeInheritanceComma: true
@@ -100,7 +100,7 @@ ConstructorInitializerIndentWidth : 1
 ContinuationIndentWidth: 2
 Cpp11BracedListStyle: true
 DeriveLineEnding: true
-ColumnLimit: 100
+ColumnLimit: 110
 
 DerivePointerAlignment: false
 EmptyLineBeforeAccessModifier: Always
@@ -166,6 +166,9 @@ SpacesInCStyleCastParentheses: false
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
 Standard: c++20
+
+PenaltyBreakAssignment: 2
+
 TabWidth : 4
 UseCRLF: true
 UseTab: Never
