@@ -778,7 +778,7 @@ private:
        meta     = (AllowPrivateAccess = "true"))
     TArray<AItem *> Inventory;
 
-    const int32 InventoryCapacity;
+    const int32 InventoryCapacity {6};
 
 public:
     /**

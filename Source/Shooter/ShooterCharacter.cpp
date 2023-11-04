@@ -29,95 +29,94 @@
 
 AShooterCharacter::AShooterCharacter()
 
-    : PlayerMesh(nullptr)
-    , SkeletalMeshContainer(nullptr)
-    , CameraBoom(nullptr)
-    , FollowCamera(nullptr)
-    , bIsTransitioning(true)
-    , bCinematicCameraSwitch(true)
-    , bUseBezierCurve(true)
-    , CameraArmLengthStart(200.f)
-    , CameraArmLengthEnd(300.f)
-    , TransitionDuration(0.2f)
-    , PreviousYaw(0.f)
-    , LerpedArmLength(0.f)
-    , CurrentTime(0.0f)
-    , BaseTurnRate(45.f)
-    , BaseLookUpRate(45.f)
-    , HipTurnRate(90.f)
-    , HipLookUpRate(90.f)
-    , AimingTurnRate(20.f)
-    , AimingLookUpRate(20.f)
-    , MouseHipTurnRate(1.f)
-    , MouseHipLookUpRate(1.f)
-    , MouseAimingTurnRate(0.8f)
-    , MouseAimingLookUpRate(0.8f)
-    , bIsFiringWeapon(false)
-    , bDidFire(false)
-    , FireSound(nullptr)
-    , MuzzleFlash(nullptr)
-    , ImpactParticles(nullptr)
-    , BeamParticles(nullptr)
-    , HipFireMontage(nullptr)
-    , bShowCustomDebugMessages(false)
-    , bAiming(false)
-    , CameraDefaultAimFOV(0.f)
-    , CameraZoomedAimFOV(40.f)
-    , CameraCurrentAimFOV(0.f)
-    , ZoomInterpSpeed(20.f)
-    , CrosshairHeight(50.f)
-    , CrosshairSpreadMultiplier(0.f)
-    , CrosshairVelocityFactor(0.f)
-    , CrosshairInAirFactor(0.f)
-    , CrosshairAimFactor(0.f)
-    , CrosshairShootingFactor(0.f)
-    , ShootTimeDuration(0.05f)
-    , bFiringBullet(false)
-    , CrosshairShootTimer(FTimerHandle())
-    , bFireButtonPressed(false)
-    , bShouldFire(true)
-    , AutomaticFireRate(0.1f)
-    , AutoFireTimer(FTimerHandle())
-    , bShouldTraceForItems(false)
-    , OverlappedItemCount(0)
-    , TraceHitItemLastFrame(nullptr)
-    , EquippedWeapon(nullptr)
-    , DefaultWeaponClass(nullptr)
-    , TraceHitItem(nullptr)
-    , CameraInterpDistance(250.f)
-    , CameraInterpElevation(65.f)
-    , AmmoMap(TMap<EAmmoType, int32>())
-    , Starting_9mm_Ammo(85)
-    , Starting_AR_Ammo(120)
-    , CombatState(ECombatState::ECS_Unoccupied)
-    , ReloadMontage(nullptr)
-    , ClipTransform(FTransform())
-    , HandSceneComponent(nullptr)
-    , bCrouching(false)
-    , BaseMovementSpeed(650.f)
-    , CrouchMovementSpeed(300.f)
-    , CurrentCapsuleHalfHeight(0.f)
-    , StandingCapsuleHalfHeight(88.f)
-    , CrouchingCapsuleHalfHeight(44.f)
-    , BaseGroundFriction(2.f)
-    , CrouchingGroundFriction(100.f)
-    , bAimingButtonPressed(false)
-    , WeaponInterpComp(nullptr)
-    , InterpComp1(nullptr)
-    , InterpComp2(nullptr)
-    , InterpComp3(nullptr)
-    , InterpComp4(nullptr)
-    , InterpComp5(nullptr)
-    , InterpComp6(nullptr)
-    , InterpLocations(TArray<FInterpLocation>())
-    , PickupSoundTimer(FTimerHandle())
-    , EquipSoundTimer(FTimerHandle())
-    , bShouldPlayPickupSound(true)
-    , bShouldPlayEquipSound(true)
-    , PickupSoundResetTime(0.2f)
-    , EquipSoundResetTime(0.2f)
-    , Inventory(TArray<AItem *>())
-    , InventoryCapacity(6) {
+ : PlayerMesh(nullptr)
+ , SkeletalMeshContainer(nullptr)
+ , CameraBoom(nullptr)
+ , FollowCamera(nullptr)
+ , bIsTransitioning(true)
+ , bCinematicCameraSwitch(true)
+ , bUseBezierCurve(true)
+ , CameraArmLengthStart(200.f)
+ , CameraArmLengthEnd(300.f)
+ , TransitionDuration(0.2f)
+ , PreviousYaw(0.f)
+ , LerpedArmLength(0.f)
+ , CurrentTime(0.0f)
+ , BaseTurnRate(45.f)
+ , BaseLookUpRate(45.f)
+ , HipTurnRate(90.f)
+ , HipLookUpRate(90.f)
+ , AimingTurnRate(20.f)
+ , AimingLookUpRate(20.f)
+ , MouseHipTurnRate(1.f)
+ , MouseHipLookUpRate(1.f)
+ , MouseAimingTurnRate(0.8f)
+ , MouseAimingLookUpRate(0.8f)
+ , bIsFiringWeapon(false)
+ , bDidFire(false)
+ , FireSound(nullptr)
+ , MuzzleFlash(nullptr)
+ , ImpactParticles(nullptr)
+ , BeamParticles(nullptr)
+ , HipFireMontage(nullptr)
+ , bShowCustomDebugMessages(false)
+ , bAiming(false)
+ , CameraDefaultAimFOV(0.f)
+ , CameraZoomedAimFOV(40.f)
+ , CameraCurrentAimFOV(0.f)
+ , ZoomInterpSpeed(20.f)
+ , CrosshairHeight(50.f)
+ , CrosshairSpreadMultiplier(0.f)
+ , CrosshairVelocityFactor(0.f)
+ , CrosshairInAirFactor(0.f)
+ , CrosshairAimFactor(0.f)
+ , CrosshairShootingFactor(0.f)
+ , ShootTimeDuration(0.05f)
+ , bFiringBullet(false)
+ , CrosshairShootTimer(FTimerHandle())
+ , bFireButtonPressed(false)
+ , bShouldFire(true)
+ , AutomaticFireRate(0.1f)
+ , AutoFireTimer(FTimerHandle())
+ , bShouldTraceForItems(false)
+ , OverlappedItemCount(0)
+ , TraceHitItemLastFrame(nullptr)
+ , EquippedWeapon(nullptr)
+ , DefaultWeaponClass(nullptr)
+ , TraceHitItem(nullptr)
+ , CameraInterpDistance(250.f)
+ , CameraInterpElevation(65.f)
+ , AmmoMap(TMap<EAmmoType, int32>())
+ , Starting_9mm_Ammo(85)
+ , Starting_AR_Ammo(120)
+ , CombatState(ECombatState::ECS_Unoccupied)
+ , ReloadMontage(nullptr)
+ , ClipTransform(FTransform())
+ , HandSceneComponent(nullptr)
+ , bCrouching(false)
+ , BaseMovementSpeed(650.f)
+ , CrouchMovementSpeed(300.f)
+ , CurrentCapsuleHalfHeight(0.f)
+ , StandingCapsuleHalfHeight(88.f)
+ , CrouchingCapsuleHalfHeight(44.f)
+ , BaseGroundFriction(2.f)
+ , CrouchingGroundFriction(100.f)
+ , bAimingButtonPressed(false)
+ , WeaponInterpComp(nullptr)
+ , InterpComp1(nullptr)
+ , InterpComp2(nullptr)
+ , InterpComp3(nullptr)
+ , InterpComp4(nullptr)
+ , InterpComp5(nullptr)
+ , InterpComp6(nullptr)
+ , InterpLocations(TArray<FInterpLocation>())
+ , PickupSoundTimer(FTimerHandle())
+ , EquipSoundTimer(FTimerHandle())
+ , bShouldPlayPickupSound(true)
+ , bShouldPlayEquipSound(true)
+ , PickupSoundResetTime(0.2f)
+ , EquipSoundResetTime(0.2f)
+ , Inventory(TArray<AItem *>()) {
 
     PrimaryActorTick.bCanEverTick = true;
 
@@ -231,19 +230,17 @@ void AShooterCharacter::StartCameraLerp(float &DeltaTime) {
     // Verifica se a transição está concluída
     if (CurrentTime >= TransitionDuration) {
 
-        if (bCinematicCameraSwitch) {
-
+        if (bCinematicCameraSwitch)
             Cinematic_camera_On();
-
-        } else {
-
+        else
             Cinematic_camera_Off();
-        }
+
         bIsTransitioning = false;
     }
 }
 
 void AShooterCharacter::ToggleCinematicCamera() {
+
     return;
     bIsTransitioning       = !bIsTransitioning;
     bCinematicCameraSwitch = !bCinematicCameraSwitch;
@@ -309,16 +306,16 @@ void AShooterCharacter::AimingCameraZoom(float DeltaTime) {
     GetFollowCamera()->SetFieldOfView(CameraCurrentAimFOV);
 }
 
-float AShooterCharacter::BezierCurve_Interp(const float &CurrentFOV,
-   const float &TargetFOV, float DeltaTime, float InterpSpeed,
+float AShooterCharacter::BezierCurve_Interp(const float &CurrentFov,
+   const float &TargetFov, float DeltaTime, float InterpSpeed,
    bool bReturnToOriginal) {
 
     auto BezierInterpolation = [](float Alpha) -> float {
         return (3 * Alpha * Alpha - 2 * Alpha * Alpha * Alpha);
     };
 
-    float CurrentFOVCopy = CurrentFOV;
-    float TargetFOVCopy  = TargetFOV;
+    float CurrentFOVCopy = CurrentFov;
+    float TargetFOVCopy  = TargetFov;
 
     // Calcula o valor da curva de Bezier para controlar a interpolação
     float TargetValue = bReturnToOriginal ? CurrentFOVCopy : TargetFOVCopy;
@@ -404,7 +401,8 @@ void AShooterCharacter::CalculateCrosshairSpread(float DeltaTime) {
 void AShooterCharacter::FireWeapon() {
 
     if ((EquippedWeapon == nullptr) ||
-       (CombatState != ECombatState::ECS_Unoccupied) || (!WeaponHasAmmo()))
+       (CombatState != ECombatState::ECS_Unoccupied) ||
+        (!WeaponHasAmmo()))
         return;
 
     if (WeaponHasAmmo()) {
@@ -502,13 +500,13 @@ void AShooterCharacter::Relative_ControllerRotationYaw(float DeltaTime) {
         //&& CurrentYaw != PreviousYaw
 
         if (bAiming || FMath::Abs(CurrentYaw)) {
+
             bUseControllerRotationYaw = true;
 
             // Chame uma função para mover o personagem apenas quando o yaw for
             // maior que 40 graus
-            if (GetCharacterMovement()) {
+            if (GetCharacterMovement())
                 GetCharacterMovement()->AddForce(MovementVector);
-            }
 
             PreviousYaw = CurrentYaw;
         }
@@ -916,13 +914,10 @@ void AShooterCharacter::Turn(float Value) {
 
     float TurnScaleFactor {};
 
-    if (bAiming) {
-
+    if (bAiming)
         TurnScaleFactor = MouseAimingTurnRate;
-    } else {
-
+    else
         TurnScaleFactor = MouseHipTurnRate;
-    }
 
     AddControllerYawInput(Value * TurnScaleFactor);
 }
@@ -931,14 +926,11 @@ void AShooterCharacter::LookUp(float Value) {
 
     float LookUpScaleFactor {};
 
-    if (bAiming) {
-
+    if (bAiming)
         LookUpScaleFactor = MouseAimingLookUpRate;
-
-    } else {
-
+    else
         LookUpScaleFactor = MouseHipLookUpRate;
-    }
+
 
     AddControllerPitchInput(Value * LookUpScaleFactor);
 }
@@ -1055,7 +1047,8 @@ void AShooterCharacter::TraceForItems() {
 
                     // We are hitting a deferent item this frame
                     // Or AItem is null
-                    TraceHitItemLastFrame->GetPickupWidget()->SetVisibility(false);
+                    TraceHitItemLastFrame->GetPickupWidget()->SetVisibility(
+                       false);
 
                     TraceHitItemLastFrame->DisableCustomDepth();
                 }

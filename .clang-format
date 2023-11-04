@@ -32,24 +32,21 @@ AlignConsecutiveDeclarations:
     AlignCompound: true
     PadOperators: true
 
-AlignEscapedNewlines: Right
+# AllowShortLoopsOnASingleLine: true
+#AllowShortCompoundRequirementOnASingleLine: true
 AlignAfterOpenBracket: DontAlign
+AlignEscapedNewlines: Right
 AlignOperands: DontAlign  
 AlignTrailingComments: false
-
 AllowAllArgumentsOnNextLine: true 
 AllowAllConstructorInitializersOnNextLine: true
 AllowAllParametersOfDeclarationOnNextLine: true
-
 AllowShortBlocksOnASingleLine: Empty
 AllowShortCaseLabelsOnASingleLine: true
-AllowShortLambdasOnASingleLine: All
 AllowShortEnumsOnASingleLine: true
 AllowShortFunctionsOnASingleLine: All
 AllowShortIfStatementsOnASingleLine: true
-# AllowShortLoopsOnASingleLine: true
-#AllowShortCompoundRequirementOnASingleLine: true
-
+AllowShortLambdasOnASingleLine: All
 AlwaysBreakAfterReturnType: None
 AlwaysBreakBeforeMultilineStrings: false
 AlwaysBreakTemplateDeclarations: No
@@ -84,19 +81,19 @@ BraceWrapping:
   BeforeWhile: false
 
 BreakAfterAttributes: Never 
+BreakAfterJavaFieldAnnotations: false
 BreakArrays: false
 BreakBeforeBinaryOperators: None
 BreakBeforeBraces: Attach
-BreakBeforeInlineASMColon: Never
-BreakBeforeInheritanceComma: true
-BreakInheritanceList: AfterColon
 BreakBeforeConceptDeclarations: false
+BreakBeforeInheritanceComma: true
+BreakBeforeInlineASMColon: Never
 BreakBeforeTernaryOperators: false
 BreakConstructorInitializers: BeforeComma
-BreakAfterJavaFieldAnnotations: false
+BreakInheritanceList: AfterColon
 BreakStringLiterals: true
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
-ConstructorInitializerIndentWidth : 4
+ConstructorInitializerIndentWidth : 1
 ContinuationIndentWidth: 3
 Cpp11BracedListStyle: true
 DerivePointerAlignment: false
@@ -117,7 +114,6 @@ IndentRequires: true
 IndentWidth: 4
 IndentWrappedFunctionNames: true
 KeepEmptyLinesAtTheStartOfBlocks: true
-
 Language: Cpp
 LineEnding: CRLF
 MaxEmptyLinesToKeep: 2
@@ -148,19 +144,19 @@ SpaceBeforeParensOptions:
     AfterRequiresInExpression: false
     BeforeNonEmptyParentheses: false
 
+RequiresExpressionIndentation: OuterScope
 SpaceBeforeRangeBasedForLoopColon: true
 SpaceBeforeSquareBrackets: true
 SpaceInEmptyBlock: false
 SpaceInEmptyParentheses: false
 SpacesInAngles: false
+SpacesInConditionalStatement: false
 SpacesInContainerLiterals: false
 SpacesInCStyleCastParentheses: false
-SpacesInConditionalStatement: false
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
-RequiresExpressionIndentation: OuterScope
-TabWidth : 4
 Standard: c++20
+TabWidth : 4
 UseCRLF: true
 UseTab: Never
 

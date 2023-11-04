@@ -6,13 +6,12 @@
 #include <Components/SphereComponent.h>
 #include <Components/WidgetComponent.h>
 
-AAmmo::AAmmo()
-    :
 
-    AmmoMesh(nullptr)
-    , AmmoType(EAmmoType::EAT_9mm)
-    , AmmoIconTexture(nullptr)
-    , AmmoCollisionSphere(nullptr) {
+AAmmo::AAmmo()
+ : AmmoMesh(nullptr)
+ , AmmoType(EAmmoType::EAT_9mm)
+ , AmmoIconTexture(nullptr)
+ , AmmoCollisionSphere(nullptr) {
 
     // Construct the AmmoMesh component and set it as the root component.
     AmmoMesh = CDSubObj<UStaticMeshComponent>(L"AmmoMesh");
@@ -44,56 +43,54 @@ void AAmmo::SetItemProperties(EItemState State) {
     switch (State) {
 
         case EItemState::EIS_Pickup :
-            {
 
-                // Set mesh properties
-                AmmoMesh->SetSimulatePhysics(false);
-                AmmoMesh->SetEnableGravity(false);
-                AmmoMesh->SetVisibility(true);
-                AmmoMesh->SetCollisionResponseToAllChannels(
-                   ECollisionResponse::ECR_Ignore);
-                AmmoMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-                break;
-            }
+            // Set mesh properties
+            AmmoMesh->SetSimulatePhysics(false);
+            AmmoMesh->SetEnableGravity(false);
+            AmmoMesh->SetVisibility(true);
+            AmmoMesh->SetCollisionResponseToAllChannels(
+               ECollisionResponse::ECR_Ignore);
+            AmmoMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+            break;
+
         case EItemState::EIS_Equipped :
-            {
 
-                // Set mesh properties
-                AmmoMesh->SetSimulatePhysics(false);
-                AmmoMesh->SetEnableGravity(false);
-                AmmoMesh->SetVisibility(true);
-                AmmoMesh->SetCollisionResponseToAllChannels(
-                   ECollisionResponse::ECR_Ignore);
-                AmmoMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-                break;
-            }
+            // Set mesh properties
+            AmmoMesh->SetSimulatePhysics(false);
+            AmmoMesh->SetEnableGravity(false);
+            AmmoMesh->SetVisibility(true);
+            AmmoMesh->SetCollisionResponseToAllChannels(
+               ECollisionResponse::ECR_Ignore);
+            AmmoMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+            break;
+
         case EItemState::EIS_Falling :
-            {
 
-                // Set mesh properties
-                AmmoMesh->SetCollisionEnabled(
-                   ECollisionEnabled::QueryAndPhysics);
-                AmmoMesh->SetSimulatePhysics(true);
-                AmmoMesh->SetEnableGravity(true);
-                AmmoMesh->SetCollisionResponseToAllChannels(
-                   ECollisionResponse::ECR_Ignore);
-                AmmoMesh->SetCollisionResponseToChannel(
-                   ECollisionChannel::ECC_WorldStatic,
-                   ECollisionResponse::ECR_Block);
-                break;
-            }
+            // Set mesh properties
+            AmmoMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+            AmmoMesh->SetSimulatePhysics(true);
+            AmmoMesh->SetEnableGravity(true);
+            AmmoMesh->SetCollisionResponseToAllChannels(
+               ECollisionResponse::ECR_Ignore);
+            AmmoMesh->SetCollisionResponseToChannel(
+               ECollisionChannel::ECC_WorldStatic,
+               ECollisionResponse::ECR_Block);
+
+            break;
+
         case EItemState::EIS_EquipInterping :
-            {
 
-                // Set mesh properties
-                AmmoMesh->SetSimulatePhysics(false);
-                AmmoMesh->SetEnableGravity(false);
-                AmmoMesh->SetVisibility(true);
-                AmmoMesh->SetCollisionResponseToAllChannels(
-                   ECollisionResponse::ECR_Ignore);
-                AmmoMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-                break;
-            }
+            // Set mesh properties
+            AmmoMesh->SetSimulatePhysics(false);
+            AmmoMesh->SetEnableGravity(false);
+            AmmoMesh->SetVisibility(true);
+            AmmoMesh->SetCollisionResponseToAllChannels(
+               ECollisionResponse::ECR_Ignore);
+            AmmoMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+            break;
     }
 }
 
