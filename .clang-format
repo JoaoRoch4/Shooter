@@ -36,17 +36,20 @@ AlignConsecutiveDeclarations:
 #AllowShortCompoundRequirementOnASingleLine: true
 AlignAfterOpenBracket: DontAlign
 AlignEscapedNewlines: Right
-AlignOperands: DontAlign  
+AlignOperands: Align   
 AlignTrailingComments: false
+
 AllowAllArgumentsOnNextLine: true 
 AllowAllConstructorInitializersOnNextLine: true
 AllowAllParametersOfDeclarationOnNextLine: true
 AllowShortBlocksOnASingleLine: Empty
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortEnumsOnASingleLine: true
-AllowShortFunctionsOnASingleLine: All
+AllowShortFunctionsOnASingleLine: true
 AllowShortIfStatementsOnASingleLine: true
-AllowShortLambdasOnASingleLine: All
+AllowShortLambdasOnASingleLine: true
+
+AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakAfterReturnType: None
 AlwaysBreakBeforeMultilineStrings: false
 AlwaysBreakTemplateDeclarations: No
@@ -94,16 +97,21 @@ BreakInheritanceList: AfterColon
 BreakStringLiterals: true
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 ConstructorInitializerIndentWidth : 1
-ContinuationIndentWidth: 3
+ContinuationIndentWidth: 2
 Cpp11BracedListStyle: true
+DeriveLineEnding: true
+ColumnLimit: 100
+
 DerivePointerAlignment: false
 EmptyLineBeforeAccessModifier: Always
 ExperimentalAutoDetectBinPacking: false
 FixNamespaceComments: false
+
 ForEachMacros: 
   - foreach
   - Q_FOREACH
   - BOOST_FOREACH
+
 IncludeBlocks: Preserve
 IndentCaseBlocks: true
 IndentCaseLabels: true
@@ -118,7 +126,9 @@ Language: Cpp
 LineEnding: CRLF
 MaxEmptyLinesToKeep: 2
 NamespaceIndentation: All
+
 PointerAlignment: Right
+
 SortIncludes: false
 SortUsingDeclarations: false
 SpaceAfterCStyleCast: false

@@ -52,8 +52,7 @@ public:
     virtual void Tick(float DeltaTime) override;
 
     // Called to bind functionality to input
-    virtual void SetupPlayerInputComponent(
-       class UInputComponent *PlayerInputComponent) override;
+    virtual void SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent) override;
 
 protected:
     // Called when the game starts or when spawned
@@ -117,8 +116,7 @@ protected:
     void FireWeapon();
 
     /** @brief Modify a FVector to get the location of bean end */
-    bool GetBeanEndLocation(
-       const FVector &MuzzleSocketLocation, FVector &OutBeanLocation);
+    bool GetBeanEndLocation(const FVector &MuzzleSocketLocation, FVector &OutBeanLocation);
 
     void Relative_ControllerRotationYaw(float DeltaTime);
 
@@ -139,8 +137,8 @@ protected:
     /** @brief Interpolation for aiming zoom */
     void AimingCameraZoom(float DeltaTime);
 
-    float BezierCurve_Interp(const float &CurrentFOV, const float &TargetFOV,
-       float DeltaTime, float InterpSpeed, bool bReturnToOriginal);
+    float BezierCurve_Interp(const float &CurrentFOV, const float &TargetFOV, float DeltaTime,
+      float InterpSpeed, bool bReturnToOriginal);
 
     /** Set BaseTurnRate and BaseLookUpRate based on aiming */
     void SetsLookRates();
@@ -176,8 +174,7 @@ protected:
 	 * @return true if hit
      * something. And false if not.
 	 */
-    bool TraceUnderCrosshairs(
-       FHitResult &OutHitResult, FVector &OutHitlocation);
+    bool TraceUnderCrosshairs(FHitResult &OutHitResult, FVector &OutHitlocation);
 
     /**
 	 * @brief Trace for itens under the crosshair if Overlapped
@@ -288,24 +285,20 @@ protected:
     FORCEINLINE void ResetEquipSoundTimer();
 
 private:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite,
-       Category = "My Custom Properties|Mesh",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Mesh",
+      meta = (AllowPrivateAccess = "true"))
     class USkeletalMeshComponent *PlayerMesh;
 
-    class TUniquePtr<ConstructorHelpers::FObjectFinder<USkeletalMesh>>
-       SkeletalMeshContainer;
+    class TUniquePtr<ConstructorHelpers::FObjectFinder<USkeletalMesh>> SkeletalMeshContainer;
 
     /**@brief Camera boom positioning the camera behind the character */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
-       Category = "My Custom Properties|Camera",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Camera",
+      meta = (AllowPrivateAccess = "true"))
     class USpringArmComponent *CameraBoom;
 
     /**@brief Camera that follows the character */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
-       Category = "My Custom Properties|Camera",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Camera",
+      meta = (AllowPrivateAccess = "true"))
     class UCameraComponent *FollowCamera;
 
     /**
@@ -321,222 +314,181 @@ private:
     bool bCinematicCameraSwitch;
 
     /** Use bezier curve for Cinematic camera */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite,
-       Category = "My Custom Properties|Camera|Cinematic Camera",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Camera|Cinematic Camera",
+      meta = (AllowPrivateAccess = "true"))
     bool bUseBezierCurve;
 
     /** Camera Arm Length Start Editable on editor */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite,
-       Category = "My Custom Properties|Camera|Cinematic Camera",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Camera|Cinematic Camera",
+      meta = (AllowPrivateAccess = "true"))
     float CameraArmLengthStart;
 
     /** Camera Arm Length End Editable on editor */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite,
-       Category = "My Custom Properties|Camera|Cinematic Camera",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Camera|Cinematic Camera",
+      meta = (AllowPrivateAccess = "true"))
     float CameraArmLengthEnd;
 
     /** Duration of the transition */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite,
-       Category = "My Custom Properties|Camera|Cinematic Camera",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Camera|Cinematic Camera",
+      meta = (AllowPrivateAccess = "true"))
     float TransitionDuration;
 
-    UPROPERTY(BlueprintReadOnly,
-       Category = "My Custom Properties|Camera|Cinematic Camera",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(BlueprintReadOnly, Category = "My Custom Properties|Camera|Cinematic Camera",
+      meta = (AllowPrivateAccess = "true"))
     float PreviousYaw;
 
-    UPROPERTY(BlueprintReadOnly,
-       Category = "My Custom Properties|Camera|Cinematic Camera",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(BlueprintReadOnly, Category = "My Custom Properties|Camera|Cinematic Camera",
+      meta = (AllowPrivateAccess = "true"))
     float LerpedArmLength;
 
     /** Current time of the transition */
-    UPROPERTY(BlueprintReadOnly,
-       Category = "My Custom Properties|Camera|Cinematic Camera",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(BlueprintReadOnly, Category = "My Custom Properties|Camera|Cinematic Camera",
+      meta = (AllowPrivateAccess = "true"))
     float CurrentTime;
 
     /** Base turn rate, in deg / sec. Other scaling may affect final turn rate
      */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
-       Category = "My Custom Properties|Camera|Aim",
-       meta     = (AllowPrivateAccess))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Camera|Aim",
+      meta = (AllowPrivateAccess))
     float BaseTurnRate;
 
     /** Base look up/down rate, in deg/sec. Other scaling may affect final turn
      * rate */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
-       Category = "My Custom Properties|Camera|Aim",
-       meta     = (AllowPrivateAccess))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Camera|Aim",
+      meta = (AllowPrivateAccess))
     float BaseLookUpRate;
 
     /** Turn rate while not aiming */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
-       Category = "My Custom Properties|Camera|Aim",
-       meta     = (AllowPrivateAccess))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Camera|Aim",
+      meta = (AllowPrivateAccess))
     float HipTurnRate;
 
     /** Look up rate while not aiming */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
-       Category = "My Custom Properties|Camera|Aim",
-       meta     = (AllowPrivateAccess))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Camera|Aim",
+      meta = (AllowPrivateAccess))
     float HipLookUpRate;
 
     /** Turn rate while aiming */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
-       Category = "My Custom Properties|Camera|Aim",
-       meta     = (AllowPrivateAccess))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Camera|Aim",
+      meta = (AllowPrivateAccess))
     float AimingTurnRate;
 
     /** *@brief Look up rate while aiming. */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
-       Category = "My Custom Properties|Camera|Aim",
-       meta     = (AllowPrivateAccess))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Camera|Aim",
+      meta = (AllowPrivateAccess))
     float AimingLookUpRate;
 
     /** *@brief Mouse turn rate while not aiming. */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
-       Category = "My Custom Properties|Camera|Aim",
-       meta     = (AllowPrivateAccess),
-       meta     = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0",
-          UIMax = "1.0"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Camera|Aim",
+      meta = (AllowPrivateAccess), meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
     float MouseHipTurnRate;
 
     /** *@brief Mouse look up rate while not aiming. */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
-       Category = "My Custom Properties|Camera|Aim",
-       meta     = (AllowPrivateAccess),
-       meta     = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0",
-          UIMax = "1.0"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Camera|Aim",
+      meta = (AllowPrivateAccess), meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
     float MouseHipLookUpRate;
 
     /** *@brief Mouse turn rate while aiming. */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
-       Category = "My Custom Properties|Camera|Aim",
-       meta     = (AllowPrivateAccess),
-       meta     = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0",
-          UIMax = "1.0"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Camera|Aim",
+      meta = (AllowPrivateAccess), meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
     float MouseAimingTurnRate;
 
     /** *@brief Mouse look up rate while aiming. */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
-       Category = "My Custom Properties|Camera|Aim",
-       meta     = (AllowPrivateAccess),
-       meta     = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0",
-          UIMax = "1.0"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Camera|Aim",
+      meta = (AllowPrivateAccess), meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
     float MouseAimingLookUpRate;
 
     /** *@brief true if is firing the weapon. */
-    UPROPERTY(BlueprintReadOnly, Category = "My Custom Properties|Combat|Fire",
-       meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(
+      BlueprintReadOnly, Category = "My Custom Properties|Combat|Fire", meta = (AllowPrivateAccess = "true"))
     bool bIsFiringWeapon;
 
     /** *@brief true if is firing the weapon. */
-    UPROPERTY(BlueprintReadOnly, Category = "My Custom Properties|Combat|Fire",
-       meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(
+      BlueprintReadOnly, Category = "My Custom Properties|Combat|Fire", meta = (AllowPrivateAccess = "true"))
     bool bDidFire;
 
     /** *@brief Randomize gun shots sound cue. */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite,
-       Category = "My Custom Properties|Combat|Class",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Combat|Class",
+      meta = (AllowPrivateAccess = "true"))
     class USoundCue *FireSound;
 
     /** *@brief Flash spawned at Barrel socket. */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite,
-       Category = "My Custom Properties|Combat|Class",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Combat|Class",
+      meta = (AllowPrivateAccess = "true"))
     class UParticleSystem *MuzzleFlash;
 
     /** *@brief Particles spawned upon bullet impact. */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite,
-       Category = "My Custom Properties|Combat|Class",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Combat|Class",
+      meta = (AllowPrivateAccess = "true"))
     UParticleSystem *ImpactParticles;
 
     /** *@brief Smoke trail for bullets. */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite,
-       Category = "My Custom Properties|Combat|Class",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Combat|Class",
+      meta = (AllowPrivateAccess = "true"))
     UParticleSystem *BeamParticles;
 
     /** *@brief Montage for firing the weapon. */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite,
-       Category = "My Custom Properties|Combat|Class",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Combat|Class",
+      meta = (AllowPrivateAccess = "true"))
     class UAnimMontage *HipFireMontage;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite,
-       Category = "My Custom Properties|Debug",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Debug",
+      meta = (AllowPrivateAccess = "true"))
     bool bShowCustomDebugMessages;
 
     /** True when Aiming */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
-       Category = "My Custom Properties|Camera|Aim",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Camera|Aim",
+      meta = (AllowPrivateAccess = "true"))
     bool bAiming;
 
     /** *@brief Default camera field of view value. */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite,
-       Category = "My Custom Properties|Camera|Aim",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Camera|Aim",
+      meta = (AllowPrivateAccess = "true"))
     float CameraDefaultAimFOV;
 
     /** *@brief Field of view value for when zoomed in. */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite,
-       Category = "My Custom Properties|Camera|Aim",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Camera|Aim",
+      meta = (AllowPrivateAccess = "true"))
     float CameraZoomedAimFOV;
 
     /** *@brief Current field of view this frame. */
-    UPROPERTY(BlueprintReadOnly, Category = "My Custom Properties|Camera|Aim",
-       meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(
+      BlueprintReadOnly, Category = "My Custom Properties|Camera|Aim", meta = (AllowPrivateAccess = "true"))
     float CameraCurrentAimFOV;
 
     /** *@brief Interp speed for zooming when aiming. */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite,
-       Category = "My Custom Properties|Camera|Aim",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Camera|Aim",
+      meta = (AllowPrivateAccess = "true"))
     float ZoomInterpSpeed;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite,
-       Category = "My Custom Properties|Combat|Crosshairs",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Combat|Crosshairs",
+      meta = (AllowPrivateAccess = "true"))
     float CrosshairHeight;
 
     /** *@brief Determines the spread of the crosshairs. */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
-       Category = "My Custom Properties|Combat|Crosshairs",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Combat|Crosshairs",
+      meta = (AllowPrivateAccess = "true"))
     float CrosshairSpreadMultiplier;
 
     /** *@brief Velocity component for crosshairs spread. */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
-       Category = "My Custom Properties|Combat|Crosshairs",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Combat|Crosshairs",
+      meta = (AllowPrivateAccess = "true"))
     float CrosshairVelocityFactor;
 
     /** *@brief In air component for crosshairs spread. */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
-       Category = "My Custom Properties|Combat|Crosshairs",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Combat|Crosshairs",
+      meta = (AllowPrivateAccess = "true"))
     float CrosshairInAirFactor;
 
     /** *@brief Aim component for crosshairs spread. */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
-       Category = "My Custom Properties|Combat|Crosshairs",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Combat|Crosshairs",
+      meta = (AllowPrivateAccess = "true"))
     float CrosshairAimFactor;
 
     /** *@brief Shooting component for crosshairs spread. */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
-       Category = "My Custom Properties|Combat|Crosshairs",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Combat|Crosshairs",
+      meta = (AllowPrivateAccess = "true"))
     float CrosshairShootingFactor;
 
     float ShootTimeDuration;
@@ -570,26 +522,23 @@ private:
     /**
 	 * @brief Last AItem traced.
 	 */
-    UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly,
-       Category = "My Custom Properties|Combat|Class",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Combat|Class",
+      meta = (AllowPrivateAccess = "true"))
     class AItem *TraceHitItemLastFrame;
 
     /**
 	 * @brief Currently equipped weapon.
 	 */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly,
-       Category = "My Custom Properties|Combat|Class",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Combat|Class",
+      meta = (AllowPrivateAccess = "true"))
     class AWeapon *EquippedWeapon;
 
     /**
 	 * @brief Sets this in Blueprints for the default weapon class.
 
      */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
-       Category = "My Custom Properties|Combat|Class",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Combat|Class",
+      meta = (AllowPrivateAccess = "true"))
     TSubclassOf<AWeapon> DefaultWeaponClass;
 
     /**
@@ -597,8 +546,8 @@ private:
 
      * * (Could be null)
 	 */
-    UPROPERTY(BlueprintReadOnly, Category = "My Custom Properties|Combat|Class",
-       meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(
+      BlueprintReadOnly, Category = "My Custom Properties|Combat|Class", meta = (AllowPrivateAccess = "true"))
     AItem *TraceHitItem;
 
     /**
@@ -606,9 +555,8 @@ private:
 	 *
      * interp destination.
 	 */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly,
-       Category = "My Custom Properties|Itens|Camera",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Itens|Camera",
+      meta = (AllowPrivateAccess = "true"))
     float CameraInterpDistance;
 
     /** 
@@ -616,142 +564,127 @@ private:
 	* interp
      * destination. 
 	*/
-    UPROPERTY(EditAnywhere, BlueprintReadOnly,
-       Category = "My Custom Properties|Itens|Camera",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Itens|Camera",
+      meta = (AllowPrivateAccess = "true"))
     float CameraInterpElevation;
 
     /** *@brief Map to keep track of ammo of different types. */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
-       Category = "My Custom Properties|Items|Ammo",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Items|Ammo",
+      meta = (AllowPrivateAccess = "true"))
     TMap<EAmmoType, int32> AmmoMap;
 
     /** @brief Starting 9mm ammo. */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite,
-       Category = "My Custom Properties|Items|Ammo",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Items|Ammo",
+      meta = (AllowPrivateAccess = "true"))
     int32 Starting_9mm_Ammo;
 
     /** @brief Starting AR ammo. */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite,
-       Category = "My Custom Properties|Items|Ammo",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Items|Ammo",
+      meta = (AllowPrivateAccess = "true"))
     int32 Starting_AR_Ammo;
 
     /** *@brief Combat State. Cannot fire or reload when unoccupied. */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
-       Category = "My Custom Properties|Combat",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Combat",
+      meta = (AllowPrivateAccess = "true"))
     ECombatState CombatState;
 
     /** @brief Montage for reloading animations. */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite,
-       Category = "My Custom Properties|Combat|Class",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Combat|Class",
+      meta = (AllowPrivateAccess = "true"))
     UAnimMontage *ReloadMontage;
 
     /** *@brief Transform of the clip when we first grab the clip during
      * reloading. */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
-       Category = "My Custom Properties|Animation",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Animation",
+      meta = (AllowPrivateAccess = "true"))
     FTransform ClipTransform;
 
     /** *@brief Scene component to attach to the Character's hand during
      * reloading. */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
-       Category = "My Custom Properties|Animation",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Animation",
+      meta = (AllowPrivateAccess = "true"))
     USceneComponent *HandSceneComponent;
 
     /** @brief True when crouching. */
-    UPROPERTY(BlueprintReadOnly,
-       Category = "My Custom Properties|Combat|Movement",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(BlueprintReadOnly, Category = "My Custom Properties|Combat|Movement",
+      meta = (AllowPrivateAccess = "true"))
     bool bCrouching;
 
     /** *@brief Regular Movement speed. */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite,
-       Category = "My Custom Properties|Combat|Movement",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Combat|Movement",
+      meta = (AllowPrivateAccess = "true"))
     float BaseMovementSpeed;
 
     /** *@brief Crouch Movement Speed. */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite,
-       Category = "My Custom Properties|Combat|Movement",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Combat|Movement",
+      meta = (AllowPrivateAccess = "true"))
     float CrouchMovementSpeed;
 
     /** *@brief Current Half Height of the Capsule. */
     float CurrentCapsuleHalfHeight;
 
     /** *@brief Half Height of the Capsule when not Crouching. */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite,
-       Category = "My Custom Properties|Combat|Movement",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Combat|Movement",
+      meta = (AllowPrivateAccess = "true"))
     float StandingCapsuleHalfHeight;
 
     /** *@brief Half Height of the Capsule when Crouching. */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite,
-       Category = "My Custom Properties|Combat|Movement",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Combat|Movement",
+      meta = (AllowPrivateAccess = "true"))
     float CrouchingCapsuleHalfHeight;
 
     /** *@brief Ground Friction while not crouching. */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite,
-       Category = "My Custom Properties|Combat|Movement",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Combat|Movement",
+      meta = (AllowPrivateAccess = "true"))
     float BaseGroundFriction;
 
     /** *@brief Ground Friction while crouching. */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite,
-       Category = "My Custom Properties|Combat|Movement",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Combat|Movement",
+      meta = (AllowPrivateAccess = "true"))
     float CrouchingGroundFriction;
 
     /** *@brief Used for knowing the Aiming Button is Pressed. */
     bool bAimingButtonPressed;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
-       Category = "My Custom Properties|Items|Interpolation Scene Components",
-       meta     = (AllowPrivateAccess = "true"))
+      Category = "My Custom Properties|Items|Interpolation Scene Components",
+      meta     = (AllowPrivateAccess = "true"))
     USceneComponent *WeaponInterpComp;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
-       Category = "My Custom Properties|Items|Interpolation Scene Components",
-       meta     = (AllowPrivateAccess = "true"))
+      Category = "My Custom Properties|Items|Interpolation Scene Components",
+      meta     = (AllowPrivateAccess = "true"))
     USceneComponent *InterpComp1;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
-       Category = "My Custom Properties|Items|Interpolation Scene Components",
-       meta     = (AllowPrivateAccess = "true"))
+      Category = "My Custom Properties|Items|Interpolation Scene Components",
+      meta     = (AllowPrivateAccess = "true"))
     USceneComponent *InterpComp2;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
-       Category = "My Custom Properties|Items|Interpolation Scene Components",
-       meta     = (AllowPrivateAccess = "true"))
+      Category = "My Custom Properties|Items|Interpolation Scene Components",
+      meta     = (AllowPrivateAccess = "true"))
     USceneComponent *InterpComp3;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
-       Category = "My Custom Properties|Items|Interpolation Scene Components",
-       meta     = (AllowPrivateAccess = "true"))
+      Category = "My Custom Properties|Items|Interpolation Scene Components",
+      meta     = (AllowPrivateAccess = "true"))
     USceneComponent *InterpComp4;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
-       Category = "My Custom Properties|Items|Interpolation Scene Components",
-       meta     = (AllowPrivateAccess = "true"))
+      Category = "My Custom Properties|Items|Interpolation Scene Components",
+      meta     = (AllowPrivateAccess = "true"))
     USceneComponent *InterpComp5;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
-       Category = "My Custom Properties|Items|Interpolation Scene Components",
-       meta     = (AllowPrivateAccess = "true"))
+      Category = "My Custom Properties|Items|Interpolation Scene Components",
+      meta     = (AllowPrivateAccess = "true"))
     USceneComponent *InterpComp6;
 
     /** *@brief Array of interp location structs. */
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
-       Category = "My Custom Properties|Items|Interpolation Scene Components",
-       meta     = (AllowPrivateAccess = "true"))
+      Category = "My Custom Properties|Items|Interpolation Scene Components",
+      meta     = (AllowPrivateAccess = "true"))
     TArray<FInterpLocation> InterpLocations;
 
     FTimerHandle PickupSoundTimer;
@@ -761,21 +694,18 @@ private:
     bool bShouldPlayEquipSound;
 
     /** *@brief Time to wait before we can play another Pickup Sound. */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly,
-       Category = "My Custom Properties|Items|Sound",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Items|Sound",
+      meta = (AllowPrivateAccess = "true"))
     float PickupSoundResetTime;
 
     /** Time to wait before we can play another Equip Sound */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly,
-       Category = "My Custom Properties|Items|Sound",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Items|Sound",
+      meta = (AllowPrivateAccess = "true"))
     float EquipSoundResetTime;
 
     /** An array of AItems for our Inventory */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
-       Category = "My Custom Properties|Items|Inventory",
-       meta     = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Items|Inventory",
+      meta = (AllowPrivateAccess = "true"))
     TArray<AItem *> Inventory;
 
     const int32 InventoryCapacity {6};
@@ -784,18 +714,12 @@ public:
     /**
 	 * @brief Returns Cameraboom subObject.
 	 */
-    FORCEINLINE USpringArmComponent *GetCameraBoom() const {
-        return CameraBoom;
-    };
+    FORCEINLINE USpringArmComponent *GetCameraBoom() const { return CameraBoom; };
 
     /** Returns FollowCamera subObject */
-    FORCEINLINE UCameraComponent *GetFollowCamera() const {
-        return FollowCamera;
-    }
-
+    FORCEINLINE UCameraComponent *GetFollowCamera() const { return FollowCamera; }
 
     FORCEINLINE bool GetAiming() const { return bAiming; }
-
 
     UFUNCTION(BlueprintCallable)
     float GetCrosshairHeight() const;
@@ -803,9 +727,7 @@ public:
     UFUNCTION(BlueprintCallable)
     float GetCrosshairSpreadMultiplier() const;
 
-    FORCEINLINE int8 GetOverlappedItemCount() const {
-        return OverlappedItemCount;
-    }
+    FORCEINLINE int8 GetOverlappedItemCount() const { return OverlappedItemCount; }
 
     /**
 	 * @brief Adds/Subtract to/from OverlappedItemCount and updates
@@ -835,13 +757,9 @@ public:
 
     void IncrementInterpLocItemCount(int32 Index, int32 Amount);
 
-    FORCEINLINE bool ShouldPlayPickupSound() const {
-        return bShouldPlayPickupSound;
-    }
+    FORCEINLINE bool ShouldPlayPickupSound() const { return bShouldPlayPickupSound; }
 
-    FORCEINLINE bool ShouldPlayEquipSound() const {
-        return bShouldPlayEquipSound;
-    }
+    FORCEINLINE bool ShouldPlayEquipSound() const { return bShouldPlayEquipSound; }
 
     void StartPickupSoundTimer();
     void StartEquipSoundTimer();
