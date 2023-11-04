@@ -2,12 +2,9 @@
 
 #include <Blueprint\UserWidget.h>
 
-AShooterPlayerController::AShooterPlayerController() 
+AShooterPlayerController::AShooterPlayerController()
 
-    : HUDOverlay(nullptr) {
-
-
-}
+  : HUDOverlay(nullptr) {}
 
 void AShooterPlayerController::BeginPlay() {
 
@@ -16,12 +13,12 @@ void AShooterPlayerController::BeginPlay() {
     // Check our HUDOverlayClass TSubClassOf variable
     if (HUDOverlayClass) {
 
-        HUDOverlay = CreateWidget<UUserWidget>(this, HUDOverlayClass);
+	HUDOverlay = CreateWidget<UUserWidget>(this, HUDOverlayClass);
 
-        if (HUDOverlay) {
+	if (HUDOverlay) {
 
-            HUDOverlay->AddToViewport();
-            HUDOverlay->SetVisibility(ESlateVisibility::Visible);
-        }
+	    HUDOverlay->AddToViewport();
+	    HUDOverlay->SetVisibility(ESlateVisibility::Visible);
+	}
     }
 }

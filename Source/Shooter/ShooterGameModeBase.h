@@ -10,8 +10,6 @@
  * 
  */
 UCLASS()
-class SHOOTER_API AShooterGameModeBase : public AGameModeBase
-{
-	GENERATED_BODY()
-	
+class SHOOTER_API AShooterGameModeBase : public AGameModeBase {
+    GENERATED_BODY()
 };

@@ -10,18 +10,14 @@
  * 
  */
 UCLASS()
-class SHOOTER_API AMyItem : public AItem
-{
-	GENERATED_BODY()
-	
+class SHOOTER_API AMyItem : public AItem {
+    GENERATED_BODY()
+
 public:
+    AMyItem();
 
-	AMyItem();
-
-	virtual void Tick(float DeltaTime) override;
+    virtual void Tick(float DeltaTime) override;
 
 protected:
-
-	virtual void BeginPlay() override;
-
+    virtual void BeginPlay() override;
 };

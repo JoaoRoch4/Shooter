@@ -1,0 +1,167 @@
+# Format Style Options - Created with Clang Power Tools
+---
+AccessModifierOffset: -4
+
+AlignArrayOfStructures: Left
+
+AlignConsecutiveAssignments:
+    Enabled: true
+    AcrossEmptyLines: false
+    AcrossComments: true
+    AlignCompound: true
+    PadOperators: true
+
+AlignConsecutiveMacros: 
+    Enabled: true
+    AcrossEmptyLines: false
+    AcrossComments: true
+    AlignCompound: true
+    PadOperators: true
+
+AlignConsecutiveBitFields:
+    Enabled: true
+    AcrossEmptyLines: false
+    AcrossComments: true
+    AlignCompound: true
+    PadOperators: true
+
+AlignConsecutiveDeclarations:
+    Enabled: true
+    AcrossEmptyLines: false
+    AcrossComments: true
+    AlignCompound: true
+    PadOperators: true
+
+AlignEscapedNewlines: Right
+AlignAfterOpenBracket: DontAlign
+AlignOperands: DontAlign  
+AlignTrailingComments: false
+
+AllowAllArgumentsOnNextLine: true 
+AllowAllConstructorInitializersOnNextLine: true
+AllowAllParametersOfDeclarationOnNextLine: true
+
+AllowShortBlocksOnASingleLine: Empty
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortLambdasOnASingleLine: All
+AllowShortEnumsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: All
+AllowShortIfStatementsOnASingleLine: true
+# AllowShortLoopsOnASingleLine: true
+#AllowShortCompoundRequirementOnASingleLine: true
+
+AlwaysBreakAfterReturnType: None
+AlwaysBreakBeforeMultilineStrings: false
+AlwaysBreakTemplateDeclarations: No
+
+
+AttributeMacros: 
+  - __capability
+
+BasedOnStyle: LLVM
+BinPackArguments: true
+BinPackParameters: true
+BitFieldColonSpacing: Both
+
+BraceWrapping: 
+  AfterCaseLabel: false
+  AfterClass: false
+  AfterControlStatement: false
+  AfterEnum: false
+  AfterFunction: false
+  AfterNamespace: false
+  AfterObjCDeclaration: false
+  AfterStruct: false
+  AfterUnion: false
+  AfterExternBlock: false
+  BeforeCatch: false
+  BeforeElse: false
+  IndentBraces: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: false
+  SplitEmptyNamespace: false
+  BeforeLambdaBody: false
+  BeforeWhile: false
+
+BreakAfterAttributes: Never 
+BreakArrays: false
+BreakBeforeBinaryOperators: None
+BreakBeforeBraces: Attach
+BreakBeforeInlineASMColon: Never
+BreakBeforeInheritanceComma: true
+BreakInheritanceList: AfterColon
+BreakBeforeConceptDeclarations: false
+BreakBeforeTernaryOperators: false
+BreakConstructorInitializers: BeforeComma
+BreakAfterJavaFieldAnnotations: false
+BreakStringLiterals: true
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+ConstructorInitializerIndentWidth : 4
+ContinuationIndentWidth: 3
+Cpp11BracedListStyle: true
+DerivePointerAlignment: false
+EmptyLineBeforeAccessModifier: Always
+ExperimentalAutoDetectBinPacking: false
+FixNamespaceComments: false
+ForEachMacros: 
+  - foreach
+  - Q_FOREACH
+  - BOOST_FOREACH
+IncludeBlocks: Preserve
+IndentCaseBlocks: true
+IndentCaseLabels: true
+IndentExternBlock: NoIndent
+IndentGotoLabels: true
+IndentPPDirectives: None
+IndentRequires: true
+IndentWidth: 4
+IndentWrappedFunctionNames: true
+KeepEmptyLinesAtTheStartOfBlocks: true
+
+Language: Cpp
+LineEnding: CRLF
+MaxEmptyLinesToKeep: 2
+NamespaceIndentation: All
+PointerAlignment: Right
+SortIncludes: false
+SortUsingDeclarations: false
+SpaceAfterCStyleCast: false
+SpaceAfterLogicalNot: false
+SpaceAfterTemplateKeyword: false
+SpaceAroundPointerQualifiers: After
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCaseColon: true
+SpaceBeforeCpp11BracedList: true
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+
+SpaceBeforeParens: Custom
+SpaceBeforeParensOptions:
+
+    AfterControlStatements: true
+    AfterForeachMacros: true
+    AfterFunctionDeclarationName: false
+    AfterFunctionDefinitionName: false
+    AfterIfMacros: true 
+    AfterOverloadedOperator: true
+    AfterRequiresInClause: false
+    AfterRequiresInExpression: false
+    BeforeNonEmptyParentheses: false
+
+SpaceBeforeRangeBasedForLoopColon: true
+SpaceBeforeSquareBrackets: true
+SpaceInEmptyBlock: false
+SpaceInEmptyParentheses: false
+SpacesInAngles: false
+SpacesInContainerLiterals: false
+SpacesInCStyleCastParentheses: false
+SpacesInConditionalStatement: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+RequiresExpressionIndentation: OuterScope
+TabWidth : 4
+Standard: c++20
+UseCRLF: true
+UseTab: Never
+
+...

@@ -12,36 +12,35 @@ using namespace UP;
  * 
  */
 UCLASS()
-class SHOOTER_API AShooterPlayerController : public APlayerController
-{
-	GENERATED_BODY()
-	
-public:
+class SHOOTER_API AShooterPlayerController : public APlayerController {
+    GENERATED_BODY()
 
-	AShooterPlayerController();
+public:
+    AShooterPlayerController();
 
 protected:
-
-	virtual void BeginPlay() override;
+    virtual void BeginPlay() override;
 
 private:
-
-	/** 
+    /** 
 	 * @brief Reference to the Overall HUD Overlay
-	 * Blueprint class. 
+	 * Blueprint
+     * class. 
 	 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,
-		Category = "Widgets", 
-		meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<class UUserWidget> HUDOverlayClass;
+    UPROPERTY(EditAnywhere,
+        BlueprintReadWrite,
+        Category = "Widgets",
+        meta     = (AllowPrivateAccess = "true"))
+    TSubclassOf<class UUserWidget> HUDOverlayClass;
 
-	/** 
+    /** 
      * @brief Variable to hold the HUD Overlay
-     * during gameplay after creating it. 
+     * during gameplay
+     * after creating it. 
      */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
-		Category = "Widgets",
-		meta = (AllowPrivateAccess = "true"))
-	UUserWidget *HUDOverlay;
-
+    UPROPERTY(VisibleAnywhere,
+        BlueprintReadOnly,
+        Category = "Widgets",
+        meta     = (AllowPrivateAccess = "true"))
+    UUserWidget *HUDOverlay;
 };

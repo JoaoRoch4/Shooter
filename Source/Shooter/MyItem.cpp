@@ -7,19 +7,8 @@
 #include <string>
 #include <any>
 
-AMyItem::AMyItem() {
+AMyItem::AMyItem() { PrimaryActorTick.bCanEverTick = true; }
 
-    PrimaryActorTick.bCanEverTick = true;
-}
+void AMyItem::BeginPlay() { Super::BeginPlay(); }
 
-void AMyItem::BeginPlay() {
-
-    Super::BeginPlay();
-
- 
-}
-
-void AMyItem::Tick(float DeltaTime) {
-
-    Super::Tick(DeltaTime);
-}
+void AMyItem::Tick(float DeltaTime) { Super::Tick(DeltaTime); }
