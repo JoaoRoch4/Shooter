@@ -13,45 +13,45 @@
 #include <Sound/SoundCue.h>
 
 AItem::AItem()
-    :
+ :
 
-    ItemMesh(nullptr)
-    , CollisionBox(nullptr)
-    , PickupWidget(nullptr)
-    , AreaSphere(nullptr)
-    , ItemName(FString(L"Default"))
-    , ItemCount(0)
-    , ItemRarity(EItemRarity::EIR_Common)
-    , ItemState(EItemState::EIS_Pickup)
-    , ActiveStars(TArray<bool>())
-    , ItemZ_Curve(nullptr)
-    , ItemInterpStartLocation(FVector(0.f))
-    , CameraTargetLocation(FVector(0.f))
-    , bInterping(false)
-    , ItemInterpTimer(FTimerHandle())
-    , Z_CurveTime(0.7f)
-    , Character(nullptr)
-    , ItemInterpX(0.f)
-    , ItemInterpY(0.f)
-    , InterpInitialYawOffset(0.f)
-    , ItemScaleCurve(nullptr)
-    , PickupSound(nullptr)
-    , EquipSound(nullptr)
-    , ItemType(EItemType::EIT_MAX)
-    , InterpLocIndex(0)
-    , MaterialIndex(0)
-    , DynamicMaterialInstance(nullptr)
-    , MaterialInstance(nullptr)
-    , bCanChangeCustomDepth(true)
-    , PulseCurve(nullptr)
-    , InterpPulseCurve(nullptr)
-    , PulseTimer(FTimerHandle())
-    , GlowAmount(150.f)
-    , FresnelExponent(3.f)
-    , FresnelReflectFraction(4.f)
-    , PulseCurveTime(5.f)
-    , IconBackground(nullptr)
-    , IconItem(nullptr) {
+ ItemMesh(nullptr)
+ , CollisionBox(nullptr)
+ , PickupWidget(nullptr)
+ , AreaSphere(nullptr)
+ , ItemName(FString(L"Default"))
+ , ItemCount(0)
+ , ItemRarity(EItemRarity::EIR_Common)
+ , ItemState(EItemState::EIS_Pickup)
+ , ActiveStars(TArray<bool>())
+ , ItemZ_Curve(nullptr)
+ , ItemInterpStartLocation(FVector(0.f))
+ , CameraTargetLocation(FVector(0.f))
+ , bInterping(false)
+ , ItemInterpTimer(FTimerHandle())
+ , Z_CurveTime(0.7f)
+ , Character(nullptr)
+ , ItemInterpX(0.f)
+ , ItemInterpY(0.f)
+ , InterpInitialYawOffset(0.f)
+ , ItemScaleCurve(nullptr)
+ , PickupSound(nullptr)
+ , EquipSound(nullptr)
+ , ItemType(EItemType::EIT_MAX)
+ , InterpLocIndex(0)
+ , MaterialIndex(0)
+ , DynamicMaterialInstance(nullptr)
+ , MaterialInstance(nullptr)
+ , bCanChangeCustomDepth(true)
+ , PulseCurve(nullptr)
+ , InterpPulseCurve(nullptr)
+ , PulseTimer(FTimerHandle())
+ , GlowAmount(150.f)
+ , FresnelExponent(3.f)
+ , FresnelReflectFraction(4.f)
+ , PulseCurveTime(5.f)
+ , IconBackground(nullptr)
+ , IconItem(nullptr) {
 
     PrimaryActorTick.bCanEverTick = true;
 
@@ -66,8 +66,7 @@ AItem::AItem()
     AreaSphere = CDSubObj<USphereComponent>(L"Area Sphere");
     AreaSphere->SetupAttachment(GetRootComponent());
 
-    DynamicMaterialInstance =
-       CDSubObj<UMaterialInstanceDynamic>(L"DynamicMaterialInstance");
+    DynamicMaterialInstance = CDSubObj<UMaterialInstanceDynamic>(L"DynamicMaterialInstance");
 
 
     DefaultConstructor_Curves();
@@ -84,10 +83,8 @@ void AItem::BeginPlay() {
     SetActiveStars();
 
     // Setup overlap for the area sphere
-    AreaSphere->OnComponentBeginOverlap.AddDynamic(
-       this, &AItem::OnSphereOverlap);
-    AreaSphere->OnComponentEndOverlap.AddDynamic(
-       this, &AItem::OnSphereEndOverlap);
+    AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnSphereOverlap);
+    AreaSphere->OnComponentEndOverlap.AddDynamic(this, &AItem::OnSphereEndOverlap);
 
     // Set Properties of itens components based on state
     SetItemProperties(ItemState);
@@ -103,8 +100,7 @@ void AItem::OnConstruction(const FTransform &Transform) {
 
     if (MaterialInstance) {
 
-        DynamicMaterialInstance =
-           UMaterialInstanceDynamic::Create(MaterialInstance, this);
+        DynamicMaterialInstance = UMaterialInstanceDynamic::Create(MaterialInstance, this);
 
         ItemMesh->SetMaterial(MaterialIndex, DynamicMaterialInstance);
 
@@ -134,11 +130,10 @@ void AItem::DefaultConstructor_CollisionBox() {
 
     CollisionBox->SetupAttachment(ItemMesh);
 
-    CollisionBox->SetCollisionResponseToAllChannels(
-       ECollisionResponse::ECR_Ignore);
+    CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 
     CollisionBox->SetCollisionResponseToChannel(
-       ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+      ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 }
 
 void AItem::DefaultConstructor_Curves() {
@@ -147,9 +142,9 @@ void AItem::DefaultConstructor_Curves() {
     {
         PulseCurve = CDSubObj<UCurveVector>(L"PulseCurve");
 
-        const static ConstructorHelpers::FObjectFinder<UCurveVector>
-           M_PulseCurve(L"/Script/Engine.CurveVector'/Game/_Game/Assets/Curves/"
-                        L"MaterialPulseCurve.MaterialPulseCurve'");
+        const static ConstructorHelpers::FObjectFinder<UCurveVector> M_PulseCurve(
+          L"/Script/Engine.CurveVector'/Game/_Game/Assets/Curves/"
+          L"MaterialPulseCurve.MaterialPulseCurve'");
 
         if (M_PulseCurve.Succeeded()) {
             PulseCurve = M_PulseCurve.Object;
@@ -163,17 +158,15 @@ void AItem::DefaultConstructor_Curves() {
     {
         InterpPulseCurve = CDSubObj<UCurveVector>(L"InterpPulseCurve");
 
-        const static ConstructorHelpers::FObjectFinder<UCurveVector>
-           M_InterpPulseCurve(
-              L"/Script/Engine.CurveVector'/Game/_Game/Assets/"
-              L"Curves/MaterialInterpCurve.MaterialInterpCurve'");
+        const static ConstructorHelpers::FObjectFinder<UCurveVector> M_InterpPulseCurve(
+          L"/Script/Engine.CurveVector'/Game/_Game/Assets/"
+          L"Curves/MaterialInterpCurve.MaterialInterpCurve'");
 
         if (M_InterpPulseCurve.Succeeded()) {
             InterpPulseCurve = M_InterpPulseCurve.Object;
         } else {
-            PrintLogErr(
-               "AItem::DefaultConstructor_Curves(): M_InterpPulseCurve "
-               "failed to load");
+            PrintLogErr("AItem::DefaultConstructor_Curves(): M_InterpPulseCurve "
+                        "failed to load");
         }
     }
 }
@@ -187,15 +180,13 @@ FVector AItem::GetInterpLocation() {
         case EItemType::EIT_Ammo :
             {
 
-                return Character->GetInterpLocation(InterpLocIndex)
-                   .SceneComponent->GetComponentLocation();
+                return Character->GetInterpLocation(InterpLocIndex).SceneComponent->GetComponentLocation();
                 break;
             }
         case EItemType::EIT_Weapon :
             {
 
-                return Character->GetInterpLocation(0)
-                   .SceneComponent->GetComponentLocation();
+                return Character->GetInterpLocation(0).SceneComponent->GetComponentLocation();
                 break;
             }
     }
@@ -232,8 +223,7 @@ void AItem::InitializeCustomDepth() { DisableCustomDepth(); }
 void AItem::StartPulseTimer() {
 
     if (ItemState == EItemState::EIS_Pickup) {
-        GetWorldTimerManager().SetTimer(
-           PulseTimer, this, &AItem::ResetPulseTimer, PulseCurveTime);
+        GetWorldTimerManager().SetTimer(PulseTimer, this, &AItem::ResetPulseTimer, PulseCurveTime);
     }
 }
 
@@ -250,14 +240,12 @@ void AItem::UpdatePulse() {
             {
                 if (PulseCurve) {
 
-                    ElapsedTime =
-                       GetWorldTimerManager().GetTimerElapsed(PulseTimer);
-                    CurveValue = PulseCurve->GetVectorValue(ElapsedTime);
+                    ElapsedTime = GetWorldTimerManager().GetTimerElapsed(PulseTimer);
+                    CurveValue  = PulseCurve->GetVectorValue(ElapsedTime);
 
                 } else {
-                    PrintLogErr(
-                       "AItem::UpdatePulse(): Case EItemState::EIS_Pickup: "
-                       "PulseCurve was nullptr");
+                    PrintLogErr("AItem::UpdatePulse(): Case EItemState::EIS_Pickup: "
+                                "PulseCurve was nullptr");
                 }
                 break;
             }
@@ -266,9 +254,8 @@ void AItem::UpdatePulse() {
 
                 if (InterpPulseCurve) {
 
-                    ElapsedTime =
-                       GetWorldTimerManager().GetTimerElapsed(ItemInterpTimer);
-                    CurveValue = InterpPulseCurve->GetVectorValue(ElapsedTime);
+                    ElapsedTime = GetWorldTimerManager().GetTimerElapsed(ItemInterpTimer);
+                    CurveValue  = InterpPulseCurve->GetVectorValue(ElapsedTime);
 
                 } else {
                     PrintLogErr("AItem::UpdatePulse(): Case "
@@ -282,18 +269,16 @@ void AItem::UpdatePulse() {
     if (DynamicMaterialInstance) {
 
         DynamicMaterialInstance->SetScalarParameterValue(
-           FName(TEXT("GlowAmount")), CurveValue.X * GlowAmount);
+          FName(TEXT("GlowAmount")), CurveValue.X * GlowAmount);
 
         DynamicMaterialInstance->SetScalarParameterValue(
-           FName(TEXT("FresnelExponent")), CurveValue.Y * FresnelExponent);
+          FName(TEXT("FresnelExponent")), CurveValue.Y * FresnelExponent);
 
         DynamicMaterialInstance->SetScalarParameterValue(
-           FName(TEXT("FresnelReflectFraction")),
-           CurveValue.Z * FresnelReflectFraction);
+          FName(TEXT("FresnelReflectFraction")), CurveValue.Z * FresnelReflectFraction);
     } else {
 
-        PrintLogErr(
-           "AItem::UpdatePulse(): DynamicMaterialInstance was nullptr");
+        PrintLogErr("AItem::UpdatePulse(): DynamicMaterialInstance was nullptr");
         PrintOnScrTime(0, "DynamicMaterialInstance nullptr!");
     }
 }
@@ -302,12 +287,10 @@ void AItem::EnableGlowMaterial() {
 
     if (DynamicMaterialInstance) {
 
-        DynamicMaterialInstance->SetScalarParameterValue(
-           FName(TEXT("GlowBlendAlpha")), 0.f);
+        DynamicMaterialInstance->SetScalarParameterValue(FName(TEXT("GlowBlendAlpha")), 0.f);
     } else {
 
-        PrintLogErr(
-           "AItem::EnableGlowMaterial(): DynamicMaterialInstance was nullptr");
+        PrintLogErr("AItem::EnableGlowMaterial(): DynamicMaterialInstance was nullptr");
     }
 }
 
@@ -315,13 +298,11 @@ void AItem::DisableGlowMaterial() {
 
     if (DynamicMaterialInstance) {
 
-        DynamicMaterialInstance->SetScalarParameterValue(
-           FName(TEXT("GlowBlendAlpha")), 1.f);
+        DynamicMaterialInstance->SetScalarParameterValue(FName(TEXT("GlowBlendAlpha")), 1.f);
 
     } else {
 
-        PrintLogErr(
-           "AItem::DisableGlowMaterial(): DynamicMaterialInstance was nullptr");
+        PrintLogErr("AItem::DisableGlowMaterial(): DynamicMaterialInstance was nullptr");
     }
 }
 
@@ -366,11 +347,9 @@ void AItem::StartItemCurve(AShooterCharacter *Char) {
     SetItemState(EItemState::EIS_EquipInterping);
     GetWorldTimerManager().ClearTimer(PulseTimer);
 
-    GetWorldTimerManager().SetTimer(
-       ItemInterpTimer, this, &AItem::FinishInterping, Z_CurveTime);
+    GetWorldTimerManager().SetTimer(ItemInterpTimer, this, &AItem::FinishInterping, Z_CurveTime);
 
-    double GetCameraRotationYaw {
-       Character->GetFollowCamera()->GetComponentRotation().Yaw};
+    double GetCameraRotationYaw {Character->GetFollowCamera()->GetComponentRotation().Yaw};
     double GetItemRotationYaw {GetActorRotation().Yaw};
 
     // Get initial yaw of the camera
@@ -385,14 +364,12 @@ void AItem::StartItemCurve(AShooterCharacter *Char) {
     bCanChangeCustomDepth = false;
 }
 
-void AItem::OnSphereOverlap(UPrimitiveComponent *OverlappedComponent,
-   AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex,
-   bool bFromSweep, const FHitResult &SweepResult) {
+void AItem::OnSphereOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor,
+  UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult) {
 
     if (OtherActor) {
 
-        AShooterCharacter *ShooterCharacter =
-           Cast<AShooterCharacter>(OtherActor);
+        AShooterCharacter *ShooterCharacter = Cast<AShooterCharacter>(OtherActor);
 
         if (ShooterCharacter) {
 
@@ -401,13 +378,12 @@ void AItem::OnSphereOverlap(UPrimitiveComponent *OverlappedComponent,
     }
 }
 
-void AItem::OnSphereEndOverlap(UPrimitiveComponent *OverlappedComponent,
-   AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex) {
+void AItem::OnSphereEndOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor,
+  UPrimitiveComponent *OtherComp, int32 OtherBodyIndex) {
 
     if (OtherActor) {
 
-        AShooterCharacter *ShooterCharacter =
-           Cast<AShooterCharacter>(OtherActor);
+        AShooterCharacter *ShooterCharacter = Cast<AShooterCharacter>(OtherActor);
 
         if (ShooterCharacter) {
 
@@ -458,21 +434,16 @@ void AItem::SetItemProperties(EItemState State) {
             ItemMesh->SetSimulatePhysics(false);
             ItemMesh->SetEnableGravity(false);
             ItemMesh->SetVisibility(true);
-            ItemMesh->SetCollisionResponseToAllChannels(
-               ECollisionResponse::ECR_Ignore);
+            ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
             // Set AreaSphere properties
-            AreaSphere->SetCollisionResponseToAllChannels(
-               ECollisionResponse::ECR_Overlap);
+            AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
             AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
             // Set CollisionBox properties
-            CollisionBox->SetCollisionResponseToAllChannels(
-               ECollisionResponse::ECR_Ignore);
+            CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             CollisionBox->SetCollisionResponseToChannel(
-               ECollisionChannel::ECC_Visibility,
-               ECollisionResponse::ECR_Block);
-            CollisionBox->SetCollisionEnabled(
-               ECollisionEnabled::QueryAndPhysics);
+              ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+            CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
             break;
 
         case EItemState::EIS_Equipped :
@@ -482,16 +453,13 @@ void AItem::SetItemProperties(EItemState State) {
             ItemMesh->SetSimulatePhysics(false);
             ItemMesh->SetEnableGravity(false);
             ItemMesh->SetVisibility(true);
-            ItemMesh->SetCollisionResponseToAllChannels(
-               ECollisionResponse::ECR_Ignore);
+            ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
             // Set AreaSphere properties
-            AreaSphere->SetCollisionResponseToAllChannels(
-               ECollisionResponse::ECR_Ignore);
+            AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
             // Set CollisionBox properties
-            CollisionBox->SetCollisionResponseToAllChannels(
-               ECollisionResponse::ECR_Ignore);
+            CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
             break;
 
@@ -501,18 +469,14 @@ void AItem::SetItemProperties(EItemState State) {
             ItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
             ItemMesh->SetSimulatePhysics(true);
             ItemMesh->SetEnableGravity(true);
-            ItemMesh->SetCollisionResponseToAllChannels(
-               ECollisionResponse::ECR_Block);
+            ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
             ItemMesh->SetCollisionResponseToChannel(
-               ECollisionChannel::ECC_WorldStatic,
-               ECollisionResponse::ECR_Block);
+              ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
             // Set AreaSphere properties
-            AreaSphere->SetCollisionResponseToAllChannels(
-               ECollisionResponse::ECR_Ignore);
+            AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
             // Set CollisionBox properties
-            CollisionBox->SetCollisionResponseToAllChannels(
-               ECollisionResponse::ECR_Ignore);
+            CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
             break;
 
@@ -523,17 +487,31 @@ void AItem::SetItemProperties(EItemState State) {
             ItemMesh->SetSimulatePhysics(false);
             ItemMesh->SetEnableGravity(false);
             ItemMesh->SetVisibility(true);
-            ItemMesh->SetCollisionResponseToAllChannels(
-               ECollisionResponse::ECR_Ignore);
+            ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
             // Set AreaSphere properties
-            AreaSphere->SetCollisionResponseToAllChannels(
-               ECollisionResponse::ECR_Ignore);
+            AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
             // Set CollisionBox properties
-            CollisionBox->SetCollisionResponseToAllChannels(
-               ECollisionResponse::ECR_Ignore);
+            CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+            break;
+
+        case EItemState::EIS_PickedUp :
+
+            PickupWidget->SetVisibility(false);
+            //Set mesh properties
+            ItemMesh->SetSimulatePhysics(false);
+            ItemMesh->SetEnableGravity(false);
+            ItemMesh->SetVisibility(false);
+            ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+            ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+            // Set AreaSphere properties
+            AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+            AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+            // Set CollisionBox properties
+            CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+            CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);            
             break;
     }
 }
@@ -568,8 +546,7 @@ void AItem::ItemInterp(float DeltaTime) {
     if (Character && ItemZ_Curve) {
 
         // Elapsed time since we started ItemInterpTimer
-        const float ElapsedTime {
-           GetWorldTimerManager().GetTimerElapsed(ItemInterpTimer)};
+        const float ElapsedTime {GetWorldTimerManager().GetTimerElapsed(ItemInterpTimer)};
 
         // Get curve value corresponding to ElapsedTime
         const float CurveValue {ItemZ_Curve->GetFloatValue(ElapsedTime)};
@@ -583,8 +560,7 @@ void AItem::ItemInterp(float DeltaTime) {
         const FVector CameraInterpLocation {GetInterpLocation()};
 
         // Vector from Item to Camera Interp Location, X and Y are zeroed out
-        const FVector ItemToCamera {
-           FVector(0.f, 0.f, (CameraInterpLocation - ItemLocation).Z)};
+        const FVector ItemToCamera {FVector(0.f, 0.f, (CameraInterpLocation - ItemLocation).Z)};
 
         const double GetDeltaZ {ItemToCamera.Size()};
 
@@ -596,11 +572,11 @@ void AItem::ItemInterp(float DeltaTime) {
         // Interp speed: 30 units per second
         float InterpSpeed {30.f};
 
-        const double GetInterpX_Value {FMath::FInterpTo(
-           CurrentLocation.X, CameraInterpLocation.X, DeltaTime, InterpSpeed)};
+        const double GetInterpX_Value {
+          FMath::FInterpTo(CurrentLocation.X, CameraInterpLocation.X, DeltaTime, InterpSpeed)};
 
-        const double GetInterpY_Value {FMath::FInterpTo(
-           CurrentLocation.Y, CameraInterpLocation.Y, DeltaTime, InterpSpeed)};
+        const double GetInterpY_Value {
+          FMath::FInterpTo(CurrentLocation.Y, CameraInterpLocation.Y, DeltaTime, InterpSpeed)};
 
         // Interpolated X values
         const float InterpX_Value {StaticCast<const float>(GetInterpX_Value)};
@@ -616,26 +592,21 @@ void AItem::ItemInterp(float DeltaTime) {
         // by DeltaZ)
         ItemLocation.Z += CurveValue * DeltaZ;
 
-        SetActorLocation(
-           ItemLocation, true, nullptr, ETeleportType::TeleportPhysics);
+        SetActorLocation(ItemLocation, true, nullptr, ETeleportType::TeleportPhysics);
 
         // Camera Rotation this frame
-        const FRotator CameraRotation {
-           Character->GetFollowCamera()->GetComponentRotation()};
+        const FRotator CameraRotation {Character->GetFollowCamera()->GetComponentRotation()};
 
         // Camera Rotation + Initial Yaw Offset
-        FRotator ItemRotation {
-           0.f, CameraRotation.Yaw + InterpInitialYawOffset, 0.f};
+        FRotator ItemRotation {0.f, CameraRotation.Yaw + InterpInitialYawOffset, 0.f};
 
         SetActorRotation(ItemRotation, ETeleportType::TeleportPhysics);
 
         if (ItemScaleCurve) {
 
-            const float ScaleCurveValue {
-               ItemScaleCurve->GetFloatValue(ElapsedTime)};
+            const float ScaleCurveValue {ItemScaleCurve->GetFloatValue(ElapsedTime)};
 
-            SetActorScale3D(
-               FVector(ScaleCurveValue, ScaleCurveValue, ScaleCurveValue));
+            SetActorScale3D(FVector(ScaleCurveValue, ScaleCurveValue, ScaleCurveValue));
         } else {
             PrintLogErr("AItem::ItemInterp(float DeltaTime):->if(Character && "
                         "ItemZ_Curve): ItemScaleCurve was nullptr");

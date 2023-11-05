@@ -1277,10 +1277,7 @@ void AShooterCharacter::GetPickupItem(AItem *Item) {
 
     Item->PlayEquipSound();
 
-    AWeapon *Weapon {nullptr};
-    AAmmo   *Ammo {nullptr};
-
-    Weapon = Cast<AWeapon>(Item);
+    auto Weapon = Cast<AWeapon>(Item);
     if (Weapon) {
 
         // If Number of elements in array is less than the inventory capacity
@@ -1296,7 +1293,7 @@ void AShooterCharacter::GetPickupItem(AItem *Item) {
         }
     }
 
-    Ammo = Cast<AAmmo>(Item);
+    auto Ammo = Cast<AAmmo>(Item);
     if (Ammo) {
         PickupAmmo(Ammo);
     }

@@ -108,7 +108,6 @@ void AWeapon::ThrowWeapon() {
 
     } else {
 
-
         double RandThrowDirectionX {FMath::RandRange(
            ThrowDirection_X_RandRange.X, ThrowDirection_X_RandRange.Y)};
 
