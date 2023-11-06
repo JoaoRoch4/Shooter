@@ -90,7 +90,7 @@ typedef FVector2d Fvc2;
 
 #define PrintLogFVec(FVec) PrintLog(FString::Printf(TEXT("X: %f, Y: %f, Z: %f"), FVec.X, FVec.Y, FVec.Z))
 
-#define ConsoleWrt(X)                                                                                           \
+#define ConsoleWrt(X)                                                                                        \
     if (APlayerController *PlayerController = GetWorld()->GetFirstPlayerController())                        \
     PlayerController->ConsoleCommand(TEXT(X))
 
@@ -101,8 +101,19 @@ typedef FVector2d Fvc2;
 #define ExitGameErr(X)                                                                                       \
     if (APlayerController *PlayerController = GetWorld()->GetFirstPlayerController()) {                      \
         checkf(false, TEXT(X));                                                                              \
-        PlayerController->ConsoleCommand(TEXT(X));                                                           \
+        PlayerController->ConsoleCommand(TEXT("Exit"));                                                      \
     }
+
+#define ExitPrintErr(X)                                                                                      \
+    if (APlayerController *PlayerController = GetWorld()->GetFirstPlayerController()) {                      \
+        PrintLogErr(X);                                                                                      \
+        checkf(false, TEXT(X));                                                                              \
+        PlayerController->ConsoleCommand(TEXT("Exit"));                                                      \
+    }
+
+#define ClearLog()                                                                                           \
+    if (GEngine) GEngine->Exec(GetWorld(), TEXT("Clear"));                                                   
+    
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"

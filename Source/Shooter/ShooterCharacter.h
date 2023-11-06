@@ -29,11 +29,11 @@ struct FInterpLocation {
 
     /** *@brief Scene component to use for its location for interping. */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-    USceneComponent *SceneComponent;
+    USceneComponent *SceneComponent {};
 
     /** *@brief Number of items interping to / at this scene com location.. */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-    int32 ItemCount;
+    int32 ItemCount {};
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEquipItemDelegate, int32, CurrentSlotIndex,   int32, NewSlotIndex);
@@ -285,6 +285,34 @@ protected:
 
     FORCEINLINE void ResetPickupSoundTimer();
     FORCEINLINE void ResetEquipSoundTimer();
+
+    void ExchangeInventoryItens(int32 CurrentItemindex, int32 NewItemIndex);
+    
+    /* Key Bindings */
+    void KEY_FkeyPressed();
+    void KEY_1_OneKeyPressed();
+    void KEY_2_TwoKeyPressed();
+    void KEY_3_ThreeKeyPressed();
+    void KEY_4_FourKeyPressed();
+    void KEY_5_FiveKeyPressed();
+    void KEY_6_SixKeyPressed();
+    void KEY_7_SevenKeyPressed();
+    void KEY_8_EightKeyPressed();
+    void KEY_9_NineKeyPressed();
+    void KEY_0_ZeroKeyPressed();
+    
+    /* Key Methods */
+    void KeyMethodFKey();
+    void KeyMethod1Key();
+    void KeyMethod2Key();
+    void KeyMethod3Key();
+    void KeyMethod4Key();
+    void KeyMethod5Key();
+    void KeyMethod6Key();
+    void KeyMethod7Key();
+    void KeyMethod8Key();
+    void KeyMethod9Key();
+    void KeyMethod0Key();
 
 private:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Mesh",
@@ -716,6 +744,10 @@ private:
     UPROPERTY(BlueprintAssignable, Category = "Delegates",
         meta = (AllowPrivateAccess = "true"))
     FEquipItemDelegate EquipItemDelegate;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Debug",
+      meta = (AllowPrivateAccess = "true"))
+    float DebugKeys;
 
 public:
     /**

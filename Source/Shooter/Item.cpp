@@ -447,7 +447,7 @@ void AItem::SetItemProperties(EItemState State) {
             CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
             break;
 
-        case EItemState::EIS_Equipped :
+        case EItemState::EIS_Equipped:
 
             PickupWidget->SetVisibility(false);
             // Set mesh properties
@@ -463,7 +463,7 @@ void AItem::SetItemProperties(EItemState State) {
             CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
             break;
-
+        
         case EItemState::EIS_Falling :
 
             // Set mesh properties

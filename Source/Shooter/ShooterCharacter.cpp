@@ -116,7 +116,8 @@ AShooterCharacter::AShooterCharacter()
  , bShouldPlayEquipSound(true)
  , PickupSoundResetTime(0.2f)
  , EquipSoundResetTime(0.2f)
- , Inventory(TArray<AItem *>()) {
+ , Inventory(TArray<AItem *>())
+ , DebugKeys(false) {
 
     PrimaryActorTick.bCanEverTick = true;
 
@@ -137,6 +138,7 @@ AShooterCharacter::AShooterCharacter()
 void AShooterCharacter::BeginPlay() {
 
     Super::BeginPlay();
+
     SetupFollowCamera();
 
     // Spawn Default Weapon and equip it
@@ -568,6 +570,34 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent *PlayerInputCo
 
     // Crouch
     PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &AShooterCharacter::CrouchButtonPressed);
+
+    /* Letter keys */ {
+
+        PlayerInputComponent->BindAction("Fkey", IE_Pressed, this, &AShooterCharacter::KEY_FkeyPressed);
+    }
+
+    /* Number keys */ {
+
+        PlayerInputComponent->BindAction("1Key", IE_Pressed, this, &AShooterCharacter::KEY_1_OneKeyPressed);
+
+        PlayerInputComponent->BindAction("2Key", IE_Pressed, this, &AShooterCharacter::KEY_2_TwoKeyPressed);
+
+        PlayerInputComponent->BindAction("3Key", IE_Pressed, this, &AShooterCharacter::KEY_3_ThreeKeyPressed);
+
+        PlayerInputComponent->BindAction("4Key", IE_Pressed, this, &AShooterCharacter::KEY_4_FourKeyPressed);
+
+        PlayerInputComponent->BindAction("5Key", IE_Pressed, this, &AShooterCharacter::KEY_5_FiveKeyPressed);
+
+        PlayerInputComponent->BindAction("6Key", IE_Pressed, this, &AShooterCharacter::KEY_6_SixKeyPressed);
+
+        PlayerInputComponent->BindAction("7Key", IE_Pressed, this, &AShooterCharacter::KEY_7_SevenKeyPressed);
+
+        PlayerInputComponent->BindAction("8Key", IE_Pressed, this, &AShooterCharacter::KEY_8_EightKeyPressed);
+
+        PlayerInputComponent->BindAction("9Key", IE_Pressed, this, &AShooterCharacter::KEY_9_NineKeyPressed);
+
+        PlayerInputComponent->BindAction("0Key", IE_Pressed, this, &AShooterCharacter::KEY_0_ZeroKeyPressed);
+    }
 }
 
 void AShooterCharacter::DefaultConstructor_SetupMesh() {
@@ -1068,13 +1098,12 @@ void AShooterCharacter::DropWeapon() {
 void AShooterCharacter::SwapWeapon(AWeapon *WeaponToSwap) {
 
     // Makes sure if the inventory can handle the SlotIndex of the EquippedWeapon
-    if ((Inventory.Num() - 1) >= EquippedWeapon->GetSlotIndex()) {
-
+    if ((Inventory.Num() - 1) >= EquippedWeapon->GetSlotIndex()) 
         // If the inventory can handle the SlotIndex of the EquippedWeapon
         // then we can add the WeaponToSwap to the Inventory
         Inventory [EquippedWeapon->GetSlotIndex()] = WeaponToSwap;
-    }
-
+    
+    
     DropWeapon();
     EquipWeapon(WeaponToSwap);
     TraceHitItem          = nullptr;
@@ -1354,6 +1383,20 @@ inline void AShooterCharacter::ResetPickupSoundTimer() { bShouldPlayPickupSound 
 
 inline void AShooterCharacter::ResetEquipSoundTimer() { bShouldPlayEquipSound = true; }
 
+void AShooterCharacter::ExchangeInventoryItens(int32 CurrentItemindex, int32 NewItemIndex) {
+
+    if ((CurrentItemindex == NewItemIndex) &&
+        (NewItemIndex >= Inventory.Num())) return;
+
+    auto OldEquippedWeapon {EquippedWeapon};
+    auto NewWeapon {Cast<AWeapon>(Inventory [NewItemIndex])};
+
+    EquipWeapon(NewWeapon);
+
+    OldEquippedWeapon->SetItemState(EItemState::EIS_PickedUp);
+    NewWeapon->SetItemState(EItemState::EIS_Equipped);
+}
+
 void AShooterCharacter::StartPickupSoundTimer() {
 
     bShouldPlayPickupSound = false;
@@ -1407,4 +1450,77 @@ void AShooterCharacter::IncrementInterpLocItemCount(int32 Index, int32 Amount) {
         InterpLocations [Index].ItemCount += Amount;
     }
 }
+
+void AShooterCharacter::KEY_FkeyPressed() { KeyMethodFKey(); }
+
+void AShooterCharacter::KeyMethodFKey() {
+
+    if (EquippedWeapon) {
+
+        if (EquippedWeapon->GetSlotIndex() == 0) return;
+
+        ExchangeInventoryItens(EquippedWeapon->GetSlotIndex(), 0);
+
+    } else {
+
+        ExitPrintErr("AShooterCharacter::KEY_FkeyPressed(): EquippedWeapon is nullptr");
+    }
+}
+
+void AShooterCharacter::KEY_1_OneKeyPressed() { KeyMethod1Key(); }
+
+void AShooterCharacter::KeyMethod1Key() {
+
+    if (EquippedWeapon) {
+
+        if (EquippedWeapon->GetSlotIndex() == 1) return;
+
+        ExchangeInventoryItens(EquippedWeapon->GetSlotIndex(), 1);
+
+    } else {
+
+        ExitPrintErr("AShooterCharacter::KEY_FkeyPressed(): EquippedWeapon is nullptr");
+    }
+}
+
+void AShooterCharacter::KEY_2_TwoKeyPressed() { KeyMethod2Key(); }
+
+void AShooterCharacter::KeyMethod2Key() { return; }
+
+void AShooterCharacter::KEY_3_ThreeKeyPressed() { KeyMethod3Key(); }
+
+void AShooterCharacter::KeyMethod3Key() { return; }
+
+void AShooterCharacter::KEY_4_FourKeyPressed() { KeyMethod4Key(); }
+
+void AShooterCharacter::KeyMethod4Key() { return; }
+
+void AShooterCharacter::KEY_5_FiveKeyPressed() { KeyMethod5Key(); }
+
+void AShooterCharacter::KeyMethod5Key() { return; }
+
+void AShooterCharacter::KEY_6_SixKeyPressed() { KeyMethod6Key(); }
+
+void AShooterCharacter::KeyMethod6Key() { return; }
+
+void AShooterCharacter::KEY_7_SevenKeyPressed() { KeyMethod7Key(); }
+
+void AShooterCharacter::KeyMethod7Key() { return; }
+
+void AShooterCharacter::KEY_8_EightKeyPressed() { KeyMethod8Key(); }
+
+void AShooterCharacter::KeyMethod8Key() { return; }
+
+void AShooterCharacter::KEY_9_NineKeyPressed() { KeyMethod9Key(); }
+
+void AShooterCharacter::KeyMethod9Key() { return; }
+
+void AShooterCharacter::KEY_0_ZeroKeyPressed() { KeyMethod0Key(); }
+
+void AShooterCharacter::KeyMethod0Key() { return; }
+
+
+
+
+
 

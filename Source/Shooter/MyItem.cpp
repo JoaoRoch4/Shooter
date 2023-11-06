@@ -9,6 +9,11 @@
 
 AMyItem::AMyItem() { PrimaryActorTick.bCanEverTick = true; }
 
-void AMyItem::BeginPlay() { Super::BeginPlay(); }
+void AMyItem::BeginPlay() { 
+
+    Super::BeginPlay();
+    PrintLogWarning("Log Clear");
+    ClearLog();
+}
 
 void AMyItem::Tick(float DeltaTime) { Super::Tick(DeltaTime); }
