@@ -142,6 +142,7 @@ void AShooterCharacter::BeginPlay() {
     // Spawn Default Weapon and equip it
     EquipWeapon(SpawnDefaultWeapon());
     Inventory.Add(EquippedWeapon);
+    EquippedWeapon->SetSlotIndex(0);
     EquippedWeapon->DisableCustomDepth();
     EquippedWeapon->DisableGlowMaterial();
 
@@ -226,9 +227,9 @@ void AShooterCharacter::StartCameraLerp(float &DeltaTime) {
     if (CurrentTime >= TransitionDuration) {
 
         if (bCinematicCameraSwitch)
-            Cinematic_camera_On();
+            CinematicCameraOn();
         else
-            Cinematic_camera_Off();
+            CinematicCameraOff();
 
         bIsTransitioning = false;
     }
@@ -285,9 +286,9 @@ void AShooterCharacter::AimingCameraZoom(float DeltaTime) {
     if (bAiming) {
 
         CameraCurrentAimFOV
-            = BezierCurve_Interp(CameraCurrentAimFOV, CameraZoomedAimFOV, DeltaTime, ZoomInterpSpeed, false);
+          = BezierCurve_Interp(CameraCurrentAimFOV, CameraZoomedAimFOV, DeltaTime, ZoomInterpSpeed, false);
 
-        Cinematic_camera_Off();
+        CinematicCameraOff();
 
     } else {
 
@@ -295,7 +296,7 @@ void AShooterCharacter::AimingCameraZoom(float DeltaTime) {
         CameraCurrentAimFOV
           = FMath::FInterpTo(CameraCurrentAimFOV, CameraDefaultAimFOV, DeltaTime, ZoomInterpSpeed);
 
-        Cinematic_camera_On();
+        CinematicCameraOn();
     }
 
     GetFollowCamera()->SetFieldOfView(CameraCurrentAimFOV);
@@ -799,7 +800,7 @@ void AShooterCharacter::SetsLookRates() {
     }
 }
 
-void AShooterCharacter::Cinematic_camera_On() {
+void AShooterCharacter::CinematicCameraOn() {
 
     CameraBoom->bEnableCameraLag         = true;
     CameraBoom->bEnableCameraRotationLag = true;
@@ -809,7 +810,7 @@ void AShooterCharacter::Cinematic_camera_On() {
     CameraBoom->CameraLagMaxTimeStep     = 0.016667f;
 }
 
-void AShooterCharacter::Cinematic_camera_Off() {
+void AShooterCharacter::CinematicCameraOff() {
 
     CameraBoom->bEnableCameraLag         = false;
     CameraBoom->bEnableCameraRotationLag = false;
@@ -1023,16 +1024,31 @@ void AShooterCharacter::EquipWeapon(AWeapon *WeaponToEquip) {
 
     if (WeaponToEquip) {
 
-        // Get the HandSocket
-        const USkeletalMeshSocket *HandSocket {GetMesh()->GetSocketByName("RightHandSocket")};
+        // Get the Hand Socket
+        const USkeletalMeshSocket *HandSocket = GetMesh()->GetSocketByName(FName("RightHandSocket"));
 
-        // Attach the Weapon to the hand
-        if (HandSocket) HandSocket->AttachActor(WeaponToEquip, GetMesh());
+        if (HandSocket) {
+
+            // Attach the Weapon to the hand socket RightHandSocket
+            HandSocket->AttachActor(WeaponToEquip, GetMesh());
+        }
+
+        if (EquippedWeapon == nullptr) {
+
+            // -1 == no EquippedWeapon yet. No need to reverse the icon animation
+            EquipItemDelegate.Broadcast(-1, WeaponToEquip->GetSlotIndex());
+
+        } else {
+
+            EquipItemDelegate.Broadcast(EquippedWeapon->GetSlotIndex(), WeaponToEquip->GetSlotIndex());
+        }
 
         // Set EquippedWeapon to the newly spawned Weapon
         EquippedWeapon = WeaponToEquip;
-
         EquippedWeapon->SetItemState(EItemState::EIS_Equipped);
+
+    } else {
+        ExitGameErr("AShooterCharacter::EquipWeapon(): WeaponToEquip is nullptr");
     }
 }
 
@@ -1050,6 +1066,14 @@ void AShooterCharacter::DropWeapon() {
 }
 
 void AShooterCharacter::SwapWeapon(AWeapon *WeaponToSwap) {
+
+    // Makes sure if the inventory can handle the SlotIndex of the EquippedWeapon
+    if ((Inventory.Num() - 1) >= EquippedWeapon->GetSlotIndex()) {
+
+        // If the inventory can handle the SlotIndex of the EquippedWeapon
+        // then we can add the WeaponToSwap to the Inventory
+        Inventory [EquippedWeapon->GetSlotIndex()] = WeaponToSwap;
+    }
 
     DropWeapon();
     EquipWeapon(WeaponToSwap);
@@ -1100,6 +1124,8 @@ void AShooterCharacter::SendBullet() {
 
             if (Beam) Beam->SetVectorParameter(FName("Target"), BeamEnd);
         }
+    } else {
+        ExitGameErr("AShooterCharacter::SendBullet(): BarrelSocket is nullptr");
     }
 }
 
@@ -1284,8 +1310,9 @@ void AShooterCharacter::GetPickupItem(AItem *Item) {
         // add the weapon
         if (Inventory.Num() < InventoryCapacity) {
 
+            Weapon->SetSlotIndex(Inventory.Num());
             Inventory.Add(Weapon);
-
+            Weapon->SetItemState(EItemState::EIS_PickedUp);
 
         } else { // Inventory is full! Swap with EquippedWeapon
 
@@ -1380,3 +1407,4 @@ void AShooterCharacter::IncrementInterpLocItemCount(int32 Index, int32 Amount) {
         InterpLocations [Index].ItemCount += Amount;
     }
 }
+

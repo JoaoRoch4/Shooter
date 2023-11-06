@@ -36,6 +36,8 @@ struct FInterpLocation {
     int32 ItemCount;
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEquipItemDelegate, int32, CurrentSlotIndex,   int32, NewSlotIndex);
+
 /*
 * 
 */
@@ -126,10 +128,10 @@ protected:
     void StartCameraLerp(float &DeltaTime);
 
     /** @brief Turn on Cinematic Camera */
-    void Cinematic_camera_On();
+    void CinematicCameraOn();
 
     /** @brief Turn off Cinematic Camera */
-    void Cinematic_camera_Off();
+    void CinematicCameraOff();
 
     /** @brief When called activate\deactivate Cinematic Camera */
     void ToggleCinematicCamera();
@@ -709,6 +711,11 @@ private:
     TArray<AItem *> Inventory;
 
     const int32 InventoryCapacity {6};
+
+    /** Delegate for sending slot information to InventoryBar when equipping */
+    UPROPERTY(BlueprintAssignable, Category = "Delegates",
+        meta = (AllowPrivateAccess = "true"))
+    FEquipItemDelegate EquipItemDelegate;
 
 public:
     /**

@@ -8,28 +8,28 @@
 #include <Kismet\GameplayStatics.h>
 
 AWeapon::AWeapon()
-    :
+ :
 
-    ThrowWeaponTime(0.7f)
-    , bFalling(false)
-    , bNotRandValues(false)
-    , ThrowHeight(10.f)
-    , ThrowDirection(FVector(0.f, 0.f, 0.f))
-    , MultiplyImpulse(180.f)
-    , ThrowHeightRandRange(FVector2D(90.f, 180.f))
-    , ThrowDirectionRandRange(FVector2D(90.f, 180.f))
-    , ThrowDirection_X_RandRange(FVector2D(0.f, 0.f))
-    , ThrowDirection_Y_RandRange(FVector2D(0.f, 0.f))
-    , ThrowDirection_Z_RandRange(FVector2D(0.f, 0.f))
-    , MultiplyImpulseRandRange(FVector2D(150.f, 180.f))
-    , ThrowWeaponTimer(FTimerHandle())
-    , Ammo(40)
-    , MagazineCapacity(120)
-    , WeaponType(EWeaponType::EWT_SubmachineGun)
-    , AmmoType(EAmmoType::EAT_9mm)
-    , ReloadMontageSection(FName(L"Reload SMG"))
-    , ClipBoneName(FName(L"smg_clip"))
-    , ItemInstance(nullptr)
+ ThrowWeaponTime(0.7f)
+ , bFalling(false)
+ , bNotRandValues(false)
+ , ThrowHeight(10.f)
+ , ThrowDirection(FVector(0.f, 0.f, 0.f))
+ , MultiplyImpulse(180.f)
+ , ThrowHeightRandRange(FVector2D(90.f, 180.f))
+ , ThrowDirectionRandRange(FVector2D(90.f, 180.f))
+ , ThrowDirection_X_RandRange(FVector2D(0.f, 0.f))
+ , ThrowDirection_Y_RandRange(FVector2D(0.f, 0.f))
+ , ThrowDirection_Z_RandRange(FVector2D(0.f, 0.f))
+ , MultiplyImpulseRandRange(FVector2D(150.f, 180.f))
+ , ThrowWeaponTimer(FTimerHandle())
+ , Ammo(40)
+ , MagazineCapacity(120)
+ , WeaponType(EWeaponType::EWT_SubmachineGun)
+ , AmmoType(EAmmoType::EAT_9mm)
+ , ReloadMontageSection(FName(L"Reload SMG"))
+ , ClipBoneName(FName(L"smg_clip"))
+ , ItemInstance(nullptr)
 
 {
     PrimaryActorTick.bCanEverTick = true;
@@ -73,11 +73,9 @@ void AWeapon::Tick(float DeltaTime) {
     // Keep the weapon upright
     if (GetItemState() == EItemState::EIS_Falling && bFalling) {
 
-        const FRotator MeshRotation {
-           0.f, GetItemMesh()->GetComponentRotation().Yaw, 0.f};
+        const FRotator MeshRotation {0.f, GetItemMesh()->GetComponentRotation().Yaw, 0.f};
 
-        GetItemMesh()->SetWorldRotation(
-           MeshRotation, false, nullptr, ETeleportType::TeleportPhysics);
+        GetItemMesh()->SetWorldRotation(MeshRotation, false, nullptr, ETeleportType::TeleportPhysics);
     }
 }
 
@@ -85,8 +83,7 @@ void AWeapon::ThrowWeapon() {
 
     FRotator MeshRotation {0.f, GetItemMesh()->GetComponentRotation().Yaw, 0.f};
 
-    GetItemMesh()->SetWorldRotation(
-       MeshRotation, false, nullptr, ETeleportType::TeleportPhysics);
+    GetItemMesh()->SetWorldRotation(MeshRotation, false, nullptr, ETeleportType::TeleportPhysics);
 
     const FVector MeshForward {GetItemMesh()->GetForwardVector()};
     const FVector MeshRight {GetItemMesh()->GetRightVector()};
@@ -100,46 +97,38 @@ void AWeapon::ThrowWeapon() {
 
     if (bNotRandValues) {
 
-        ThrowDirectionX = ThrowDirection.X;
-        ThrowDirectionY = ThrowDirection.Y;
-        ThrowDirectionZ = ThrowDirection.Z;
-        ImpulseDirection =
-           MeshForward.RotateAngleAxis(ThrowHeight * -1.f, MeshRight);
+        ThrowDirectionX  = ThrowDirection.X;
+        ThrowDirectionY  = ThrowDirection.Y;
+        ThrowDirectionZ  = ThrowDirection.Z;
+        ImpulseDirection = MeshForward.RotateAngleAxis(ThrowHeight * -1.f, MeshRight);
 
     } else {
 
-        double RandThrowDirectionX {FMath::RandRange(
-           ThrowDirection_X_RandRange.X, ThrowDirection_X_RandRange.Y)};
+        // RR = FMath::RandRange
+        double RandThrowDirectionX {RR(ThrowDirection_X_RandRange.X, ThrowDirection_X_RandRange.Y)};
 
         ThrowDirectionX = RandThrowDirectionX;
 
-        double RandThrowDirectionY {FMath::RandRange(
-           ThrowDirection_Y_RandRange.X, ThrowDirection_Y_RandRange.Y)};
+        double RandThrowDirectionY {RR(ThrowDirection_Y_RandRange.X, ThrowDirection_Y_RandRange.Y)};
 
         ThrowDirectionY = RandThrowDirectionY;
 
-        double RandThrowDirectionZ {FMath::RandRange(
-           ThrowDirection_Z_RandRange.X, ThrowDirection_Z_RandRange.Y)};
+        double RandThrowDirectionZ {RR(ThrowDirection_Z_RandRange.X, ThrowDirection_Z_RandRange.Y)};
 
         ThrowDirectionZ = RandThrowDirectionZ;
 
-        double RandThrowHeight {
-           FMath::RandRange(ThrowHeightRandRange.X, ThrowHeightRandRange.Y)};
+        double RandThrowHeight {RR(ThrowHeightRandRange.X, ThrowHeightRandRange.Y)};
 
         RandThrowHeight *= -1.f;
 
-        ImpulseDirection =
-           MeshForward.RotateAngleAxis(RandThrowHeight, MeshRight);
+        ImpulseDirection = MeshForward.RotateAngleAxis(RandThrowHeight, MeshRight);
     }
 
-    ImpulseDirection = ImpulseDirection.RotateAngleAxis(
-       ThrowDirectionX, FVector(1.f, 0.f, 0.f));
+    ImpulseDirection = ImpulseDirection.RotateAngleAxis(ThrowDirectionX, FVector(1.f, 0.f, 0.f));
 
-    ImpulseDirection = ImpulseDirection.RotateAngleAxis(
-       ThrowDirectionY, FVector(0.f, 1.f, 1.f));
+    ImpulseDirection = ImpulseDirection.RotateAngleAxis(ThrowDirectionY, FVector(0.f, 1.f, 1.f));
 
-    ImpulseDirection = ImpulseDirection.RotateAngleAxis(
-       ThrowDirectionZ, FVector(0.f, 0.f, 1.f));
+    ImpulseDirection = ImpulseDirection.RotateAngleAxis(ThrowDirectionZ, FVector(0.f, 0.f, 1.f));
 
     if (bNotRandValues) {
 
@@ -148,8 +137,7 @@ void AWeapon::ThrowWeapon() {
     } else {
 
         MultiplyImpulseRandRange *= 10000.f;
-        double RandMultiplyImpulse {FMath::RandRange(
-           MultiplyImpulseRandRange.X, MultiplyImpulseRandRange.Y)};
+        double RandMultiplyImpulse {RR(MultiplyImpulseRandRange.X, MultiplyImpulseRandRange.Y)};
 
         ImpulseDirection *= RandMultiplyImpulse;
     }
@@ -158,8 +146,7 @@ void AWeapon::ThrowWeapon() {
 
     bFalling = true;
 
-    GetWorldTimerManager().SetTimer(
-       ThrowWeaponTimer, this, &AWeapon::StopFalling, ThrowWeaponTime);
+    GetWorldTimerManager().SetTimer(ThrowWeaponTimer, this, &AWeapon::StopFalling, ThrowWeaponTime);
 
     EnableGlowMaterial();
 }
@@ -187,8 +174,7 @@ void AWeapon::DecrementAmmo() {
 
 void AWeapon::ReloadAmmo(int32 Amount) {
 
-    checkf(Ammo + Amount <= MagazineCapacity,
-       L"Attempted to reload with more than magazine capacity!");
+    checkf(Ammo + Amount <= MagazineCapacity, L"Attempted to reload with more than magazine capacity!");
     Ammo += Amount;
 }
 

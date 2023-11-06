@@ -51,7 +51,8 @@ AItem::AItem()
  , FresnelReflectFraction(4.f)
  , PulseCurveTime(5.f)
  , IconBackground(nullptr)
- , IconItem(nullptr) {
+ , IconItem(nullptr)
+ , SlotIndex(0) {
 
     PrimaryActorTick.bCanEverTick = true;
 

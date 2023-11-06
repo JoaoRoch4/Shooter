@@ -25,7 +25,7 @@ enum class EItemRarity : uint8 {
     EIR_MAX UMETA(DisplayName = "DefaultMAX")
 };
 
-UENUM(BlueprintType, Category = "UEnus|EItemState")
+UENUM(BlueprintType, Category = "UEnums|EItemState")
 enum class EItemState : uint8 {
 
     EIS_Pickup UMETA(DisplayName = "Pickup"),
@@ -320,6 +320,11 @@ private:
       meta = (AllowPrivateAccess = "true"))
     UTexture2D *AmmoItem;
 
+    /** Slot in the inventory array */
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Interface|Inventory",
+      meta = (AllowPrivateAccess = "true"))
+    int32 SlotIndex;
+
 public:
     FORCEINLINE UWidgetComponent *GetPickupWidget() const { return PickupWidget; }
 
@@ -357,4 +362,7 @@ public:
     void EnableGlowMaterial();
 
     void DisableGlowMaterial();
+    
+    FORCEINLINE int32 GetSlotIndex() const { return SlotIndex; }
+    FORCEINLINE void SetSlotIndex(int32 Index) { SlotIndex = Index; }
 };
