@@ -47,6 +47,7 @@ class SHOOTER_API AShooterCharacter : public ACharacter {
     GENERATED_BODY()
 
 public:
+
     // Sets default values for this character's properties
     AShooterCharacter();
 

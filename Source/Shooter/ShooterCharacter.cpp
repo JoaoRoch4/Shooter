@@ -1479,25 +1479,73 @@ void AShooterCharacter::KeyMethod1Key() {
 
     } else {
 
-        ExitPrintErr("AShooterCharacter::KEY_FkeyPressed(): EquippedWeapon is nullptr");
+        ExitPrintErr("AShooterCharacter::KeyMethod1Key(): EquippedWeapon is nullptr");
     }
 }
 
 void AShooterCharacter::KEY_2_TwoKeyPressed() { KeyMethod2Key(); }
 
-void AShooterCharacter::KeyMethod2Key() { return; }
+void AShooterCharacter::KeyMethod2Key() {
+
+    if (EquippedWeapon) {
+
+        if (EquippedWeapon->GetSlotIndex() == 2) return;
+
+        ExchangeInventoryItens(EquippedWeapon->GetSlotIndex(), 2);
+
+    } else {
+
+        ExitPrintErr("AShooterCharacter::KeyMethod2Key(): EquippedWeapon is nullptr");
+    }
+}
 
 void AShooterCharacter::KEY_3_ThreeKeyPressed() { KeyMethod3Key(); }
 
-void AShooterCharacter::KeyMethod3Key() { return; }
+void AShooterCharacter::KeyMethod3Key() {
+
+    if (EquippedWeapon) {
+
+        if (EquippedWeapon->GetSlotIndex() == 3) return;
+
+        ExchangeInventoryItens(EquippedWeapon->GetSlotIndex(), 3);
+
+    } else {
+
+        ExitPrintErr("AShooterCharacter::KeyMethod3Key(): EquippedWeapon is nullptr");
+    }
+}
 
 void AShooterCharacter::KEY_4_FourKeyPressed() { KeyMethod4Key(); }
 
-void AShooterCharacter::KeyMethod4Key() { return; }
+void AShooterCharacter::KeyMethod4Key() {
+
+    if (EquippedWeapon) {
+
+        if (EquippedWeapon->GetSlotIndex() == 4) return;
+
+        ExchangeInventoryItens(EquippedWeapon->GetSlotIndex(), 4);
+
+    } else {
+
+        ExitPrintErr("AShooterCharacter::KeyMethod4Key(): EquippedWeapon is nullptr");
+    }
+}
 
 void AShooterCharacter::KEY_5_FiveKeyPressed() { KeyMethod5Key(); }
 
-void AShooterCharacter::KeyMethod5Key() { return; }
+void AShooterCharacter::KeyMethod5Key() {
+
+    if (EquippedWeapon) {
+
+        if (EquippedWeapon->GetSlotIndex() == 5) return;
+
+        ExchangeInventoryItens(EquippedWeapon->GetSlotIndex(), 5);
+
+    } else {
+
+        ExitPrintErr("AShooterCharacter::KeyMethod5Key(): EquippedWeapon is nullptr");
+    }
+}
 
 void AShooterCharacter::KEY_6_SixKeyPressed() { KeyMethod6Key(); }
 
