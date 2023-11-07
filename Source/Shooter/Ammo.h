@@ -72,6 +72,8 @@ private:
         meta     = (AllowPrivateAccess = "true"))
     class USphereComponent *AmmoCollisionSphere;
 
+    
+
 public:
     FORCEINLINE UStaticMeshComponent *GetAmmoMesh() const { return AmmoMesh; }
 
@@ -80,4 +82,6 @@ public:
     virtual void EnableCustomDepth() override;
 
     virtual void DisableCustomDepth() override;
+
+   
 };

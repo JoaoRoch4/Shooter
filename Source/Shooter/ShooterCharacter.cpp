@@ -117,7 +117,10 @@ AShooterCharacter::AShooterCharacter()
  , PickupSoundResetTime(0.2f)
  , EquipSoundResetTime(0.2f)
  , Inventory(TArray<AItem *>())
- , DebugKeys(false) {
+ , DebugKeys(false)
+ , CurrentSlotIndex(0)
+ , InventoryCount(0)
+ , bDebugSlotMessages(false) {
 
     PrimaryActorTick.bCanEverTick = true;
 
@@ -150,6 +153,7 @@ void AShooterCharacter::BeginPlay() {
 
     InitializeAmmoMap();
     InitializeInterpLocations();
+        
 }
 
 void AShooterCharacter::Tick(float DeltaTime) {
@@ -170,6 +174,8 @@ void AShooterCharacter::Tick(float DeltaTime) {
 
     // Interpolate capsule half height based on crouching/standing
     InterpCapsuleHalfHeight(DeltaTime);
+
+    DebugSlotsItens();    
 }
 
 void AShooterCharacter::InterpCapsuleHalfHeight(float DeltaTime) {
@@ -530,6 +536,9 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent *PlayerInputCo
         PlayerInputComponent->BindAxis("Turn", this, &AShooterCharacter::Turn);
         PlayerInputComponent->BindAxis("LookUp", this, &AShooterCharacter::LookUp);
     }
+
+    PlayerInputComponent->BindAxis("MouseWheel", this, &AShooterCharacter::HandleMouseWheel);
+
 
     /* Jump */ {
         PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AShooterCharacter::Jump);
@@ -1005,6 +1014,12 @@ void AShooterCharacter::TraceForItems() {
             // Cast to AItem to check if it's valid and if it has a widget
             TraceHitItem = Cast<AItem>(ItemHitResult.GetActor());
 
+            // if hititem is in EquipInterping state set to nullptr
+            if (TraceHitItem && TraceHitItem->GetItemState() == EItemState::EIS_EquipInterping) {
+
+                TraceHitItem = nullptr;
+            }
+
             if (TraceHitItem && TraceHitItem->GetPickupWidget()) {
 
                 // Show the pickup widget
@@ -1098,12 +1113,15 @@ void AShooterCharacter::DropWeapon() {
 void AShooterCharacter::SwapWeapon(AWeapon *WeaponToSwap) {
 
     // Makes sure if the inventory can handle the SlotIndex of the EquippedWeapon
-    if ((Inventory.Num() - 1) >= EquippedWeapon->GetSlotIndex()) 
+    if ((Inventory.Num() - 1) >= (EquippedWeapon->GetSlotIndex())) {
+
         // If the inventory can handle the SlotIndex of the EquippedWeapon
         // then we can add the WeaponToSwap to the Inventory
         Inventory [EquippedWeapon->GetSlotIndex()] = WeaponToSwap;
-    
-    
+
+        WeaponToSwap->SetSlotIndex(EquippedWeapon->GetSlotIndex());
+    }
+
     DropWeapon();
     EquipWeapon(WeaponToSwap);
     TraceHitItem          = nullptr;
@@ -1296,7 +1314,11 @@ void AShooterCharacter::Jump() {
 
 void AShooterCharacter::SelectButtonPressed() {
 
-    if (TraceHitItem) TraceHitItem->StartItemCurve(this);
+    if (TraceHitItem) {
+
+        TraceHitItem->StartItemCurve(this);
+        TraceHitItem = nullptr;
+    }
 }
 
 void AShooterCharacter::SelectButtonReleased() {}
@@ -1385,8 +1407,7 @@ inline void AShooterCharacter::ResetEquipSoundTimer() { bShouldPlayEquipSound = 
 
 void AShooterCharacter::ExchangeInventoryItens(int32 CurrentItemindex, int32 NewItemIndex) {
 
-    if ((CurrentItemindex == NewItemIndex) &&
-        (NewItemIndex >= Inventory.Num())) return;
+    if ((CurrentItemindex == NewItemIndex) || (NewItemIndex >= Inventory.Num())) return;
 
     auto OldEquippedWeapon {EquippedWeapon};
     auto NewWeapon {Cast<AWeapon>(Inventory [NewItemIndex])};
@@ -1451,8 +1472,76 @@ void AShooterCharacter::IncrementInterpLocItemCount(int32 Index, int32 Amount) {
     }
 }
 
-void AShooterCharacter::KEY_FkeyPressed() { KeyMethodFKey(); }
+void AShooterCharacter::HandleMouseWheel(float Value) {
 
+    if (Value != 0.0f) {
+        if (Value > 0.0f) {
+
+            ScrollUp();
+
+        } else {
+
+            ScrollDown();
+        }
+    }
+}
+
+void AShooterCharacter::DebugSlotsItens() {
+
+    CurrentSlotIndex = EquippedWeapon->GetSlotIndex();
+
+    InventoryCount   = Inventory.Num();
+
+
+    if (GEngine && bDebugSlotMessages) {
+
+        GEngine->AddOnScreenDebugMessage(
+          1, -1.f, FColor::Red, FString::Printf(L"Current Slot Index: %d", CurrentSlotIndex));
+        GEngine->AddOnScreenDebugMessage(
+          2, -1.f, FColor::Blue, FString::Printf(L"Inventory Count: %d", InventoryCount));
+    }
+}
+
+
+void AShooterCharacter::ScrollUp() {
+
+    if (EquippedWeapon) {
+
+        if (InventoryCount == 1) return;
+
+        if (CurrentSlotIndex >= EquippedWeapon->GetMaxSlotNumber() || ((CurrentSlotIndex + 1) == InventoryCount))
+            return ExchangeInventoryItens(CurrentSlotIndex, 0);        
+
+        if (InventoryCount - 1 > CurrentSlotIndex) {
+
+            ExchangeInventoryItens(CurrentSlotIndex, (CurrentSlotIndex + 1));
+                        
+        }
+
+    } else {
+        ExitPrintErr("AShooterCharacter::ScrollUp(): EquippedWeapon is nullptr");
+    }
+}
+
+void AShooterCharacter::ScrollDown() {
+
+    if (EquippedWeapon) {
+
+        if (InventoryCount == 1) return;
+
+        if (CurrentSlotIndex <= 0) return ExchangeInventoryItens(CurrentSlotIndex, (InventoryCount -1));
+
+        if (InventoryCount - 1 >= CurrentSlotIndex) {
+
+            ExchangeInventoryItens(CurrentSlotIndex, (CurrentSlotIndex - 1));
+                       
+        }
+    } else {
+        ExitPrintErr("AShooterCharacter::ScrollDown(): EquippedWeapon is nullptr");
+    }
+}
+
+void AShooterCharacter::KEY_FkeyPressed() { KeyMethodFKey(); }
 void AShooterCharacter::KeyMethodFKey() {
 
     if (EquippedWeapon) {
@@ -1468,7 +1557,6 @@ void AShooterCharacter::KeyMethodFKey() {
 }
 
 void AShooterCharacter::KEY_1_OneKeyPressed() { KeyMethod1Key(); }
-
 void AShooterCharacter::KeyMethod1Key() {
 
     if (EquippedWeapon) {
@@ -1484,7 +1572,6 @@ void AShooterCharacter::KeyMethod1Key() {
 }
 
 void AShooterCharacter::KEY_2_TwoKeyPressed() { KeyMethod2Key(); }
-
 void AShooterCharacter::KeyMethod2Key() {
 
     if (EquippedWeapon) {
@@ -1500,7 +1587,6 @@ void AShooterCharacter::KeyMethod2Key() {
 }
 
 void AShooterCharacter::KEY_3_ThreeKeyPressed() { KeyMethod3Key(); }
-
 void AShooterCharacter::KeyMethod3Key() {
 
     if (EquippedWeapon) {
@@ -1516,7 +1602,6 @@ void AShooterCharacter::KeyMethod3Key() {
 }
 
 void AShooterCharacter::KEY_4_FourKeyPressed() { KeyMethod4Key(); }
-
 void AShooterCharacter::KeyMethod4Key() {
 
     if (EquippedWeapon) {
@@ -1532,7 +1617,6 @@ void AShooterCharacter::KeyMethod4Key() {
 }
 
 void AShooterCharacter::KEY_5_FiveKeyPressed() { KeyMethod5Key(); }
-
 void AShooterCharacter::KeyMethod5Key() {
 
     if (EquippedWeapon) {
@@ -1548,27 +1632,16 @@ void AShooterCharacter::KeyMethod5Key() {
 }
 
 void AShooterCharacter::KEY_6_SixKeyPressed() { KeyMethod6Key(); }
-
 void AShooterCharacter::KeyMethod6Key() { return; }
 
 void AShooterCharacter::KEY_7_SevenKeyPressed() { KeyMethod7Key(); }
-
 void AShooterCharacter::KeyMethod7Key() { return; }
 
 void AShooterCharacter::KEY_8_EightKeyPressed() { KeyMethod8Key(); }
-
 void AShooterCharacter::KeyMethod8Key() { return; }
 
 void AShooterCharacter::KEY_9_NineKeyPressed() { KeyMethod9Key(); }
-
 void AShooterCharacter::KeyMethod9Key() { return; }
 
 void AShooterCharacter::KEY_0_ZeroKeyPressed() { KeyMethod0Key(); }
-
 void AShooterCharacter::KeyMethod0Key() { return; }
-
-
-
-
-
-

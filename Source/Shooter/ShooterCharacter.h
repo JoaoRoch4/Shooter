@@ -288,6 +288,12 @@ protected:
     FORCEINLINE void ResetEquipSoundTimer();
 
     void ExchangeInventoryItens(int32 CurrentItemindex, int32 NewItemIndex);
+
+    void DebugSlotsItens();
+
+    void HandleMouseWheel(float Value);
+    void ScrollUp();
+    void ScrollDown();
     
     /* Key Bindings */
     void KEY_FkeyPressed();
@@ -749,6 +755,14 @@ private:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Debug",
       meta = (AllowPrivateAccess = "true"))
     float DebugKeys;
+
+    /** EquippedWeapon->GetSlotIndex() */ 
+    int32 CurrentSlotIndex;
+
+    /** Inventory.Num() */
+    int32 InventoryCount;
+
+    bool bDebugSlotMessages;
 
 public:
     /**

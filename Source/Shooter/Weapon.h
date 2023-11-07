@@ -166,6 +166,10 @@ private:
     /** *@brief Pointer to the item class. */
     class AItem *ItemInstance;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Item",
+      meta = (AllowPrivateAccess = "true"))
+     int32 MaxSlotNumber {5};
+
 public:
     /** Adds an impulse to the weapon */
     UFUNCTION(BlueprintCallable)
@@ -197,4 +201,6 @@ public:
     FORCEINLINE void SetMovingClip(bool Move) { bMovingClip = Move; }
 
     FORCEINLINE bool ClipIsFull() const;
+
+     FORCEINLINE int32 GetMaxSlotNumber() const { return MaxSlotNumber; }
 };

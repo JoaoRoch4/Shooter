@@ -431,6 +431,7 @@ void AItem::SetItemProperties(EItemState State) {
     switch (State) {
 
         case EItemState::EIS_Pickup :
+
             // Set mesh properties
             ItemMesh->SetSimulatePhysics(false);
             ItemMesh->SetEnableGravity(false);
@@ -470,6 +471,7 @@ void AItem::SetItemProperties(EItemState State) {
             ItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
             ItemMesh->SetSimulatePhysics(true);
             ItemMesh->SetEnableGravity(true);
+            ItemMesh->SetVisibility(true);
             ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
             ItemMesh->SetCollisionResponseToChannel(
               ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
@@ -525,9 +527,7 @@ void AItem::FinishInterping() {
 
         // Subtract 1 from the item count in this location struct
         Character->IncrementInterpLocItemCount(InterpLocIndex, -1);
-
         Character->GetPickupItem(this);
-        SetItemState(EItemState::EIS_PickedUp);
 
     } else {
         PrintLogErr("AItem::FinishInterping(): Character was nullptr");
