@@ -19,6 +19,8 @@ enum class ECombatState : uint8 {
 
     ECS_Reloading UMETA(DisplayName = "Reloading"),
 
+     ECS_Equipping UMETA(DisplayName = "Equipping"),
+
     ECS_MAX UMETA(DisplayName = "Default MAX")
 };
 
@@ -290,6 +292,7 @@ protected:
     void ExchangeInventoryItens(int32 CurrentItemindex, int32 NewItemIndex);
 
     void DebugSlotsItens();
+    void UpdateSlotsItens();
 
     void HandleMouseWheel(float Value);
     void ScrollUp();
@@ -469,6 +472,10 @@ private:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Combat|Class",
       meta = (AllowPrivateAccess = "true"))
     class UAnimMontage *HipFireMontage;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Combat|Class",
+      meta = (AllowPrivateAccess = "true"))
+    UAnimMontage *EquipMontage;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Debug",
       meta = (AllowPrivateAccess = "true"))

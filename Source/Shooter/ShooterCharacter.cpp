@@ -59,6 +59,7 @@ AShooterCharacter::AShooterCharacter()
  , ImpactParticles(nullptr)
  , BeamParticles(nullptr)
  , HipFireMontage(nullptr)
+ , EquipMontage(nullptr)
  , bShowCustomDebugMessages(false)
  , bAiming(false)
  , CameraDefaultAimFOV(0.f)
@@ -153,7 +154,8 @@ void AShooterCharacter::BeginPlay() {
 
     InitializeAmmoMap();
     InitializeInterpLocations();
-        
+
+    UpdateSlotsItens();
 }
 
 void AShooterCharacter::Tick(float DeltaTime) {
@@ -175,7 +177,7 @@ void AShooterCharacter::Tick(float DeltaTime) {
     // Interpolate capsule half height based on crouching/standing
     InterpCapsuleHalfHeight(DeltaTime);
 
-    DebugSlotsItens();    
+    if (bDebugSlotMessages) DebugSlotsItens();
 }
 
 void AShooterCharacter::InterpCapsuleHalfHeight(float DeltaTime) {
@@ -1314,6 +1316,8 @@ void AShooterCharacter::Jump() {
 
 void AShooterCharacter::SelectButtonPressed() {
 
+    if (CombatState != ECombatState::ECS_Unoccupied) return;
+
     if (TraceHitItem) {
 
         TraceHitItem->StartItemCurve(this);
@@ -1407,15 +1411,21 @@ inline void AShooterCharacter::ResetEquipSoundTimer() { bShouldPlayEquipSound = 
 
 void AShooterCharacter::ExchangeInventoryItens(int32 CurrentItemindex, int32 NewItemIndex) {
 
-    if ((CurrentItemindex == NewItemIndex) || (NewItemIndex >= Inventory.Num())) return;
+    if ((CurrentItemindex == NewItemIndex) ||
+        (NewItemIndex >= Inventory.Num())  || 
+        (CombatState != ECombatState::ECS_Unoccupied)) return;
 
-    auto OldEquippedWeapon {EquippedWeapon};
-    auto NewWeapon {Cast<AWeapon>(Inventory [NewItemIndex])};
+    AWeapon *OldEquippedWeapon {EquippedWeapon};
+    AWeapon *NewWeapon {Cast<AWeapon>(Inventory [NewItemIndex])};
 
     EquipWeapon(NewWeapon);
 
     OldEquippedWeapon->SetItemState(EItemState::EIS_PickedUp);
     NewWeapon->SetItemState(EItemState::EIS_Equipped);
+
+    CombatState = ECombatState::ECS_Equipping;
+
+    UAnimInstance* AnimInstance {GetMesh()->GetAnimInstance()};
 }
 
 void AShooterCharacter::StartPickupSoundTimer() {
@@ -1488,12 +1498,9 @@ void AShooterCharacter::HandleMouseWheel(float Value) {
 
 void AShooterCharacter::DebugSlotsItens() {
 
-    CurrentSlotIndex = EquippedWeapon->GetSlotIndex();
+    UpdateSlotsItens();
 
-    InventoryCount   = Inventory.Num();
-
-
-    if (GEngine && bDebugSlotMessages) {
+    if (GEngine) {
 
         GEngine->AddOnScreenDebugMessage(
           1, -1.f, FColor::Red, FString::Printf(L"Current Slot Index: %d", CurrentSlotIndex));
@@ -1502,21 +1509,29 @@ void AShooterCharacter::DebugSlotsItens() {
     }
 }
 
+void AShooterCharacter::UpdateSlotsItens() {
+
+    CurrentSlotIndex = EquippedWeapon->GetSlotIndex();
+    InventoryCount   = Inventory.Num();
+}
 
 void AShooterCharacter::ScrollUp() {
 
     if (EquippedWeapon) {
 
-        if (InventoryCount == 1) return;
+        UpdateSlotsItens();
 
-        if (CurrentSlotIndex >= EquippedWeapon->GetMaxSlotNumber() || ((CurrentSlotIndex + 1) == InventoryCount))
-            return ExchangeInventoryItens(CurrentSlotIndex, 0);        
+        if (InventoryCount == 1)
+            return;
 
-        if (InventoryCount - 1 > CurrentSlotIndex) {
+        // Go to the first slot index
+        else if ((CurrentSlotIndex >= EquippedWeapon->GetMaxSlotNumber())
+                 || ((CurrentSlotIndex + 1) == InventoryCount))
+            ExchangeInventoryItens(CurrentSlotIndex, 0);
 
+        // advance the slot index
+        else if ((InventoryCount - 1) > CurrentSlotIndex)
             ExchangeInventoryItens(CurrentSlotIndex, (CurrentSlotIndex + 1));
-                        
-        }
 
     } else {
         ExitPrintErr("AShooterCharacter::ScrollUp(): EquippedWeapon is nullptr");
@@ -1527,15 +1542,19 @@ void AShooterCharacter::ScrollDown() {
 
     if (EquippedWeapon) {
 
-        if (InventoryCount == 1) return;
+        UpdateSlotsItens();
 
-        if (CurrentSlotIndex <= 0) return ExchangeInventoryItens(CurrentSlotIndex, (InventoryCount -1));
+        if (InventoryCount == 1)
+            return;
 
-        if (InventoryCount - 1 >= CurrentSlotIndex) {
+        // Go to the last slot index
+        else if (CurrentSlotIndex <= 0)
+            return ExchangeInventoryItens(CurrentSlotIndex, (InventoryCount - 1));
 
-            ExchangeInventoryItens(CurrentSlotIndex, (CurrentSlotIndex - 1));
-                       
-        }
+        // Go back the slot index
+        else if ((InventoryCount - 1) >= CurrentSlotIndex)
+            return ExchangeInventoryItens(CurrentSlotIndex, (CurrentSlotIndex - 1));
+
     } else {
         ExitPrintErr("AShooterCharacter::ScrollDown(): EquippedWeapon is nullptr");
     }
@@ -1546,9 +1565,11 @@ void AShooterCharacter::KeyMethodFKey() {
 
     if (EquippedWeapon) {
 
-        if (EquippedWeapon->GetSlotIndex() == 0) return;
+        UpdateSlotsItens();
 
-        ExchangeInventoryItens(EquippedWeapon->GetSlotIndex(), 0);
+        if (CurrentSlotIndex == 0) return;
+
+       return ExchangeInventoryItens(CurrentSlotIndex, 0);
 
     } else {
 
@@ -1561,9 +1582,11 @@ void AShooterCharacter::KeyMethod1Key() {
 
     if (EquippedWeapon) {
 
-        if (EquippedWeapon->GetSlotIndex() == 1) return;
+        UpdateSlotsItens();
 
-        ExchangeInventoryItens(EquippedWeapon->GetSlotIndex(), 1);
+        if (CurrentSlotIndex == 1) return;
+
+        return ExchangeInventoryItens(CurrentSlotIndex, 1);
 
     } else {
 
@@ -1576,9 +1599,11 @@ void AShooterCharacter::KeyMethod2Key() {
 
     if (EquippedWeapon) {
 
-        if (EquippedWeapon->GetSlotIndex() == 2) return;
+        UpdateSlotsItens();
 
-        ExchangeInventoryItens(EquippedWeapon->GetSlotIndex(), 2);
+        if (CurrentSlotIndex == 2) return;
+
+       return ExchangeInventoryItens(CurrentSlotIndex, 2);
 
     } else {
 
@@ -1591,9 +1616,11 @@ void AShooterCharacter::KeyMethod3Key() {
 
     if (EquippedWeapon) {
 
-        if (EquippedWeapon->GetSlotIndex() == 3) return;
+        UpdateSlotsItens();
 
-        ExchangeInventoryItens(EquippedWeapon->GetSlotIndex(), 3);
+        if (CurrentSlotIndex == 3) return;
+
+        return ExchangeInventoryItens(CurrentSlotIndex, 3);
 
     } else {
 
@@ -1606,9 +1633,11 @@ void AShooterCharacter::KeyMethod4Key() {
 
     if (EquippedWeapon) {
 
-        if (EquippedWeapon->GetSlotIndex() == 4) return;
+        UpdateSlotsItens();
 
-        ExchangeInventoryItens(EquippedWeapon->GetSlotIndex(), 4);
+        if (CurrentSlotIndex == 4) return;
+
+        return ExchangeInventoryItens(CurrentSlotIndex, 4);
 
     } else {
 
@@ -1621,9 +1650,11 @@ void AShooterCharacter::KeyMethod5Key() {
 
     if (EquippedWeapon) {
 
-        if (EquippedWeapon->GetSlotIndex() == 5) return;
+        UpdateSlotsItens();
 
-        ExchangeInventoryItens(EquippedWeapon->GetSlotIndex(), 5);
+        if (CurrentSlotIndex == 5) return;
+
+        return ExchangeInventoryItens(CurrentSlotIndex, 5);
 
     } else {
 

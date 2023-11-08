@@ -36,7 +36,7 @@ AlignConsecutiveDeclarations:
 #AllowShortCompoundRequirementOnASingleLine: true
 AlignAfterOpenBracket: DontAlign
 AlignEscapedNewlines: Right
-AlignOperands: Align   
+AlignOperands: AlignAfterOperator   
 AlignTrailingComments: false
 
 AllowAllArgumentsOnNextLine: true 
