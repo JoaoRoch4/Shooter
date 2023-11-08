@@ -106,7 +106,7 @@ protected:
 	*/
     FVector GetInterpLocation();
 
-    void PlayPickupSound();
+    void PlayPickupSound(bool bForcePlaySound = false);
 
     virtual void InitializeCustomDepth();
 
@@ -351,9 +351,9 @@ public:
      * @param Char
      * The character that is picking up the item.
      */
-    void StartItemCurve(AShooterCharacter *Char);
+    void StartItemCurve(AShooterCharacter *GetCharacter, bool bForcePlaySound = false);
 
-    void PlayEquipSound();
+    void PlayEquipSound(bool bForcePlaySound = false);
 
     virtual void EnableCustomDepth();
 
@@ -364,5 +364,6 @@ public:
     void DisableGlowMaterial();
     
     FORCEINLINE int32 GetSlotIndex() const { return SlotIndex; }
-    FORCEINLINE void SetSlotIndex(int32 Index) { SlotIndex = Index; }
+    FORCEINLINE void  SetSlotIndex(int32 Index) { SlotIndex = Index; }
+    FORCEINLINE void  SetCharacter(AShooterCharacter *GetCharacter) { Character = GetCharacter; }
 };

@@ -151,6 +151,7 @@ void AShooterCharacter::BeginPlay() {
     EquippedWeapon->SetSlotIndex(0);
     EquippedWeapon->DisableCustomDepth();
     EquippedWeapon->DisableGlowMaterial();
+    EquippedWeapon->SetCharacter(this);
 
     InitializeAmmoMap();
     InitializeInterpLocations();
@@ -1381,7 +1382,7 @@ void AShooterCharacter::SelectButtonPressed() {
 
     if (TraceHitItem) {
 
-        TraceHitItem->StartItemCurve(this);
+        TraceHitItem->StartItemCurve(this, true);
         TraceHitItem = nullptr;
     }
 }
@@ -1502,6 +1503,8 @@ void AShooterCharacter::ExchangeInventoryItens(int32 CurrentItemindex, int32 New
     } else {
         ExitPrintErr("AShooterCharacter::ExchangeInventoryItens(): AnimInstance is nullptr");
     }
+
+    NewWeapon->PlayEquipSound(true);
 }
 
 void AShooterCharacter::StartPickupSoundTimer() {

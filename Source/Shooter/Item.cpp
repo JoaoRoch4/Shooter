@@ -194,18 +194,22 @@ FVector AItem::GetInterpLocation() {
     return FVector::Zero();
 }
 
-void AItem::PlayPickupSound() {
+void AItem::PlayPickupSound(bool bForcePlaySound) {
 
     if (Character) {
 
-        if (Character->ShouldPlayPickupSound()) {
+        if (bForcePlaySound) {
+
+            if (PickupSound) UGameplayStatics::PlaySound2D(this, PickupSound);
+
+        }else if (Character->ShouldPlayPickupSound()) {
 
             Character->StartPickupSoundTimer();
 
             if (PickupSound) UGameplayStatics::PlaySound2D(this, PickupSound);
         }
     } else {
-        PrintLogErr("AItem::PlayPickupSound(): Character was nullptr");
+        ExitGameErr("AItem::PlayPickupSound(): Character was nullptr");
     }
 }
 
@@ -307,9 +311,13 @@ void AItem::DisableGlowMaterial() {
     }
 }
 
-void AItem::PlayEquipSound() {
+void AItem::PlayEquipSound(bool bForcePlaySound) {
 
-    if (Character) {
+    if(bForcePlaySound) {
+
+         if (EquipSound) UGameplayStatics::PlaySound2D(this, EquipSound);
+
+    }else if (Character) {
 
         if (Character->ShouldPlayEquipSound()) {
 
@@ -328,10 +336,10 @@ void AItem::SetItemState(EItemState State) {
     SetItemProperties(State);
 }
 
-void AItem::StartItemCurve(AShooterCharacter *Char) {
+void AItem::StartItemCurve(AShooterCharacter *GetCharacter, bool bForcePlaySound) {
 
     // Store a ref to the character
-    Character = Char;
+    Character = GetCharacter;
 
     // Get array index in InterpLocations with the lowest item count
     InterpLocIndex = Character->GetInterpLocationIndex();
@@ -339,7 +347,7 @@ void AItem::StartItemCurve(AShooterCharacter *Char) {
     // Add 1 to the item count in this Location Struct
     Character->IncrementInterpLocItemCount(InterpLocIndex, 1);
 
-    PlayPickupSound();
+    PlayPickupSound(bForcePlaySound);
 
     // Store initial location of the item
     ItemInterpStartLocation = GetActorLocation();
