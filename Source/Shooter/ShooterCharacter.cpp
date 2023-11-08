@@ -1253,6 +1253,12 @@ void AShooterCharacter::FinishReloading() {
     }
 }
 
+void AShooterCharacter::FinishEquipping() {
+
+    // Update the combat state
+    CombatState = ECombatState::ECS_Unoccupied;
+}
+
 bool AShooterCharacter::CarryingAmmo() {
 
     if (EquippedWeapon == nullptr) return false;
@@ -1425,7 +1431,22 @@ void AShooterCharacter::ExchangeInventoryItens(int32 CurrentItemindex, int32 New
 
     CombatState = ECombatState::ECS_Equipping;
 
-    UAnimInstance* AnimInstance {GetMesh()->GetAnimInstance()};
+    UAnimInstance *AnimInstance {nullptr};
+    AnimInstance = GetMesh()->GetAnimInstance();
+
+    if (AnimInstance) {
+        if (EquipMontage){
+            if (AnimInstance && EquipMontage) {
+
+                AnimInstance->Montage_Play(EquipMontage, 1.0f);
+                AnimInstance->Montage_JumpToSection(FName("Equip"));
+            }
+        } else {
+            ExitPrintErr("AShooterCharacter::ExchangeInventoryItens(): EquipMontage is nullptr");
+        }
+    } else {
+        ExitPrintErr("AShooterCharacter::ExchangeInventoryItens(): AnimInstance is nullptr");
+    }
 }
 
 void AShooterCharacter::StartPickupSoundTimer() {

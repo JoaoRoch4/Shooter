@@ -246,6 +246,9 @@ protected:
     UFUNCTION(BlueprintCallable)
     void FinishReloading();
 
+    UFUNCTION(BlueprintCallable)
+    void FinishEquipping();
+
     /**
 	 * @brief Check if we have ammo of the Equipped Weapons
 
