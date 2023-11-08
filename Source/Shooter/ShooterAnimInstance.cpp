@@ -178,9 +178,9 @@ void UShooterAnimInstance::TurnInPlace() {
 
     } else { // not turning in place
 
-        if (bCrouching || bEquipping) {
+        if (bCrouching) {
 
-            if (bReloading) {
+            if (bReloading || bEquipping) {
 
                 RecoilWeight = 1.f;
 

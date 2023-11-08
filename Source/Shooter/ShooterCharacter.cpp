@@ -683,55 +683,110 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
 
         HipFireMontage = CDSubObj<UAnimMontage>(L"HipFireMontage");
 
-        auto const M_Animation_HipFireMontage {ConstructorHelpers::FObjectFinder<UAnimMontage>(
+        const static TCHAR *HipFireMontagePath {
           L"/Script/Engine.AnimMontage'/Game/_Game/Character/Animations/"
-          L"HipFireMontage.HipFireMontage'")};
+          L"HipFireMontage.HipFireMontage'"};
 
-        if (M_Animation_HipFireMontage.Succeeded()) HipFireMontage = M_Animation_HipFireMontage.Object;
+        auto const static M_Animation_HipFireMontage {
+          ConstructorHelpers::FObjectFinder<UAnimMontage>(HipFireMontagePath)};
+
+        if (M_Animation_HipFireMontage.Succeeded())
+            HipFireMontage = M_Animation_HipFireMontage.Object;
+        else {
+            PrintLogErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
+                        "M_Animation_HipFireMontage failed");
+        }
+    }
+
+    if (EquipMontage == nullptr) {
+
+        EquipMontage = CDSubObj<UAnimMontage>(L"EquipMontage");
+
+        const static TCHAR *EquipMontagePath {
+          L"/Script/Engine.AnimMontage'/Game/_Game/Character/Animations/Montage/EquipMontage.EquipMontage'"};
+
+        auto const static M_Animation_EquipMontage {
+          ConstructorHelpers::FObjectFinder<UAnimMontage>(EquipMontagePath)};
+
+        if (M_Animation_EquipMontage.Succeeded())
+            EquipMontage = M_Animation_EquipMontage.Object;
+        else {
+            PrintLogErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
+                        "M_Animation_EquipMontage failed");
+        }
     }
 
     if (ImpactParticles == nullptr) {
 
         ImpactParticles = CDSubObj<UParticleSystem>(L"ImpactParticles");
 
-        auto const M_ImpactParticle {ConstructorHelpers::FObjectFinder<UParticleSystem>(
+        const static TCHAR *ImpactParticlesPath {
           L"/Script/Engine.ParticleSystem'/Game/ParagonLtBelica/FX/Particles/"
-          L"Belica/Abilities/Primary/FX/P_BelicaHitWorld.P_BelicaHitWorld'")};
+          L"Belica/Abilities/Primary/FX/P_BelicaHitWorld.P_BelicaHitWorld'"};
 
-        if (M_ImpactParticle.Succeeded()) ImpactParticles = M_ImpactParticle.Object;
+        auto const static M_ImpactParticle {
+          ConstructorHelpers::FObjectFinder<UParticleSystem>(ImpactParticlesPath)};
+
+        if (M_ImpactParticle.Succeeded())
+            ImpactParticles = M_ImpactParticle.Object;
+        else {
+            PrintLogErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
+                        "M_ImpactParticle failed");
+        }
     }
 
     if (BeamParticles == nullptr) {
 
         BeamParticles = CDSubObj<UParticleSystem>(L"BeamParticles");
 
-        auto const M_BeamParticle {ConstructorHelpers::FObjectFinder<UParticleSystem>(
+        const static TCHAR *BeamParticlesPath {
           L"/Script/Engine.ParticleSystem'/Game/_Game/Assets/FX/SmokeBean/"
-          L"P_SmokeTrail_Faded.P_SmokeTrail_Faded'")};
+          L"P_SmokeTrail_Faded.P_SmokeTrail_Faded'"};
 
-        if (M_BeamParticle.Succeeded()) BeamParticles = M_BeamParticle.Object;
+        auto const static M_BeamParticle {
+          ConstructorHelpers::FObjectFinder<UParticleSystem>(BeamParticlesPath)};
+
+        if (M_BeamParticle.Succeeded())
+            BeamParticles = M_BeamParticle.Object;
+        else {
+            PrintLogErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
+                        "M_BeamParticle failed");
+        }
     }
 
     if (MuzzleFlash == nullptr) {
 
         MuzzleFlash = CDSubObj<UParticleSystem>(L"MuzzleFlash");
 
-        auto const M_MuzzleFlashParticle {ConstructorHelpers::FObjectFinder<UParticleSystem>(
-          L"/Script/Engine.ParticleSystem'/Game/_Game/Assets/FX/"
-          L"P_BelicaMuzzle_SigleBrust.P_BelicaMuzzle_SigleBrust'")};
+        const static TCHAR *MuzzleFlashPath {L"/Script/Engine.ParticleSystem'/Game/_Game/Assets/FX/"
+                                             L"P_BelicaMuzzle_SigleBrust.P_BelicaMuzzle_SigleBrust'"};
 
-        if (M_MuzzleFlashParticle.Succeeded()) MuzzleFlash = M_MuzzleFlashParticle.Object;
+        auto const static M_MuzzleFlashParticle {
+          ConstructorHelpers::FObjectFinder<UParticleSystem>(MuzzleFlashPath)};
+
+        if (M_MuzzleFlashParticle.Succeeded())
+            MuzzleFlash = M_MuzzleFlashParticle.Object;
+        else {
+            PrintLogErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
+                        "M_MuzzleFlashParticle failed");
+        }
     }
 
     if (ReloadMontage == nullptr) {
 
         ReloadMontage = CDSubObj<UAnimMontage>(L"ReloadMontage");
 
-        auto const M_ReloadMontage {ConstructorHelpers::FObjectFinder<UAnimMontage>(
-          L"/Script/Engine.AnimMontage'/Game/_Game/Character/Animations/"
-          L"ReloadMontage.ReloadMontage'")};
+        const static TCHAR *ReloadMontagePath {L"/Script/Engine.AnimMontage'/Game/_Game/Character/Animations/"
+                                               L"ReloadMontage.ReloadMontage'"};
 
-        if (M_ReloadMontage.Succeeded()) ReloadMontage = M_ReloadMontage.Object;
+        auto const M_ReloadMontage {ConstructorHelpers::FObjectFinder<UAnimMontage>(ReloadMontagePath)};
+
+        if (M_ReloadMontage.Succeeded())
+            ReloadMontage = M_ReloadMontage.Object;
+        else {
+            PrintLogErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
+                        "M_ReloadMontage failed");
+        }
     }
 }
 
@@ -1016,7 +1071,7 @@ void AShooterCharacter::TraceForItems() {
             // Cast to AItem to check if it's valid and if it has a widget
             TraceHitItem = Cast<AItem>(ItemHitResult.GetActor());
 
-            // if hititem is in EquipInterping state set to nullptr
+            // if Hit Item is in EquipInterping state set to nullptr
             if (TraceHitItem && TraceHitItem->GetItemState() == EItemState::EIS_EquipInterping) {
 
                 TraceHitItem = nullptr;
@@ -1357,7 +1412,7 @@ FVector AShooterCharacter::GetCameraInterpLocation() {
     const FVector CameraForward {FollowCamera->GetForwardVector()};
 
     return CameraWorldLocation + CameraForward * CameraInterpDistance
-           + FVector(0.f, 0.f, CameraInterpElevation);
+         + FVector(0.f, 0.f, CameraInterpElevation);
 }
 
 void AShooterCharacter::GetPickupItem(AItem *Item) {
@@ -1417,9 +1472,9 @@ inline void AShooterCharacter::ResetEquipSoundTimer() { bShouldPlayEquipSound = 
 
 void AShooterCharacter::ExchangeInventoryItens(int32 CurrentItemindex, int32 NewItemIndex) {
 
-    if ((CurrentItemindex == NewItemIndex) ||
-        (NewItemIndex >= Inventory.Num())  || 
-        (CombatState != ECombatState::ECS_Unoccupied)) return;
+    if ((CurrentItemindex == NewItemIndex) || (NewItemIndex >= Inventory.Num())
+        || (CombatState != ECombatState::ECS_Unoccupied))
+        return;
 
     AWeapon *OldEquippedWeapon {EquippedWeapon};
     AWeapon *NewWeapon {Cast<AWeapon>(Inventory [NewItemIndex])};
@@ -1435,11 +1490,11 @@ void AShooterCharacter::ExchangeInventoryItens(int32 CurrentItemindex, int32 New
     AnimInstance = GetMesh()->GetAnimInstance();
 
     if (AnimInstance) {
-        if (EquipMontage){
+        if (EquipMontage) {
             if (AnimInstance && EquipMontage) {
 
                 AnimInstance->Montage_Play(EquipMontage, 1.0f);
-                AnimInstance->Montage_JumpToSection(FName("Equip"));
+                AnimInstance->Montage_JumpToSection(FName(L"Equip"));
             }
         } else {
             ExitPrintErr("AShooterCharacter::ExchangeInventoryItens(): EquipMontage is nullptr");
@@ -1542,8 +1597,7 @@ void AShooterCharacter::ScrollUp() {
 
         UpdateSlotsItens();
 
-        if (InventoryCount == 1)
-            return;
+        if (InventoryCount == 1) return;
 
         // Go to the first slot index
         else if ((CurrentSlotIndex >= EquippedWeapon->GetMaxSlotNumber())
@@ -1565,8 +1619,7 @@ void AShooterCharacter::ScrollDown() {
 
         UpdateSlotsItens();
 
-        if (InventoryCount == 1)
-            return;
+        if (InventoryCount == 1) return;
 
         // Go to the last slot index
         else if (CurrentSlotIndex <= 0)
@@ -1590,7 +1643,7 @@ void AShooterCharacter::KeyMethodFKey() {
 
         if (CurrentSlotIndex == 0) return;
 
-       return ExchangeInventoryItens(CurrentSlotIndex, 0);
+        return ExchangeInventoryItens(CurrentSlotIndex, 0);
 
     } else {
 
@@ -1624,7 +1677,7 @@ void AShooterCharacter::KeyMethod2Key() {
 
         if (CurrentSlotIndex == 2) return;
 
-       return ExchangeInventoryItens(CurrentSlotIndex, 2);
+        return ExchangeInventoryItens(CurrentSlotIndex, 2);
 
     } else {
 
