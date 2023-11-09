@@ -12,47 +12,47 @@
 #include <Kismet\GameplayStatics.h>
 #include <Sound/SoundCue.h>
 
-AItem::AItem()
- :
+AItem::AItem() :
 
- ItemMesh(nullptr)
- , CollisionBox(nullptr)
- , PickupWidget(nullptr)
- , AreaSphere(nullptr)
- , ItemName(FString(L"Default"))
- , ItemCount(0)
- , ItemRarity(EItemRarity::EIR_Common)
- , ItemState(EItemState::EIS_Pickup)
- , ActiveStars(TArray<bool>())
- , ItemZ_Curve(nullptr)
- , ItemInterpStartLocation(FVector(0.f))
- , CameraTargetLocation(FVector(0.f))
- , bInterping(false)
- , ItemInterpTimer(FTimerHandle())
- , Z_CurveTime(0.7f)
- , Character(nullptr)
- , ItemInterpX(0.f)
- , ItemInterpY(0.f)
- , InterpInitialYawOffset(0.f)
- , ItemScaleCurve(nullptr)
- , PickupSound(nullptr)
- , EquipSound(nullptr)
- , ItemType(EItemType::EIT_MAX)
- , InterpLocIndex(0)
- , MaterialIndex(0)
- , DynamicMaterialInstance(nullptr)
- , MaterialInstance(nullptr)
- , bCanChangeCustomDepth(true)
- , PulseCurve(nullptr)
- , InterpPulseCurve(nullptr)
- , PulseTimer(FTimerHandle())
- , GlowAmount(150.f)
- , FresnelExponent(3.f)
- , FresnelReflectFraction(4.f)
- , PulseCurveTime(5.f)
- , IconBackground(nullptr)
- , IconItem(nullptr)
- , SlotIndex(0) {
+ ItemMesh(nullptr),
+ CollisionBox(nullptr),
+ PickupWidget(nullptr),
+ AreaSphere(nullptr),
+ ItemName(FString(L"Default")),
+ ItemCount(0),
+ ItemRarity(EItemRarity::EIR_Common),
+ ItemState(EItemState::EIS_Pickup),
+ ActiveStars(TArray<bool>()),
+ ItemZ_Curve(nullptr),
+ ItemInterpStartLocation(FVector(0.f)),
+ CameraTargetLocation(FVector(0.f)),
+ bInterping(false),
+ ItemInterpTimer(FTimerHandle()),
+ Z_CurveTime(0.7f),
+ Character(nullptr),
+ ItemInterpX(0.f),
+ ItemInterpY(0.f),
+ InterpInitialYawOffset(0.f),
+ ItemScaleCurve(nullptr),
+ PickupSound(nullptr),
+ EquipSound(nullptr),
+ ItemType(EItemType::EIT_MAX),
+ InterpLocIndex(0),
+ MaterialIndex(0),
+ DynamicMaterialInstance(nullptr),
+ MaterialInstance(nullptr),
+ bCanChangeCustomDepth(true),
+ PulseCurve(nullptr),
+ InterpPulseCurve(nullptr),
+ PulseTimer(FTimerHandle()),
+ GlowAmount(150.f),
+ FresnelExponent(3.f),
+ FresnelReflectFraction(4.f),
+ PulseCurveTime(5.f),
+ IconBackground(nullptr),
+ IconItem(nullptr),
+ SlotIndex(0),
+ bCharacterInventoryFull(false) {
 
     PrimaryActorTick.bCanEverTick = true;
 
@@ -68,7 +68,6 @@ AItem::AItem()
     AreaSphere->SetupAttachment(GetRootComponent());
 
     DynamicMaterialInstance = CDSubObj<UMaterialInstanceDynamic>(L"DynamicMaterialInstance");
-
 
     DefaultConstructor_Curves();
 }
@@ -178,18 +177,16 @@ FVector AItem::GetInterpLocation() {
 
     switch (ItemType) {
 
-        case EItemType::EIT_Ammo :
-            {
+        case EItemType::EIT_Ammo : {
 
-                return Character->GetInterpLocation(InterpLocIndex).SceneComponent->GetComponentLocation();
-                break;
-            }
-        case EItemType::EIT_Weapon :
-            {
+            return Character->GetInterpLocation(InterpLocIndex).SceneComponent->GetComponentLocation();
+            break;
+        }
+        case EItemType::EIT_Weapon : {
 
-                return Character->GetInterpLocation(0).SceneComponent->GetComponentLocation();
-                break;
-            }
+            return Character->GetInterpLocation(0).SceneComponent->GetComponentLocation();
+            break;
+        }
     }
     return FVector::Zero();
 }
@@ -202,7 +199,7 @@ void AItem::PlayPickupSound(bool bForcePlaySound) {
 
             if (PickupSound) UGameplayStatics::PlaySound2D(this, PickupSound);
 
-        }else if (Character->ShouldPlayPickupSound()) {
+        } else if (Character->ShouldPlayPickupSound()) {
 
             Character->StartPickupSoundTimer();
 
@@ -241,34 +238,33 @@ void AItem::UpdatePulse() {
 
     switch (ItemState) {
 
-        case EItemState::EIS_Pickup :
-            {
-                if (PulseCurve) {
+        case EItemState::EIS_Pickup : {
 
-                    ElapsedTime = GetWorldTimerManager().GetTimerElapsed(PulseTimer);
-                    CurveValue  = PulseCurve->GetVectorValue(ElapsedTime);
+            if (PulseCurve) {
 
-                } else {
-                    PrintLogErr("AItem::UpdatePulse(): Case EItemState::EIS_Pickup: "
-                                "PulseCurve was nullptr");
-                }
-                break;
+                ElapsedTime = GetWorldTimerManager().GetTimerElapsed(PulseTimer);
+                CurveValue  = PulseCurve->GetVectorValue(ElapsedTime);
+
+            } else {
+                PrintLogErr("AItem::UpdatePulse(): Case EItemState::EIS_Pickup: "
+                            "PulseCurve was nullptr");
             }
-        case EItemState::EIS_EquipInterping :
-            {
+        } break;
 
-                if (InterpPulseCurve) {
+        case EItemState::EIS_EquipInterping : {
 
-                    ElapsedTime = GetWorldTimerManager().GetTimerElapsed(ItemInterpTimer);
-                    CurveValue  = InterpPulseCurve->GetVectorValue(ElapsedTime);
+            if (InterpPulseCurve) {
 
-                } else {
-                    PrintLogErr("AItem::UpdatePulse(): Case "
-                                "EItemState::EIS_EquipInterping: "
-                                "InterpPulseCurve was nullptr");
-                }
-                break;
+                ElapsedTime = GetWorldTimerManager().GetTimerElapsed(ItemInterpTimer);
+                CurveValue  = InterpPulseCurve->GetVectorValue(ElapsedTime);
+
+            } else {
+                PrintLogErr("AItem::UpdatePulse(): Case "
+                            "EItemState::EIS_EquipInterping: "
+                            "InterpPulseCurve was nullptr");
             }
+            break;
+        }
     }
 
     if (DynamicMaterialInstance) {
@@ -313,11 +309,11 @@ void AItem::DisableGlowMaterial() {
 
 void AItem::PlayEquipSound(bool bForcePlaySound) {
 
-    if(bForcePlaySound) {
+    if (bForcePlaySound) {
 
-         if (EquipSound) UGameplayStatics::PlaySound2D(this, EquipSound);
+        if (EquipSound) UGameplayStatics::PlaySound2D(this, EquipSound);
 
-    }else if (Character) {
+    } else if (Character) {
 
         if (Character->ShouldPlayEquipSound()) {
 
@@ -438,7 +434,7 @@ void AItem::SetItemProperties(EItemState State) {
 
     switch (State) {
 
-        case EItemState::EIS_Pickup :
+        case EItemState::EIS_Pickup : {
 
             // Set mesh properties
             ItemMesh->SetSimulatePhysics(false);
@@ -446,34 +442,41 @@ void AItem::SetItemProperties(EItemState State) {
             ItemMesh->SetVisibility(true);
             ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+            
             // Set AreaSphere properties
             AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
             AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+            
             // Set CollisionBox properties
             CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             CollisionBox->SetCollisionResponseToChannel(
               ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
             CollisionBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-            break;
 
-        case EItemState::EIS_Equipped:
+        } break;
+
+        case EItemState::EIS_Equipped : {
 
             PickupWidget->SetVisibility(false);
+
             // Set mesh properties
             ItemMesh->SetSimulatePhysics(false);
             ItemMesh->SetEnableGravity(false);
             ItemMesh->SetVisibility(true);
             ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+            
             // Set AreaSphere properties
             AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
             // Set CollisionBox properties
+            
             CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-            break;
-        
-        case EItemState::EIS_Falling :
+
+        } break;
+
+        case EItemState::EIS_Falling : {
 
             // Set mesh properties
             ItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -483,47 +486,58 @@ void AItem::SetItemProperties(EItemState State) {
             ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
             ItemMesh->SetCollisionResponseToChannel(
               ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
+            
             // Set AreaSphere properties
             AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+            
             // Set CollisionBox properties
             CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-            break;
 
-        case EItemState::EIS_EquipInterping :
+        } break;
+
+        case EItemState::EIS_EquipInterping : {
 
             PickupWidget->SetVisibility(false);
+            
             // Set mesh properties
             ItemMesh->SetSimulatePhysics(false);
             ItemMesh->SetEnableGravity(false);
             ItemMesh->SetVisibility(true);
             ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+           
             // Set AreaSphere properties
             AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+            
             // Set CollisionBox properties
             CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-            break;
 
-        case EItemState::EIS_PickedUp :
+        } break;
+
+        case EItemState::EIS_PickedUp : {
 
             PickupWidget->SetVisibility(false);
-            //Set mesh properties
+           
+            // Set mesh properties
             ItemMesh->SetSimulatePhysics(false);
             ItemMesh->SetEnableGravity(false);
             ItemMesh->SetVisibility(false);
             ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+            
             // Set AreaSphere properties
             AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+            
             // Set CollisionBox properties
             CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-            CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);            
-            break;
+            CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+        } break;
     }
 }
 

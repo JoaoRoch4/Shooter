@@ -63,6 +63,7 @@ BinPackArguments: true
 BinPackParameters: true
 BitFieldColonSpacing: Both
 
+BreakBeforeBraces: Custom
 BraceWrapping: 
   AfterCaseLabel: false
   AfterClass: false
@@ -87,12 +88,11 @@ BreakAfterAttributes: Never
 BreakAfterJavaFieldAnnotations: false
 BreakArrays: false
 BreakBeforeBinaryOperators: All
-BreakBeforeBraces: Attach
 BreakBeforeConceptDeclarations: false
 BreakBeforeInheritanceComma: true
 BreakBeforeInlineASMColon: Never
 BreakBeforeTernaryOperators: false
-BreakConstructorInitializers: BeforeComma
+BreakConstructorInitializers: AfterColon
 BreakInheritanceList: AfterColon
 BreakStringLiterals: true
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
@@ -113,7 +113,7 @@ ForEachMacros:
   - BOOST_FOREACH
 
 IncludeBlocks: Preserve
-IndentCaseBlocks: true
+IndentCaseBlocks: false
 IndentCaseLabels: true
 IndentExternBlock: NoIndent
 IndentGotoLabels: true
@@ -166,7 +166,7 @@ SpacesInCStyleCastParentheses: false
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
 Standard: c++20
-
+PackConstructorInitializers: NextLine
 PenaltyBreakAssignment: 2
 
 TabWidth : 4

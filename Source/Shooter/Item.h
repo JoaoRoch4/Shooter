@@ -325,6 +325,11 @@ private:
       meta = (AllowPrivateAccess = "true"))
     int32 SlotIndex;
 
+    /** True when the Character's inventory is full */
+     UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Interface|Inventory",
+      meta = (AllowPrivateAccess = "true"))
+     bool bCharacterInventoryFull;
+
 public:
     FORCEINLINE UWidgetComponent *GetPickupWidget() const { return PickupWidget; }
 
@@ -366,4 +371,5 @@ public:
     FORCEINLINE int32 GetSlotIndex() const { return SlotIndex; }
     FORCEINLINE void  SetSlotIndex(int32 Index) { SlotIndex = Index; }
     FORCEINLINE void  SetCharacter(AShooterCharacter *GetCharacter) { Character = GetCharacter; }
+    FORCEINLINE void  SetCharacterInventoryFull(bool bIsFull) { bCharacterInventoryFull = bIsFull; }
 };

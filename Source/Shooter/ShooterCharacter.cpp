@@ -29,99 +29,100 @@
 
 AShooterCharacter::AShooterCharacter()
 
- : PlayerMesh(nullptr)
- , SkeletalMeshContainer(nullptr)
- , CameraBoom(nullptr)
- , FollowCamera(nullptr)
- , bIsTransitioning(true)
- , bCinematicCameraSwitch(true)
- , bUseBezierCurve(true)
- , CameraArmLengthStart(200.f)
- , CameraArmLengthEnd(300.f)
- , TransitionDuration(0.2f)
- , PreviousYaw(0.f)
- , LerpedArmLength(0.f)
- , CurrentTime(0.0f)
- , BaseTurnRate(45.f)
- , BaseLookUpRate(45.f)
- , HipTurnRate(90.f)
- , HipLookUpRate(90.f)
- , AimingTurnRate(20.f)
- , AimingLookUpRate(20.f)
- , MouseHipTurnRate(1.f)
- , MouseHipLookUpRate(1.f)
- , MouseAimingTurnRate(0.8f)
- , MouseAimingLookUpRate(0.8f)
- , bIsFiringWeapon(false)
- , bDidFire(false)
- , FireSound(nullptr)
- , MuzzleFlash(nullptr)
- , ImpactParticles(nullptr)
- , BeamParticles(nullptr)
- , HipFireMontage(nullptr)
- , EquipMontage(nullptr)
- , bShowCustomDebugMessages(false)
- , bAiming(false)
- , CameraDefaultAimFOV(0.f)
- , CameraZoomedAimFOV(40.f)
- , CameraCurrentAimFOV(0.f)
- , ZoomInterpSpeed(20.f)
- , CrosshairHeight(50.f)
- , CrosshairSpreadMultiplier(0.f)
- , CrosshairVelocityFactor(0.f)
- , CrosshairInAirFactor(0.f)
- , CrosshairAimFactor(0.f)
- , CrosshairShootingFactor(0.f)
- , ShootTimeDuration(0.05f)
- , bFiringBullet(false)
- , CrosshairShootTimer(FTimerHandle())
- , bFireButtonPressed(false)
- , bShouldFire(true)
- , AutomaticFireRate(0.1f)
- , AutoFireTimer(FTimerHandle())
- , bShouldTraceForItems(false)
- , OverlappedItemCount(0)
- , TraceHitItemLastFrame(nullptr)
- , EquippedWeapon(nullptr)
- , DefaultWeaponClass(nullptr)
- , TraceHitItem(nullptr)
- , CameraInterpDistance(250.f)
- , CameraInterpElevation(65.f)
- , AmmoMap(TMap<EAmmoType, int32>())
- , Starting_9mm_Ammo(85)
- , Starting_AR_Ammo(120)
- , CombatState(ECombatState::ECS_Unoccupied)
- , ReloadMontage(nullptr)
- , ClipTransform(FTransform())
- , HandSceneComponent(nullptr)
- , bCrouching(false)
- , BaseMovementSpeed(650.f)
- , CrouchMovementSpeed(300.f)
- , CurrentCapsuleHalfHeight(0.f)
- , StandingCapsuleHalfHeight(88.f)
- , CrouchingCapsuleHalfHeight(44.f)
- , BaseGroundFriction(2.f)
- , CrouchingGroundFriction(100.f)
- , bAimingButtonPressed(false)
- , WeaponInterpComp(nullptr)
- , InterpComp1(nullptr)
- , InterpComp2(nullptr)
- , InterpComp3(nullptr)
- , InterpComp4(nullptr)
- , InterpComp5(nullptr)
- , InterpComp6(nullptr)
- , InterpLocations(TArray<FInterpLocation>())
- , PickupSoundTimer(FTimerHandle())
- , EquipSoundTimer(FTimerHandle())
- , bShouldPlayPickupSound(true)
- , bShouldPlayEquipSound(true)
- , PickupSoundResetTime(0.2f)
- , EquipSoundResetTime(0.2f)
- , Inventory(TArray<AItem *>())
- , DebugKeys(false)
- , CurrentSlotIndex(0)
- , InventoryCount(0)
- , bDebugSlotMessages(false) {
+ :
+ PlayerMesh(nullptr),
+ SkeletalMeshContainer(nullptr),
+ CameraBoom(nullptr),
+ FollowCamera(nullptr),
+ bIsTransitioning(true),
+ bCinematicCameraSwitch(true),
+ bUseBezierCurve(true),
+ CameraArmLengthStart(200.f),
+ CameraArmLengthEnd(300.f),
+ TransitionDuration(0.2f),
+ PreviousYaw(0.f),
+ LerpedArmLength(0.f),
+ CurrentTime(0.0f),
+ BaseTurnRate(45.f),
+ BaseLookUpRate(45.f),
+ HipTurnRate(90.f),
+ HipLookUpRate(90.f),
+ AimingTurnRate(20.f),
+ AimingLookUpRate(20.f),
+ MouseHipTurnRate(1.f),
+ MouseHipLookUpRate(1.f),
+ MouseAimingTurnRate(0.8f),
+ MouseAimingLookUpRate(0.8f),
+ bIsFiringWeapon(false),
+ bDidFire(false),
+ FireSound(nullptr),
+ MuzzleFlash(nullptr),
+ ImpactParticles(nullptr),
+ BeamParticles(nullptr),
+ HipFireMontage(nullptr),
+ EquipMontage(nullptr),
+ bShowCustomDebugMessages(false),
+ bAiming(false),
+ CameraDefaultAimFOV(0.f),
+ CameraZoomedAimFOV(40.f),
+ CameraCurrentAimFOV(0.f),
+ ZoomInterpSpeed(20.f),
+ CrosshairHeight(50.f),
+ CrosshairSpreadMultiplier(0.f),
+ CrosshairVelocityFactor(0.f),
+ CrosshairInAirFactor(0.f),
+ CrosshairAimFactor(0.f),
+ CrosshairShootingFactor(0.f),
+ ShootTimeDuration(0.05f),
+ bFiringBullet(false),
+ CrosshairShootTimer(FTimerHandle()),
+ bFireButtonPressed(false),
+ bShouldFire(true),
+ AutomaticFireRate(0.1f),
+ AutoFireTimer(FTimerHandle()),
+ bShouldTraceForItems(false),
+ OverlappedItemCount(0),
+ TraceHitItemLastFrame(nullptr),
+ EquippedWeapon(nullptr),
+ DefaultWeaponClass(nullptr),
+ TraceHitItem(nullptr),
+ CameraInterpDistance(250.f),
+ CameraInterpElevation(65.f),
+ AmmoMap(TMap<EAmmoType, int32>()),
+ Starting_9mm_Ammo(85),
+ Starting_AR_Ammo(120),
+ CombatState(ECombatState::ECS_Unoccupied),
+ ReloadMontage(nullptr),
+ ClipTransform(FTransform()),
+ HandSceneComponent(nullptr),
+ bCrouching(false),
+ BaseMovementSpeed(650.f),
+ CrouchMovementSpeed(300.f),
+ CurrentCapsuleHalfHeight(0.f),
+ StandingCapsuleHalfHeight(88.f),
+ CrouchingCapsuleHalfHeight(44.f),
+ BaseGroundFriction(2.f),
+ CrouchingGroundFriction(100.f),
+ bAimingButtonPressed(false),
+ WeaponInterpComp(nullptr),
+ InterpComp1(nullptr),
+ InterpComp2(nullptr),
+ InterpComp3(nullptr),
+ InterpComp4(nullptr),
+ InterpComp5(nullptr),
+ InterpComp6(nullptr),
+ InterpLocations(TArray<FInterpLocation>()),
+ PickupSoundTimer(FTimerHandle()),
+ EquipSoundTimer(FTimerHandle()),
+ bShouldPlayPickupSound(true),
+ bShouldPlayEquipSound(true),
+ PickupSoundResetTime(0.2f),
+ EquipSoundResetTime(0.2f),
+ Inventory(TArray<AItem *>()),
+ DebugKeys(false),
+ CurrentSlotIndex(0),
+ InventoryCount(0),
+ bDebugSlotMessages(false) {
 
     PrimaryActorTick.bCanEverTick = true;
 
@@ -1084,6 +1085,17 @@ void AShooterCharacter::TraceForItems() {
                 TraceHitItem->GetPickupWidget()->SetVisibility(true);
 
                 TraceHitItem->EnableCustomDepth();
+
+                if (Inventory.Num() >= InventoryCapacity) {
+
+                    // Inventory is full
+                    TraceHitItem->SetCharacterInventoryFull(true);
+
+                } else {
+
+                    // Inventory is not full
+                    TraceHitItem->SetCharacterInventoryFull(false);
+                }
             }
 
             // We hit an item last frame

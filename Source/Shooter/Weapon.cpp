@@ -7,29 +7,28 @@
 #include <Engine\World.h>
 #include <Kismet\GameplayStatics.h>
 
-AWeapon::AWeapon()
- :
+AWeapon::AWeapon() :
 
- ThrowWeaponTime(0.7f)
- , bFalling(false)
- , bNotRandValues(false)
- , ThrowHeight(10.f)
- , ThrowDirection(FVector(0.f, 0.f, 0.f))
- , MultiplyImpulse(180.f)
- , ThrowHeightRandRange(FVector2D(90.f, 180.f))
- , ThrowDirectionRandRange(FVector2D(90.f, 180.f))
- , ThrowDirection_X_RandRange(FVector2D(0.f, 0.f))
- , ThrowDirection_Y_RandRange(FVector2D(0.f, 0.f))
- , ThrowDirection_Z_RandRange(FVector2D(0.f, 0.f))
- , MultiplyImpulseRandRange(FVector2D(150.f, 180.f))
- , ThrowWeaponTimer(FTimerHandle())
- , Ammo(40)
- , MagazineCapacity(120)
- , WeaponType(EWeaponType::EWT_SubmachineGun)
- , AmmoType(EAmmoType::EAT_9mm)
- , ReloadMontageSection(FName(L"Reload SMG"))
- , ClipBoneName(FName(L"smg_clip"))
- , ItemInstance(nullptr)
+ ThrowWeaponTime(0.7f),
+ bFalling(false),
+ bNotRandValues(false),
+ ThrowHeight(10.f),
+ ThrowDirection(FVector(0.f, 0.f, 0.f)),
+ MultiplyImpulse(180.f),
+ ThrowHeightRandRange(FVector2D(90.f, 180.f)),
+ ThrowDirectionRandRange(FVector2D(90.f, 180.f)),
+ ThrowDirection_X_RandRange(FVector2D(0.f, 0.f)),
+ ThrowDirection_Y_RandRange(FVector2D(0.f, 0.f)),
+ ThrowDirection_Z_RandRange(FVector2D(0.f, 0.f)),
+ MultiplyImpulseRandRange(FVector2D(150.f, 180.f)),
+ ThrowWeaponTimer(FTimerHandle()),
+ Ammo(40),
+ MagazineCapacity(120),
+ WeaponType(EWeaponType::EWT_SubmachineGun),
+ AmmoType(EAmmoType::EAT_9mm),
+ ReloadMontageSection(FName(L"Reload SMG")),
+ ClipBoneName(FName(L"smg_clip")),
+ ItemInstance(nullptr)
 
 {
     PrimaryActorTick.bCanEverTick = true;
