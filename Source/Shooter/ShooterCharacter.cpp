@@ -221,15 +221,13 @@ void AShooterCharacter::StartCameraLerp(float &DeltaTime) {
 
         if (bCinematicCameraSwitch)
             LerpedArmLength = FMath::Lerp(CameraArmLengthStart, CameraArmLengthEnd, BezierCurve);
-        else
-            LerpedArmLength = FMath::Lerp(CameraArmLengthEnd, CameraArmLengthStart, BezierCurve);
+        else LerpedArmLength = FMath::Lerp(CameraArmLengthEnd, CameraArmLengthStart, BezierCurve);
 
     } else {
 
         if (bCinematicCameraSwitch)
             LerpedArmLength = FMath::Lerp(CameraArmLengthStart, CameraArmLengthEnd, CurrTmDivTransDur);
-        else
-            LerpedArmLength = FMath::Lerp(CameraArmLengthEnd, CameraArmLengthStart, CurrTmDivTransDur);
+        else LerpedArmLength = FMath::Lerp(CameraArmLengthEnd, CameraArmLengthStart, CurrTmDivTransDur);
     }
 
     // Configure o comprimento do braço da câmera
@@ -238,10 +236,8 @@ void AShooterCharacter::StartCameraLerp(float &DeltaTime) {
     // Verifica se a transição está concluída
     if (CurrentTime >= TransitionDuration) {
 
-        if (bCinematicCameraSwitch)
-            CinematicCameraOn();
-        else
-            CinematicCameraOff();
+        if (bCinematicCameraSwitch) CinematicCameraOn();
+        else CinematicCameraOff();
 
         bIsTransitioning = false;
     }
@@ -655,8 +651,7 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
 
         auto const static M_FireSoundCue {ConstructorHelpers::FObjectFinder<USoundCue>(FireSoundCuePath)};
 
-        if (M_FireSoundCue.Succeeded())
-            FireSound = M_FireSoundCue.Object;
+        if (M_FireSoundCue.Succeeded()) FireSound = M_FireSoundCue.Object;
         else {
             PrintLogErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
                         "M_FireSoundCue failed");
@@ -673,8 +668,7 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
         auto const static M_MuzzleFlashParticle {
           ConstructorHelpers::FObjectFinder<UParticleSystem>(MuzzleFlashPath)};
 
-        if (M_MuzzleFlashParticle.Succeeded())
-            MuzzleFlash = M_MuzzleFlashParticle.Object;
+        if (M_MuzzleFlashParticle.Succeeded()) MuzzleFlash = M_MuzzleFlashParticle.Object;
         else {
             PrintLogErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
                         "M_MuzzleFlashParticle failed");
@@ -692,8 +686,7 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
         auto const static M_Animation_HipFireMontage {
           ConstructorHelpers::FObjectFinder<UAnimMontage>(HipFireMontagePath)};
 
-        if (M_Animation_HipFireMontage.Succeeded())
-            HipFireMontage = M_Animation_HipFireMontage.Object;
+        if (M_Animation_HipFireMontage.Succeeded()) HipFireMontage = M_Animation_HipFireMontage.Object;
         else {
             PrintLogErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
                         "M_Animation_HipFireMontage failed");
@@ -710,8 +703,7 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
         auto const static M_Animation_EquipMontage {
           ConstructorHelpers::FObjectFinder<UAnimMontage>(EquipMontagePath)};
 
-        if (M_Animation_EquipMontage.Succeeded())
-            EquipMontage = M_Animation_EquipMontage.Object;
+        if (M_Animation_EquipMontage.Succeeded()) EquipMontage = M_Animation_EquipMontage.Object;
         else {
             PrintLogErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
                         "M_Animation_EquipMontage failed");
@@ -729,8 +721,7 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
         auto const static M_ImpactParticle {
           ConstructorHelpers::FObjectFinder<UParticleSystem>(ImpactParticlesPath)};
 
-        if (M_ImpactParticle.Succeeded())
-            ImpactParticles = M_ImpactParticle.Object;
+        if (M_ImpactParticle.Succeeded()) ImpactParticles = M_ImpactParticle.Object;
         else {
             PrintLogErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
                         "M_ImpactParticle failed");
@@ -748,8 +739,7 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
         auto const static M_BeamParticle {
           ConstructorHelpers::FObjectFinder<UParticleSystem>(BeamParticlesPath)};
 
-        if (M_BeamParticle.Succeeded())
-            BeamParticles = M_BeamParticle.Object;
+        if (M_BeamParticle.Succeeded()) BeamParticles = M_BeamParticle.Object;
         else {
             PrintLogErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
                         "M_BeamParticle failed");
@@ -766,8 +756,7 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
         auto const static M_MuzzleFlashParticle {
           ConstructorHelpers::FObjectFinder<UParticleSystem>(MuzzleFlashPath)};
 
-        if (M_MuzzleFlashParticle.Succeeded())
-            MuzzleFlash = M_MuzzleFlashParticle.Object;
+        if (M_MuzzleFlashParticle.Succeeded()) MuzzleFlash = M_MuzzleFlashParticle.Object;
         else {
             PrintLogErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
                         "M_MuzzleFlashParticle failed");
@@ -783,8 +772,7 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
 
         auto const M_ReloadMontage {ConstructorHelpers::FObjectFinder<UAnimMontage>(ReloadMontagePath)};
 
-        if (M_ReloadMontage.Succeeded())
-            ReloadMontage = M_ReloadMontage.Object;
+        if (M_ReloadMontage.Succeeded()) ReloadMontage = M_ReloadMontage.Object;
         else {
             PrintLogErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
                         "M_ReloadMontage failed");
@@ -958,10 +946,8 @@ void AShooterCharacter::Turn(float Value) {
 
     float TurnScaleFactor {};
 
-    if (bAiming)
-        TurnScaleFactor = MouseAimingTurnRate;
-    else
-        TurnScaleFactor = MouseHipTurnRate;
+    if (bAiming) TurnScaleFactor = MouseAimingTurnRate;
+    else TurnScaleFactor = MouseHipTurnRate;
 
     AddControllerYawInput(Value * TurnScaleFactor);
 }
@@ -970,10 +956,8 @@ void AShooterCharacter::LookUp(float Value) {
 
     float LookUpScaleFactor {};
 
-    if (bAiming)
-        LookUpScaleFactor = MouseAimingLookUpRate;
-    else
-        LookUpScaleFactor = MouseHipLookUpRate;
+    if (bAiming) LookUpScaleFactor = MouseAimingLookUpRate;
+    else LookUpScaleFactor = MouseHipLookUpRate;
 
 
     AddControllerPitchInput(Value * LookUpScaleFactor);
@@ -1135,7 +1119,7 @@ AWeapon *AShooterCharacter::SpawnDefaultWeapon() {
     return nullptr;
 }
 
-void AShooterCharacter::EquipWeapon(AWeapon *WeaponToEquip) {
+void AShooterCharacter::EquipWeapon(AWeapon *WeaponToEquip, bool bSwapping) {
 
     if (WeaponToEquip) {
 
@@ -1153,7 +1137,7 @@ void AShooterCharacter::EquipWeapon(AWeapon *WeaponToEquip) {
             // -1 == no EquippedWeapon yet. No need to reverse the icon animation
             EquipItemDelegate.Broadcast(-1, WeaponToEquip->GetSlotIndex());
 
-        } else {
+        } else if (!bSwapping) {
 
             EquipItemDelegate.Broadcast(EquippedWeapon->GetSlotIndex(), WeaponToEquip->GetSlotIndex());
         }
@@ -1193,7 +1177,7 @@ void AShooterCharacter::SwapWeapon(AWeapon *WeaponToSwap) {
     }
 
     DropWeapon();
-    EquipWeapon(WeaponToSwap);
+    EquipWeapon(WeaponToSwap, true);
     TraceHitItem          = nullptr;
     TraceHitItemLastFrame = nullptr;
 }
@@ -1384,8 +1368,7 @@ void AShooterCharacter::Jump() {
         bCrouching                           = false;
         GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
 
-    } else
-        ACharacter::Jump();
+    } else ACharacter::Jump();
 }
 
 void AShooterCharacter::SelectButtonPressed() {
@@ -1485,9 +1468,17 @@ inline void AShooterCharacter::ResetEquipSoundTimer() { bShouldPlayEquipSound = 
 
 void AShooterCharacter::ExchangeInventoryItens(int32 CurrentItemindex, int32 NewItemIndex) {
 
-    if ((CurrentItemindex == NewItemIndex) || (NewItemIndex >= Inventory.Num())
-        || (CombatState != ECombatState::ECS_Unoccupied))
-        return;
+    const bool CanExchange {
+      (
+      (CurrentItemindex != NewItemIndex)
+      && 
+      (NewItemIndex < Inventory.Num())
+      && 
+      ((CombatState == ECombatState::ECS_Unoccupied || CombatState == ECombatState::ECS_Equipping))
+      )
+    };
+
+    if (!CanExchange) return;
 
     AWeapon *OldEquippedWeapon {EquippedWeapon};
     AWeapon *NewWeapon {Cast<AWeapon>(Inventory [NewItemIndex])};
@@ -1637,8 +1628,7 @@ void AShooterCharacter::ScrollDown() {
         if (InventoryCount == 1) return;
 
         // Go to the last slot index
-        else if (CurrentSlotIndex <= 0)
-            return ExchangeInventoryItens(CurrentSlotIndex, (InventoryCount - 1));
+        else if (CurrentSlotIndex <= 0) return ExchangeInventoryItens(CurrentSlotIndex, (InventoryCount - 1));
 
         // Go back the slot index
         else if ((InventoryCount - 1) >= CurrentSlotIndex)

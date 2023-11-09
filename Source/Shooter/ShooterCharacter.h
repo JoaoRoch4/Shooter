@@ -196,7 +196,7 @@ protected:
 	 *
      * @param WeaponToEquip The weapon to equip
 	 */
-    void EquipWeapon(AWeapon *WeaponToEquip);
+    void EquipWeapon(AWeapon *WeaponToEquip, bool bSwapping = false);
 
     /**
 	 * @brief Detaches weapon, let it fall to the ground and sets
