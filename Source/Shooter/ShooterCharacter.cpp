@@ -122,6 +122,9 @@ AShooterCharacter::AShooterCharacter()
  DebugKeys(false),
  CurrentSlotIndex(0),
  InventoryCount(0),
+ ExchangeInventoryItensTimer(FTimerHandle()),
+ bExchangeInventoryItensEnabled(true),
+ ExchangeInventoryItensTime(0.1f),
  bDebugSlotMessages(false) {
 
     PrimaryActorTick.bCanEverTick = true;
@@ -1469,16 +1472,13 @@ inline void AShooterCharacter::ResetEquipSoundTimer() { bShouldPlayEquipSound = 
 void AShooterCharacter::ExchangeInventoryItens(int32 CurrentItemindex, int32 NewItemIndex) {
 
     const bool CanExchange {
-      (
-      (CurrentItemindex != NewItemIndex)
-      && 
-      (NewItemIndex < Inventory.Num())
-      && 
-      ((CombatState == ECombatState::ECS_Unoccupied || CombatState == ECombatState::ECS_Equipping))
-      )
-    };
+      ((CurrentItemindex != NewItemIndex) && (NewItemIndex < Inventory.Num())
+        && ((CombatState == ECombatState::ECS_Unoccupied || CombatState == ECombatState::ECS_Equipping))
+        && (bExchangeInventoryItensEnabled))};
 
     if (!CanExchange) return;
+
+    bExchangeInventoryItensEnabled = false;
 
     AWeapon *OldEquippedWeapon {EquippedWeapon};
     AWeapon *NewWeapon {Cast<AWeapon>(Inventory [NewItemIndex])};
@@ -1508,7 +1508,12 @@ void AShooterCharacter::ExchangeInventoryItens(int32 CurrentItemindex, int32 New
     }
 
     NewWeapon->PlayEquipSound(true);
+
+    GetWorld()->GetTimerManager().SetTimer(ExchangeInventoryItensTimer, this,
+      &AShooterCharacter::EnableExchangeInventoryItens, ExchangeInventoryItensTime, false);
 }
+
+void AShooterCharacter::EnableExchangeInventoryItens() { bExchangeInventoryItensEnabled = true; }
 
 void AShooterCharacter::StartPickupSoundTimer() {
 

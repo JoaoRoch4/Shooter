@@ -294,6 +294,9 @@ protected:
 
     void ExchangeInventoryItens(int32 CurrentItemindex, int32 NewItemIndex);
 
+    UFUNCTION(BlueprintCallable)
+    void EnableExchangeInventoryItens();
+
     void DebugSlotsItens();
     void UpdateSlotsItens();
 
@@ -771,6 +774,14 @@ private:
 
     /** Inventory.Num() */
     int32 InventoryCount;
+
+    FTimerHandle ExchangeInventoryItensTimer;
+
+    bool bExchangeInventoryItensEnabled;
+
+     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Items|Inventory",
+      meta = (AllowPrivateAccess = "true"))
+    float ExchangeInventoryItensTime;
 
     bool bDebugSlotMessages;
 
