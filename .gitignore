@@ -15,7 +15,7 @@ Content/*
 /Content/_Game/Maps/
 /Content/_Game/Assets
 
-/Intermediate
+/Intermediate/*
 !/Intermediate/ProjectFiles/
 
 .vscode
