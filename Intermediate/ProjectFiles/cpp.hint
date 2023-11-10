@@ -26,3 +26,7 @@
 // such as names of functions and macros.
 // For more information see https://go.microsoft.com/fwlink/?linkid=865984
 #define USTRUCT(__VA_ARGS__)
+
+#define DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(DelegateName,Param1Type,Param1Name,Param2Type,Param2Name) \
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams_Private(DelegateName,Param1Type,Param1Name,Param2Type,Param2Name) \
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams_Public(DelegateName,Param1Type,Param1Name,Param2Type,Param2Name)

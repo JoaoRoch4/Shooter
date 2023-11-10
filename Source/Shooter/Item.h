@@ -56,7 +56,7 @@ USTRUCT(BlueprintType, Category = "DataTables|ItemRarityTable")
 struct FItemRarityTable : public FTableRowBase {
 
     GENERATED_BODY()
-
+      
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FLinearColor GlowColor;
 
@@ -71,6 +71,22 @@ struct FItemRarityTable : public FTableRowBase {
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     UTexture2D* IconBackground;
+
+    FItemRarityTable() :
+
+     GlowColor(FLinearColor()),
+     LightColor(FLinearColor()),
+     DarkColor(FLinearColor()),
+     NumberOfStars(0),
+     IconBackground(nullptr) {}
+
+    FItemRarityTable(const FLinearColor &GlowColor, const FLinearColor &LightColor,
+      const FLinearColor &DarkColor, const int32 &NumberOfStars, UTexture2D *IconBackground) :
+     GlowColor(GlowColor),
+     LightColor(LightColor),
+     DarkColor(DarkColor),
+     NumberOfStars(NumberOfStars),
+     IconBackground(IconBackground) {}
 };
 
 UCLASS()
