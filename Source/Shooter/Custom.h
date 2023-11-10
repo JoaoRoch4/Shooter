@@ -100,8 +100,7 @@ typedef FVector2d Fvc2;
 
 #define ExitGameErr(X)                                                                                       \
     if (APlayerController *PlayerController = GetWorld()->GetFirstPlayerController()) {                      \
-        checkf(false, TEXT(X));                                                                              \
-        PlayerController->ConsoleCommand(TEXT("Exit"));                                                      \
+        checkf(false, TEXT(X)); \
     }
 
 #define ExitPrintErr(X)                                                                                      \

@@ -49,11 +49,15 @@ AItem::AItem() :
  FresnelExponent(3.f),
  FresnelReflectFraction(4.f),
  PulseCurveTime(5.f),
- IconBackground(nullptr),
  IconItem(nullptr),
  SlotIndex(0),
  bCharacterInventoryFull(false),
- ItemRarityDataTable(nullptr) {
+ ItemRarityDataTable(nullptr),
+ GlowColor(FLinearColor()),
+ LightColor(FLinearColor()),
+ DarkColor(FLinearColor()),
+ NumberOfStars(0),
+ IconBackground(nullptr) {
 
     PrimaryActorTick.bCanEverTick = true;
 
@@ -111,15 +115,60 @@ void AItem::OnConstruction(const FTransform &Transform) {
     FString RarityTablePath {L"/Script/Engine.DataTable'"
                              L"/Game/_Game/DataTable/ItemRarityDataTable.ItemRarityDataTable'"};
 
-    UDataTable *RarityTableObject {nullptr};
+    UDataTable *RarityTableObject {
+      Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), nullptr, *RarityTablePath))};
 
-    RarityTableObject = Cast<UDataTable>(
-        StaticLoadObject(UDataTable::StaticClass(),
-          nullptr, *RarityTablePath));
+    if (RarityTableObject) {
 
-    if(RarityTableObject) {
+        FItemRarityTable *RarityRow {nullptr};
 
+        switch (ItemRarity) {
+            case EItemRarity::EIR_Damaged : {
 
+                RarityRow = RarityTableObject->FindRow<FItemRarityTable>(FName(L"Damaged"), TEXT(""), true);
+
+            } break;
+            case EItemRarity::EIR_Common : {
+
+                RarityRow = RarityTableObject->FindRow<FItemRarityTable>(FName(L"Common"), TEXT(""), true);
+
+            } break;
+            case EItemRarity::EIR_Uncommon : {
+
+                RarityRow = RarityTableObject->FindRow<FItemRarityTable>(FName(L"Uncommon"), TEXT(""), true);
+
+            } break;
+            case EItemRarity::EIR_Rare : {
+
+                RarityRow = RarityTableObject->FindRow<FItemRarityTable>(FName(L"Rare"), TEXT(""), true);
+
+            } break;
+            case EItemRarity::EIR_Legendary : {
+
+                RarityRow = RarityTableObject->FindRow<FItemRarityTable>(FName(L"Legendary"), TEXT(""), true);
+
+            } break;
+            default : {
+                ExitGameErr("AItem::OnConstruction(const FTransform &Transform):->switch (ItemRarity): case "
+                            "default reached!");
+            } break;
+        }
+
+        if (RarityRow) {
+
+            GlowColor      = RarityRow->GlowColor;
+            LightColor     = RarityRow->LightColor;
+            DarkColor      = RarityRow->DarkColor;
+            NumberOfStars  = RarityRow->NumberOfStars;
+            IconBackground = RarityRow->IconBackground;
+
+        } else {
+            ExitGameErr(
+              "AItem::OnConstruction(const FTransform &Transform):->if (RarityRow): RarityRow is nullptr");
+        }
+    } else {
+        ExitGameErr("AItem::OnConstruction(const FTransform &Transform):->if (RarityTableObject): "
+                           "RarityTableObject is nullptr");
     }
 }
 
@@ -159,7 +208,7 @@ void AItem::DefaultConstructor_Curves() {
         if (M_PulseCurve.Succeeded()) {
             PulseCurve = M_PulseCurve.Object;
         } else {
-            PrintLogErr("AItem::DefaultConstructor_Curves(): M_PulseCurve "
+            ExitGameErr("AItem::DefaultConstructor_Curves(): M_PulseCurve "
                         "failed to load");
         }
     }
@@ -175,7 +224,7 @@ void AItem::DefaultConstructor_Curves() {
         if (M_InterpPulseCurve.Succeeded()) {
             InterpPulseCurve = M_InterpPulseCurve.Object;
         } else {
-            PrintLogErr("AItem::DefaultConstructor_Curves(): M_InterpPulseCurve "
+            ExitGameErr("AItem::DefaultConstructor_Curves(): M_InterpPulseCurve "
                         "failed to load");
         }
     }
@@ -256,7 +305,7 @@ void AItem::UpdatePulse() {
                 CurveValue  = PulseCurve->GetVectorValue(ElapsedTime);
 
             } else {
-                PrintLogErr("AItem::UpdatePulse(): Case EItemState::EIS_Pickup: "
+                ExitGameErr("AItem::UpdatePulse(): Case EItemState::EIS_Pickup: "
                             "PulseCurve was nullptr");
             }
         } break;
@@ -269,12 +318,11 @@ void AItem::UpdatePulse() {
                 CurveValue  = InterpPulseCurve->GetVectorValue(ElapsedTime);
 
             } else {
-                PrintLogErr("AItem::UpdatePulse(): Case "
+                ExitGameErr("AItem::UpdatePulse(): Case "
                             "EItemState::EIS_EquipInterping: "
                             "InterpPulseCurve was nullptr");
             }
-            break;
-        }
+        } break;
     }
 
     if (DynamicMaterialInstance) {
@@ -287,11 +335,7 @@ void AItem::UpdatePulse() {
 
         DynamicMaterialInstance->SetScalarParameterValue(
           FName(TEXT("FresnelReflectFraction")), CurveValue.Z * FresnelReflectFraction);
-    } else {
-
-        PrintLogErr("AItem::UpdatePulse(): DynamicMaterialInstance was nullptr");
-        PrintOnScrTime(0, "DynamicMaterialInstance nullptr!");
-    }
+    } 
 }
 
 void AItem::EnableGlowMaterial() {
@@ -332,7 +376,7 @@ void AItem::PlayEquipSound(bool bForcePlaySound) {
             if (EquipSound) UGameplayStatics::PlaySound2D(this, EquipSound);
         }
     } else {
-        PrintLogErr("AItem::PlayEquipSound(): Character was nullptr");
+        ExitGameErr("AItem::PlayEquipSound(): Character was nullptr");
     }
 }
 
@@ -421,7 +465,7 @@ void AItem::SetActiveStars() {
 
     switch (ItemRarity) {
 
-        case EItemRarity::EIR_Damege : ActiveStars [1] = true; break;
+        case EItemRarity::EIR_Damaged : ActiveStars [1] = true; break;
 
         case EItemRarity::EIR_Common :
             for (int32 i = 1; i <= 2; i++)
@@ -568,7 +612,7 @@ void AItem::FinishInterping() {
         Character->UnHighlightInventorySlot();
 
     } else {
-        PrintLogErr("AItem::FinishInterping(): Character was nullptr");
+        ExitGameErr("AItem::FinishInterping(): Character was nullptr");
     }
     // Set item state back to normal
     SetActorScale3D(FVector(1.f));

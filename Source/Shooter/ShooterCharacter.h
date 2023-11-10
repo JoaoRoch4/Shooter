@@ -295,6 +295,8 @@ protected:
 
     void ExchangeInventoryItens(int32 CurrentItemindex, int32 NewItemIndex);
 
+    void PreviousSlot();
+
     UFUNCTION(BlueprintCallable)
     void EnableExchangeInventoryItens();
 
@@ -783,6 +785,10 @@ private:
 
     /** Inventory.Num() */
     int32 InventoryCount;
+
+    int32 LastSlotIndex;
+
+    int32 LastLastSlotIndex;
 
     FTimerHandle ExchangeInventoryItensTimer;
 

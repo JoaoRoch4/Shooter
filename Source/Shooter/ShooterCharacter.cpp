@@ -515,7 +515,7 @@ void AShooterCharacter::SetupFollowCamera() {
 
     } else {
 
-        PrintLogErr("AShooterCharacter::SetupFollowCamera(): Follow Camera is nullptr");
+        ExitGameErr("AShooterCharacter::SetupFollowCamera(): Follow Camera is nullptr");
     }
 }
 
@@ -611,6 +611,9 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent *PlayerInputCo
 
         PlayerInputComponent->BindAction("0Key", IE_Pressed, this, &AShooterCharacter::KEY_0_ZeroKeyPressed);
     }
+
+    // Switch to Previous Weapon
+    PlayerInputComponent->BindAction("PreviousWeapon", IE_Pressed, this, &AShooterCharacter::PreviousSlot);
 }
 
 void AShooterCharacter::DefaultConstructor_SetupMesh() {
@@ -635,11 +638,11 @@ void AShooterCharacter::DefaultConstructor_SetupMesh() {
             PlayerMesh->SetAnimationMode(EAnimationMode::AnimationBlueprint);
             PlayerMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
         } else {
-            PrintLogErr("AShooterCharacter::DefaultConstructor_SetupMesh(): "
+            ExitGameErr("AShooterCharacter::DefaultConstructor_SetupMesh(): "
                         "SkeletalMeshContainer failed");
         }
     } else {
-        PrintLogErr("AShooterCharacter::DefaultConstructor_SetupMesh(): PlayerMesh "
+        ExitGameErr("AShooterCharacter::DefaultConstructor_SetupMesh(): PlayerMesh "
                     "is nullptr");
     }
 }
@@ -657,7 +660,7 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
 
         if (M_FireSoundCue.Succeeded()) FireSound = M_FireSoundCue.Object;
         else {
-            PrintLogErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
+            ExitGameErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
                         "M_FireSoundCue failed");
         }
     }
@@ -674,7 +677,7 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
 
         if (M_MuzzleFlashParticle.Succeeded()) MuzzleFlash = M_MuzzleFlashParticle.Object;
         else {
-            PrintLogErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
+            ExitGameErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
                         "M_MuzzleFlashParticle failed");
         }
     }
@@ -692,7 +695,7 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
 
         if (M_Animation_HipFireMontage.Succeeded()) HipFireMontage = M_Animation_HipFireMontage.Object;
         else {
-            PrintLogErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
+            ExitGameErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
                         "M_Animation_HipFireMontage failed");
         }
     }
@@ -709,7 +712,7 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
 
         if (M_Animation_EquipMontage.Succeeded()) EquipMontage = M_Animation_EquipMontage.Object;
         else {
-            PrintLogErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
+            ExitGameErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
                         "M_Animation_EquipMontage failed");
         }
     }
@@ -727,7 +730,7 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
 
         if (M_ImpactParticle.Succeeded()) ImpactParticles = M_ImpactParticle.Object;
         else {
-            PrintLogErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
+            ExitGameErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
                         "M_ImpactParticle failed");
         }
     }
@@ -745,7 +748,7 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
 
         if (M_BeamParticle.Succeeded()) BeamParticles = M_BeamParticle.Object;
         else {
-            PrintLogErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
+            ExitGameErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
                         "M_BeamParticle failed");
         }
     }
@@ -762,7 +765,7 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
 
         if (M_MuzzleFlashParticle.Succeeded()) MuzzleFlash = M_MuzzleFlashParticle.Object;
         else {
-            PrintLogErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
+            ExitGameErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
                         "M_MuzzleFlashParticle failed");
         }
     }
@@ -778,7 +781,7 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
 
         if (M_ReloadMontage.Succeeded()) ReloadMontage = M_ReloadMontage.Object;
         else {
-            PrintLogErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
+            ExitGameErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
                         "M_ReloadMontage failed");
         }
     }
@@ -1093,7 +1096,7 @@ void AShooterCharacter::TraceForItems() {
 
                 else
                     // Inventory is not full
-                    TraceHitItem->SetCharacterInventoryFull(false);               
+                    TraceHitItem->SetCharacterInventoryFull(false);
             }
 
             // We hit an item last frame
@@ -1487,6 +1490,9 @@ void AShooterCharacter::ExchangeInventoryItens(int32 CurrentItemindex, int32 New
 
     if (!CanExchange) return;
 
+    LastSlotIndex     = CurrentItemindex;
+    LastLastSlotIndex = NewItemIndex;
+
     bExchangeInventoryItensEnabled = false;
 
     AWeapon *OldEquippedWeapon {EquippedWeapon};
@@ -1521,6 +1527,8 @@ void AShooterCharacter::ExchangeInventoryItens(int32 CurrentItemindex, int32 New
 
     NewWeapon->PlayEquipSound(true);
 }
+
+void AShooterCharacter::PreviousSlot() { ExchangeInventoryItens(LastLastSlotIndex, LastSlotIndex); }
 
 void AShooterCharacter::EnableExchangeInventoryItens() { bExchangeInventoryItensEnabled = true; }
 
@@ -1609,14 +1617,8 @@ void AShooterCharacter::IncrementInterpLocItemCount(int32 Index, int32 Amount) {
 void AShooterCharacter::HandleMouseWheel(float Value) {
 
     if (Value != 0.0f) {
-        if (Value > 0.0f) {
-
-            ScrollUp();
-
-        } else {
-
-            ScrollDown();
-        }
+        if (Value > 0.0f) ScrollUp();
+        else ScrollDown();
     }
 }
 

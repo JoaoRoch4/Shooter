@@ -13,7 +13,7 @@ using namespace UnrealBasic;
 UENUM(BlueprintType, Category = "UEnums|EItemRarity")
 enum class EItemRarity : uint8 {
 
-    EIR_Damege UMETA(DisplayName = "Damaged"),
+    EIR_Damaged UMETA(DisplayName = "Damaged"),
 
     EIR_Common UMETA(DisplayName = "Common"),
 
@@ -313,12 +313,7 @@ private:
     /** Time for the PulseTimer */
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
       Category = "My Custom Properties|Interp|Curves|PulseCurve|Values", meta = (AllowPrivateAccess = "true"))
-    float PulseCurveTime;
-
-    /** Background for this item in the inventory */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Interface|Inventory",
-      meta = (AllowPrivateAccess = "true"))
-    UTexture2D *IconBackground;
+    float PulseCurveTime;      
 
     /** Icon for this item in the inventory */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Interface|Inventory",
@@ -344,6 +339,31 @@ private:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|DataTables",
       meta = (AllowPrivateAccess = "true"))
     class UDataTable *ItemRarityDataTable;
+
+    /** Color in the glow material */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Interface|PickupWidget",
+      meta = (AllowPrivateAccess = "true"))
+    FLinearColor GlowColor;
+
+    /** Light color in the pickup widget */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Interface|PickupWidget",
+      meta = (AllowPrivateAccess = "true"))
+    FLinearColor LightColor;
+
+    /** Dark color in the pickup widget */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Interface|PickupWidget",
+      meta = (AllowPrivateAccess = "true"))
+    FLinearColor DarkColor;
+
+    /** Number of Stars in the pickup widget */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Interface|PickupWidget",
+      meta = (AllowPrivateAccess = "true"))
+    int32 NumberOfStars;
+
+    /** Background icon for the inventory */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Interface|PickupWidget",
+      meta = (AllowPrivateAccess = "true"))
+    UTexture2D *IconBackground;
 
 public:
 
