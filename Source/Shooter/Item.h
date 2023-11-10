@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine/DataTable.h"
 #include "GameFramework/Actor.h"
 
 #include "Custom.h"
@@ -9,7 +10,7 @@
 
 using namespace UnrealBasic;
 
-UENUM(BlueprintType, Category = "UEnus|EItemRarity")
+UENUM(BlueprintType, Category = "UEnums|EItemRarity")
 enum class EItemRarity : uint8 {
 
     EIR_Damege UMETA(DisplayName = "Damaged"),
@@ -41,7 +42,7 @@ enum class EItemState : uint8 {
     EIS_MAX UMETA(DisplayName = "DefaultMAX")
 };
 
-UENUM(BlueprintType, Category = "UEnus|EItemType")
+UENUM(BlueprintType, Category = "UEnums|EItemType")
 enum class EItemType : uint8 {
 
     EIT_Ammo UMETA(DisplayName = "Ammo"),
@@ -49,6 +50,27 @@ enum class EItemType : uint8 {
     EIT_Weapon UMETA(DisplayName = "Weapon"),
 
     EIT_MAX UMETA(DisplayName = "DefaultMAX")
+};
+
+USTRUCT(BlueprintType, Category = "DataTables|ItemRarityTable")
+struct FItemRarityTable : public FTableRowBase {
+
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FLinearColor GlowColor;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FLinearColor LightColor;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FLinearColor DarkColor;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 NumberOfStars;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UTexture2D* IconBackground;
 };
 
 UCLASS()
@@ -120,9 +142,11 @@ protected:
     void UpdatePulse();
 
 public:
+
     virtual void Tick(float DeltaTime) override;
 
 private:
+
     /**@brief Default constructor for Collision Box. */
     void DefaultConstructor_CollisionBox();
 
@@ -172,11 +196,7 @@ private:
       Category = "My Custom Properties|Interface|PickupWidget|Rarity", meta = (AllowPrivateAccess = "true"))
     TArray<bool> ActiveStars;
 
-    /**
-	*@brief The curve asset to use for the item's Z location
-
-     * * when interping.
-	*/
+    /**	The curve asset to use for the item's Z location when interping. */
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Interp|Curves",
       meta = (AllowPrivateAccess = "true"))
     class UCurveFloat *ItemZ_Curve;
@@ -253,33 +273,28 @@ private:
     int32 MaterialIndex;
 
     /** *@brief Dynamic instance that we can change at runtime. */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, 
-        Category = "My Custom Properties|Materials",
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Materials",
       meta = (AllowPrivateAccess = "true"))
     UMaterialInstanceDynamic *DynamicMaterialInstance;
 
     /** *@brief Material instance used with the Dynamic Material instance. */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, 
-        Category = "My Custom Properties|Materials",
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Materials",
       meta = (AllowPrivateAccess = "true"))
     UMaterialInstance *MaterialInstance;
 
     bool bCanChangeCustomDepth;
 
     /** Curve to drive the dynamic material parameters */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, 
-        Category = "My Custom Properties|Interp|Curves|PulseCurve",
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Interp|Curves|PulseCurve",
       meta = (AllowPrivateAccess = "true"))
     class UCurveVector *PulseCurve;
 
     /** Curve to drive the dynamic material parameters */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, 
-        Category = "My Custom Properties|Interp|Curves|PulseCurve",
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Interp|Curves|PulseCurve",
       meta = (AllowPrivateAccess = "true"))
     UCurveVector *InterpPulseCurve;
 
-    UPROPERTY(BlueprintReadOnly, 
-        Category = "My Custom Properties|Interp|Curves|PulseCurve",
+    UPROPERTY(BlueprintReadOnly, Category = "My Custom Properties|Interp|Curves|PulseCurve",
       meta = (AllowPrivateAccess = "true"))
     FTimerHandle PulseTimer;
 
@@ -287,19 +302,16 @@ private:
       meta = (AllowPrivateAccess = "true"))
     float GlowAmount;
 
-    UPROPERTY(VisibleAnywhere, 
-        Category = "My Custom Properties|Interp|Curves|PulseCurve|Values",
+    UPROPERTY(VisibleAnywhere, Category = "My Custom Properties|Interp|Curves|PulseCurve|Values",
       meta = (AllowPrivateAccess = "true"))
     float FresnelExponent;
 
-    UPROPERTY(VisibleAnywhere, 
-        Category = "My Custom Properties|Interp|Curves|PulseCurve|Values",
+    UPROPERTY(VisibleAnywhere, Category = "My Custom Properties|Interp|Curves|PulseCurve|Values",
       meta = (AllowPrivateAccess = "true"))
     float FresnelReflectFraction;
 
     /** Time for the PulseTimer */
-    UPROPERTY(EditDefaultsOnly, 
-        BlueprintReadOnly,
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
       Category = "My Custom Properties|Interp|Curves|PulseCurve|Values", meta = (AllowPrivateAccess = "true"))
     float PulseCurveTime;
 
@@ -309,14 +321,12 @@ private:
     UTexture2D *IconBackground;
 
     /** Icon for this item in the inventory */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly,
-        Category = "My Custom Properties|Interface|Inventory",
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Interface|Inventory",
       meta = (AllowPrivateAccess = "true"))
     UTexture2D *IconItem;
 
     /** Ammo Icon for this item in the inventory */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly,
-        Category = "My Custom Properties|Interface|Inventory",
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Interface|Inventory",
       meta = (AllowPrivateAccess = "true"))
     UTexture2D *AmmoItem;
 
@@ -326,11 +336,17 @@ private:
     int32 SlotIndex;
 
     /** True when the Character's inventory is full */
-     UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Interface|Inventory",
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Interface|Inventory",
       meta = (AllowPrivateAccess = "true"))
-     bool bCharacterInventoryFull;
+    bool bCharacterInventoryFull;
+
+    /** item Rarity Data table */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|DataTables",
+      meta = (AllowPrivateAccess = "true"))
+    class UDataTable *ItemRarityDataTable;
 
 public:
+
     FORCEINLINE UWidgetComponent *GetPickupWidget() const { return PickupWidget; }
 
     FORCEINLINE USphereComponent *GetAreaSphere() const { return AreaSphere; }
@@ -367,7 +383,7 @@ public:
     void EnableGlowMaterial();
 
     void DisableGlowMaterial();
-    
+
     FORCEINLINE int32 GetSlotIndex() const { return SlotIndex; }
     FORCEINLINE void  SetSlotIndex(int32 Index) { SlotIndex = Index; }
     FORCEINLINE void  SetCharacter(AShooterCharacter *GetCharacter) { Character = GetCharacter; }

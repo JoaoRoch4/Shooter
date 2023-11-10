@@ -52,7 +52,8 @@ AItem::AItem() :
  IconBackground(nullptr),
  IconItem(nullptr),
  SlotIndex(0),
- bCharacterInventoryFull(false) {
+ bCharacterInventoryFull(false),
+ ItemRarityDataTable(nullptr) {
 
     PrimaryActorTick.bCanEverTick = true;
 
@@ -97,20 +98,29 @@ void AItem::BeginPlay() {
 
 void AItem::OnConstruction(const FTransform &Transform) {
 
-
     if (MaterialInstance) {
 
         DynamicMaterialInstance = UMaterialInstanceDynamic::Create(MaterialInstance, this);
 
         ItemMesh->SetMaterial(MaterialIndex, DynamicMaterialInstance);
-
-    } else {
-
-        PrintLogErr("AItem::OnConstruction(const FTransform &Transform): "
-                    "MaterialInstance was nullptr");
     }
 
     EnableGlowMaterial();
+
+    // Load the data table for item rarity
+    FString RarityTablePath {L"/Script/Engine.DataTable'"
+                             L"/Game/_Game/DataTable/ItemRarityDataTable.ItemRarityDataTable'"};
+
+    UDataTable *RarityTableObject {nullptr};
+
+    RarityTableObject = Cast<UDataTable>(
+        StaticLoadObject(UDataTable::StaticClass(),
+          nullptr, *RarityTablePath));
+
+    if(RarityTableObject) {
+
+
+    }
 }
 
 void AItem::Tick(float DeltaTime) {
@@ -379,7 +389,6 @@ void AItem::OnSphereOverlap(UPrimitiveComponent *OverlappedComponent, AActor *Ot
         if (ShooterCharacter) {
 
             ShooterCharacter->IncrementOverlappedItemCount(1);
-
         }
     } else {
         ExitGameErr("AItem::OnSphereOverlap(): OtherActor was nullptr");
@@ -397,8 +406,7 @@ void AItem::OnSphereEndOverlap(UPrimitiveComponent *OverlappedComponent, AActor 
 
             ShooterCharacter->IncrementOverlappedItemCount(-1);
             ShooterCharacter->UnHighlightInventorySlot();
-
-        } 
+        }
     } else {
         ExitGameErr("AItem::OnSphereEndOverlap(): OtherActor was nullptr");
     }
@@ -449,11 +457,11 @@ void AItem::SetItemProperties(EItemState State) {
             ItemMesh->SetVisibility(true);
             ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-            
+
             // Set AreaSphere properties
             AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
             AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-            
+
             // Set CollisionBox properties
             CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             CollisionBox->SetCollisionResponseToChannel(
@@ -472,12 +480,12 @@ void AItem::SetItemProperties(EItemState State) {
             ItemMesh->SetVisibility(true);
             ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-            
+
             // Set AreaSphere properties
             AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
             // Set CollisionBox properties
-            
+
             CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
@@ -493,11 +501,11 @@ void AItem::SetItemProperties(EItemState State) {
             ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
             ItemMesh->SetCollisionResponseToChannel(
               ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
-            
+
             // Set AreaSphere properties
             AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-            
+
             // Set CollisionBox properties
             CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -507,18 +515,18 @@ void AItem::SetItemProperties(EItemState State) {
         case EItemState::EIS_EquipInterping : {
 
             PickupWidget->SetVisibility(false);
-            
+
             // Set mesh properties
             ItemMesh->SetSimulatePhysics(false);
             ItemMesh->SetEnableGravity(false);
             ItemMesh->SetVisibility(true);
             ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-           
+
             // Set AreaSphere properties
             AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-            
+
             // Set CollisionBox properties
             CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -528,18 +536,18 @@ void AItem::SetItemProperties(EItemState State) {
         case EItemState::EIS_PickedUp : {
 
             PickupWidget->SetVisibility(false);
-           
+
             // Set mesh properties
             ItemMesh->SetSimulatePhysics(false);
             ItemMesh->SetEnableGravity(false);
             ItemMesh->SetVisibility(false);
             ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-            
+
             // Set AreaSphere properties
             AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-            
+
             // Set CollisionBox properties
             CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
             CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -576,77 +584,77 @@ void AItem::ItemInterp(float DeltaTime) {
 
     if (Character) {
 
-    if (ItemZ_Curve) {
+        if (ItemZ_Curve) {
 
-        // Elapsed time since we started ItemInterpTimer
-        const float ElapsedTime {GetWorldTimerManager().GetTimerElapsed(ItemInterpTimer)};
+            // Elapsed time since we started ItemInterpTimer
+            const float ElapsedTime {GetWorldTimerManager().GetTimerElapsed(ItemInterpTimer)};
 
-        // Get curve value corresponding to ElapsedTime
-        const float CurveValue {ItemZ_Curve->GetFloatValue(ElapsedTime)};
+            // Get curve value corresponding to ElapsedTime
+            const float CurveValue {ItemZ_Curve->GetFloatValue(ElapsedTime)};
 
-        // UE_LOG(LogTemp, Warning, TEXT("CurveValue: %f"), CurveValue);
+            // UE_LOG(LogTemp, Warning, TEXT("CurveValue: %f"), CurveValue);
 
-        // Get the item's initial location when the curve started
-        FVector ItemLocation {ItemInterpStartLocation};
+            // Get the item's initial location when the curve started
+            FVector ItemLocation {ItemInterpStartLocation};
 
-        // Get location in front of the camera
-        const FVector CameraInterpLocation {GetInterpLocation()};
+            // Get location in front of the camera
+            const FVector CameraInterpLocation {GetInterpLocation()};
 
-        // Vector from Item to Camera Interp Location, X and Y are zeroed out
-        const FVector ItemToCamera {FVector(0.f, 0.f, (CameraInterpLocation - ItemLocation).Z)};
+            // Vector from Item to Camera Interp Location, X and Y are zeroed out
+            const FVector ItemToCamera {FVector(0.f, 0.f, (CameraInterpLocation - ItemLocation).Z)};
 
-        const double GetDeltaZ {ItemToCamera.Size()};
+            const double GetDeltaZ {ItemToCamera.Size()};
 
-        // Scale factor to multiply with CurveValue
-        const float DeltaZ {StaticCast<const float>(GetDeltaZ)};
+            // Scale factor to multiply with CurveValue
+            const float DeltaZ {StaticCast<const float>(GetDeltaZ)};
 
-        const FVector CurrentLocation {GetActorLocation()};
+            const FVector CurrentLocation {GetActorLocation()};
 
-        // Interp speed: 30 units per second
-        float InterpSpeed {30.f};
+            // Interp speed: 30 units per second
+            float InterpSpeed {30.f};
 
-        const double GetInterpX_Value {
-            FMath::FInterpTo(CurrentLocation.X, CameraInterpLocation.X, DeltaTime, InterpSpeed)};
+            const double GetInterpX_Value {
+              FMath::FInterpTo(CurrentLocation.X, CameraInterpLocation.X, DeltaTime, InterpSpeed)};
 
-        const double GetInterpY_Value {
-            FMath::FInterpTo(CurrentLocation.Y, CameraInterpLocation.Y, DeltaTime, InterpSpeed)};
+            const double GetInterpY_Value {
+              FMath::FInterpTo(CurrentLocation.Y, CameraInterpLocation.Y, DeltaTime, InterpSpeed)};
 
-        // Interpolated X values
-        const float InterpX_Value {StaticCast<const float>(GetInterpX_Value)};
+            // Interpolated X values
+            const float InterpX_Value {StaticCast<const float>(GetInterpX_Value)};
 
-        // Interpolated X values
-        const float InterpY_Value {StaticCast<const float>(GetInterpY_Value)};
+            // Interpolated X values
+            const float InterpY_Value {StaticCast<const float>(GetInterpY_Value)};
 
-        // Set X and Y of ItemLocation to interp values
-        ItemLocation.X = InterpX_Value;
-        ItemLocation.Y = InterpY_Value;
+            // Set X and Y of ItemLocation to interp values
+            ItemLocation.X = InterpX_Value;
+            ItemLocation.Y = InterpY_Value;
 
-        // Adding curve value to the Z component of the Initial Location (scaled
-        // by DeltaZ)
-        ItemLocation.Z += CurveValue * DeltaZ;
+            // Adding curve value to the Z component of the Initial Location (scaled
+            // by DeltaZ)
+            ItemLocation.Z += CurveValue * DeltaZ;
 
-        SetActorLocation(ItemLocation, true, nullptr, ETeleportType::TeleportPhysics);
+            SetActorLocation(ItemLocation, true, nullptr, ETeleportType::TeleportPhysics);
 
-        // Camera Rotation this frame
-        const FRotator CameraRotation {Character->GetFollowCamera()->GetComponentRotation()};
+            // Camera Rotation this frame
+            const FRotator CameraRotation {Character->GetFollowCamera()->GetComponentRotation()};
 
-        // Camera Rotation + Initial Yaw Offset
-        FRotator ItemRotation {0.f, CameraRotation.Yaw + InterpInitialYawOffset, 0.f};
+            // Camera Rotation + Initial Yaw Offset
+            FRotator ItemRotation {0.f, CameraRotation.Yaw + InterpInitialYawOffset, 0.f};
 
-        SetActorRotation(ItemRotation, ETeleportType::TeleportPhysics);
+            SetActorRotation(ItemRotation, ETeleportType::TeleportPhysics);
 
-        if (ItemScaleCurve) {
+            if (ItemScaleCurve) {
 
-            const float ScaleCurveValue {ItemScaleCurve->GetFloatValue(ElapsedTime)};
+                const float ScaleCurveValue {ItemScaleCurve->GetFloatValue(ElapsedTime)};
 
-            SetActorScale3D(FVector(ScaleCurveValue, ScaleCurveValue, ScaleCurveValue));
-        } else {
-            ExitGameErr("AItem::ItemInterp(float DeltaTime):->if("
-                        "ItemZ_Curve): ItemScaleCurve was nullptr");
-        }
+                SetActorScale3D(FVector(ScaleCurveValue, ScaleCurveValue, ScaleCurveValue));
+            } else {
+                ExitGameErr("AItem::ItemInterp(float DeltaTime):->if("
+                            "ItemZ_Curve): ItemScaleCurve was nullptr");
+            }
         } else {
             ExitGameErr("AItem::ItemInterp(float DeltaTime) ItemZ_Curve was nullptr");
-        }        
+        }
     } else {
         ExitGameErr("AItem::ItemInterp(float DeltaTime)"
                     "Character was nullptr");
