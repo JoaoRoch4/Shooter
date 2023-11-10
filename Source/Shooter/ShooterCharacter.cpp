@@ -124,7 +124,7 @@ AShooterCharacter::AShooterCharacter()
  InventoryCount(0),
  ExchangeInventoryItensTimer(FTimerHandle()),
  bExchangeInventoryItensEnabled(true),
- ExchangeInventoryItensTime(0.1f),
+ ExchangeInventoryItensTime(0.15f),
  bDebugSlotMessages(false) {
 
     PrimaryActorTick.bCanEverTick = true;
@@ -1507,10 +1507,10 @@ void AShooterCharacter::ExchangeInventoryItens(int32 CurrentItemindex, int32 New
         ExitPrintErr("AShooterCharacter::ExchangeInventoryItens(): AnimInstance is nullptr");
     }
 
-    NewWeapon->PlayEquipSound(true);
-
     GetWorld()->GetTimerManager().SetTimer(ExchangeInventoryItensTimer, this,
       &AShooterCharacter::EnableExchangeInventoryItens, ExchangeInventoryItensTime, false);
+
+   NewWeapon->PlayEquipSound(true);
 }
 
 void AShooterCharacter::EnableExchangeInventoryItens() { bExchangeInventoryItensEnabled = true; }
@@ -1548,6 +1548,18 @@ int32 AShooterCharacter::GetInterpLocationIndex() {
     }
 
     return LowestIndex;
+}
+
+int32 AShooterCharacter::GetEmptyInventorySlot() {
+
+    for (int32 i = 0; i < Inventory.Num(); i++) {
+
+        if (Inventory [i] == nullptr) return i;
+    }
+
+    if (Inventory.Num() < InventoryCapacity) return Inventory.Num();
+
+    return -1; //inventory is full
 }
 
 FInterpLocation AShooterCharacter::GetInterpLocation(int32 Index) {
@@ -1760,3 +1772,5 @@ void AShooterCharacter::KeyMethod9Key() { return; }
 
 void AShooterCharacter::KEY_0_ZeroKeyPressed() { KeyMethod0Key(); }
 void AShooterCharacter::KeyMethod0Key() { return; }
+
+

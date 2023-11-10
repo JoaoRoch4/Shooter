@@ -19,7 +19,7 @@ enum class ECombatState : uint8 {
 
     ECS_Reloading UMETA(DisplayName = "Reloading"),
 
-     ECS_Equipping UMETA(DisplayName = "Equipping"),
+    ECS_Equipping UMETA(DisplayName = "Equipping"),
 
     ECS_MAX UMETA(DisplayName = "Default MAX")
 };
@@ -38,9 +38,11 @@ struct FInterpLocation {
     int32 ItemCount {};
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEquipItemDelegate, int32, CurrentSlotIndex,   int32, NewSlotIndex);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(
+  FEquipItemDelegate, int32, CurrentSlotIndex, int32, NewSlotIndex);
 
-/*
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FHighlightIconDelegate, int32, SlotIndex, bool, bStartAnimation);
+  /*
 * 
 */
 UCLASS()
@@ -49,7 +51,6 @@ class SHOOTER_API AShooterCharacter : public ACharacter {
     GENERATED_BODY()
 
 public:
-
     // Sets default values for this character's properties
     AShooterCharacter();
 
@@ -300,10 +301,12 @@ protected:
     void DebugSlotsItens();
     void UpdateSlotsItens();
 
+    int32 GetEmptyInventorySlot();
+
     void HandleMouseWheel(float Value);
     void ScrollUp();
     void ScrollDown();
-    
+
     /* Key Bindings */
     void KEY_FkeyPressed();
     void KEY_1_OneKeyPressed();
@@ -316,7 +319,7 @@ protected:
     void KEY_8_EightKeyPressed();
     void KEY_9_NineKeyPressed();
     void KEY_0_ZeroKeyPressed();
-    
+
     /* Key Methods */
     void KeyMethodFKey();
     void KeyMethod1Key();
@@ -329,6 +332,7 @@ protected:
     void KeyMethod8Key();
     void KeyMethod9Key();
     void KeyMethod0Key();
+
 
 private:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Mesh",
@@ -761,15 +765,18 @@ private:
     const int32 InventoryCapacity {6};
 
     /** Delegate for sending slot information to InventoryBar when equipping */
-    UPROPERTY(BlueprintAssignable, Category = "Delegates",
-        meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(BlueprintAssignable, Category = "Delegates", meta = (AllowPrivateAccess = "true"))
     FEquipItemDelegate EquipItemDelegate;
+        
+    /** Delegate for sending slot information for playing the icon animation */
+    UPROPERTY(BlueprintAssignable, Category = "Delegates", meta = (AllowPrivateAccess = "true"))
+    FHighlightIconDelegate HighlightIconDelegate;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Debug",
       meta = (AllowPrivateAccess = "true"))
     float DebugKeys;
 
-    /** EquippedWeapon->GetSlotIndex() */ 
+    /** EquippedWeapon->GetSlotIndex() */
     int32 CurrentSlotIndex;
 
     /** Inventory.Num() */
@@ -779,7 +786,7 @@ private:
 
     bool bExchangeInventoryItensEnabled;
 
-     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Items|Inventory",
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Items|Inventory",
       meta = (AllowPrivateAccess = "true"))
     float ExchangeInventoryItensTime;
 
