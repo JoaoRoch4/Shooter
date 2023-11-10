@@ -379,7 +379,12 @@ void AItem::OnSphereOverlap(UPrimitiveComponent *OverlappedComponent, AActor *Ot
         if (ShooterCharacter) {
 
             ShooterCharacter->IncrementOverlappedItemCount(1);
+
+        } else {
+            ExitGameErr("AItem::OnSphereOverlap():-> if (OtherActor): ShooterCharacter was nullptr");
         }
+    } else {
+        ExitGameErr("AItem::OnSphereOverlap(): OtherActor was nullptr");
     }
 }
 
@@ -393,7 +398,13 @@ void AItem::OnSphereEndOverlap(UPrimitiveComponent *OverlappedComponent, AActor 
         if (ShooterCharacter) {
 
             ShooterCharacter->IncrementOverlappedItemCount(-1);
+            ShooterCharacter->UnHighlightInventorySlot();
+
+        } else {
+            ExitGameErr("AItem::OnSphereEndOverlap():-> if (OtherActor): ShooterCharacter was nullptr");
         }
+    } else {
+        ExitGameErr("AItem::OnSphereEndOverlap(): OtherActor was nullptr");
     }
 }
 
@@ -550,6 +561,7 @@ void AItem::FinishInterping() {
         // Subtract 1 from the item count in this location struct
         Character->IncrementInterpLocItemCount(InterpLocIndex, -1);
         Character->GetPickupItem(this);
+        Character->UnHighlightInventorySlot();
 
     } else {
         PrintLogErr("AItem::FinishInterping(): Character was nullptr");
@@ -566,7 +578,9 @@ void AItem::ItemInterp(float DeltaTime) {
 
     if (!bInterping) return;
 
-    if (Character && ItemZ_Curve) {
+    if (Character) {
+
+    if (ItemZ_Curve) {
 
         // Elapsed time since we started ItemInterpTimer
         const float ElapsedTime {GetWorldTimerManager().GetTimerElapsed(ItemInterpTimer)};
@@ -596,10 +610,10 @@ void AItem::ItemInterp(float DeltaTime) {
         float InterpSpeed {30.f};
 
         const double GetInterpX_Value {
-          FMath::FInterpTo(CurrentLocation.X, CameraInterpLocation.X, DeltaTime, InterpSpeed)};
+            FMath::FInterpTo(CurrentLocation.X, CameraInterpLocation.X, DeltaTime, InterpSpeed)};
 
         const double GetInterpY_Value {
-          FMath::FInterpTo(CurrentLocation.Y, CameraInterpLocation.Y, DeltaTime, InterpSpeed)};
+            FMath::FInterpTo(CurrentLocation.Y, CameraInterpLocation.Y, DeltaTime, InterpSpeed)};
 
         // Interpolated X values
         const float InterpX_Value {StaticCast<const float>(GetInterpX_Value)};
@@ -631,11 +645,14 @@ void AItem::ItemInterp(float DeltaTime) {
 
             SetActorScale3D(FVector(ScaleCurveValue, ScaleCurveValue, ScaleCurveValue));
         } else {
-            PrintLogErr("AItem::ItemInterp(float DeltaTime):->if(Character && "
+            ExitGameErr("AItem::ItemInterp(float DeltaTime):->if("
                         "ItemZ_Curve): ItemScaleCurve was nullptr");
         }
+        } else {
+            ExitGameErr("AItem::ItemInterp(float DeltaTime) ItemZ_Curve was nullptr");
+        }        
     } else {
-        PrintLogErr("AItem::ItemInterp(float DeltaTime):->if(Character && "
-                    "ItemZ_Curve): Character or ItemZ_Curve was nullptr");
+        ExitGameErr("AItem::ItemInterp(float DeltaTime)"
+                    "Character was nullptr");
     }
 }

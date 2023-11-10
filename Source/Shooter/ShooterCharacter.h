@@ -304,7 +304,6 @@ protected:
     int32 GetEmptyInventorySlot();
 
     void HighlightInventorySlot();
-    void UnHighlightInventorySlot();
 
     void HandleMouseWheel(float Value);
     void ScrollUp();
@@ -853,4 +852,5 @@ public:
 
     void StartPickupSoundTimer();
     void StartEquipSoundTimer();
+    void UnHighlightInventorySlot();
 };

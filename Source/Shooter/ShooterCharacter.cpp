@@ -1044,7 +1044,6 @@ bool AShooterCharacter::TraceUnderCrosshairs(FHitResult &OutHitResult, FVector &
             return true;
         }
     }
-
     return false;
 }
 
@@ -1061,11 +1060,25 @@ void AShooterCharacter::TraceForItems() {
             // Cast to AItem to check if it's valid and if it has a widget
             TraceHitItem = Cast<AItem>(ItemHitResult.GetActor());
 
-            // if Hit Item is in EquipInterping state set to nullptr
-            if (TraceHitItem && TraceHitItem->GetItemState() == EItemState::EIS_EquipInterping) {
+            const AWeapon *TraceHitWeapon = Cast<AWeapon>(TraceHitItem);
 
-                TraceHitItem = nullptr;
+            if (TraceHitWeapon) {
+
+                if (HighlightedSlot == -1)
+                    // If not currently highlighting a slot, highlight the slot
+                    HighlightInventorySlot();
+
+            } else {
+
+                // is a slot being highlighted?
+                if (HighlightedSlot != -1)
+                    // Unhighlight the slot
+                    UnHighlightInventorySlot();
             }
+
+            // if Hit Item is in EquipInterping state set to nullptr
+            if (TraceHitItem && TraceHitItem->GetItemState() == EItemState::EIS_EquipInterping)
+                TraceHitItem = nullptr;
 
             if (TraceHitItem && TraceHitItem->GetPickupWidget()) {
 
@@ -1074,16 +1087,13 @@ void AShooterCharacter::TraceForItems() {
 
                 TraceHitItem->EnableCustomDepth();
 
-                if (Inventory.Num() >= InventoryCapacity) {
-
+                if (Inventory.Num() >= InventoryCapacity)
                     // Inventory is full
                     TraceHitItem->SetCharacterInventoryFull(true);
 
-                } else {
-
+                else
                     // Inventory is not full
-                    TraceHitItem->SetCharacterInventoryFull(false);
-                }
+                    TraceHitItem->SetCharacterInventoryFull(false);               
             }
 
             // We hit an item last frame
@@ -1107,7 +1117,6 @@ void AShooterCharacter::TraceForItems() {
         // We are not hitting an item this frame
         // Hide the widget of the item we were hitting last frame
         TraceHitItemLastFrame->GetPickupWidget()->SetVisibility(false);
-
         TraceHitItemLastFrame->DisableCustomDepth();
     }
 }
@@ -1116,7 +1125,6 @@ AWeapon *AShooterCharacter::SpawnDefaultWeapon() {
 
     // Check the TSubclassOf variable
     if (DefaultWeaponClass)
-
         // Spawn the Weapon
         return GetWorld()->SpawnActor<AWeapon>(DefaultWeaponClass);
 
@@ -1511,7 +1519,7 @@ void AShooterCharacter::ExchangeInventoryItens(int32 CurrentItemindex, int32 New
     GetWorld()->GetTimerManager().SetTimer(ExchangeInventoryItensTimer, this,
       &AShooterCharacter::EnableExchangeInventoryItens, ExchangeInventoryItensTime, false);
 
-   NewWeapon->PlayEquipSound(true);
+    NewWeapon->PlayEquipSound(true);
 }
 
 void AShooterCharacter::EnableExchangeInventoryItens() { bExchangeInventoryItensEnabled = true; }
@@ -1560,7 +1568,7 @@ int32 AShooterCharacter::GetEmptyInventorySlot() {
 
     if (Inventory.Num() < InventoryCapacity) return Inventory.Num();
 
-    return -1; //inventory is full
+    return -1; // inventory is full
 }
 
 void AShooterCharacter::HighlightInventorySlot() {
@@ -1789,5 +1797,3 @@ void AShooterCharacter::KeyMethod9Key() { return; }
 
 void AShooterCharacter::KEY_0_ZeroKeyPressed() { KeyMethod0Key(); }
 void AShooterCharacter::KeyMethod0Key() { return; }
-
-
