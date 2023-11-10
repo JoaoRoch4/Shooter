@@ -380,8 +380,6 @@ void AItem::OnSphereOverlap(UPrimitiveComponent *OverlappedComponent, AActor *Ot
 
             ShooterCharacter->IncrementOverlappedItemCount(1);
 
-        } else {
-            ExitGameErr("AItem::OnSphereOverlap():-> if (OtherActor): ShooterCharacter was nullptr");
         }
     } else {
         ExitGameErr("AItem::OnSphereOverlap(): OtherActor was nullptr");
@@ -400,9 +398,7 @@ void AItem::OnSphereEndOverlap(UPrimitiveComponent *OverlappedComponent, AActor 
             ShooterCharacter->IncrementOverlappedItemCount(-1);
             ShooterCharacter->UnHighlightInventorySlot();
 
-        } else {
-            ExitGameErr("AItem::OnSphereEndOverlap():-> if (OtherActor): ShooterCharacter was nullptr");
-        }
+        } 
     } else {
         ExitGameErr("AItem::OnSphereEndOverlap(): OtherActor was nullptr");
     }
