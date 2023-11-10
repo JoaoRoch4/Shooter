@@ -8,12 +8,8 @@
 Content/*
 
 !/Content/_Game/
-
-!/Content/_Game/*
-!/Content/_Game/Assets/Curves/*
 /Content/_Game/Mixamo/
 /Content/_Game/Maps/
-/Content/_Game/Assets
 
 /Intermediate/*
 !/Intermediate/ProjectFiles/
