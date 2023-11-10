@@ -125,7 +125,8 @@ AShooterCharacter::AShooterCharacter()
  ExchangeInventoryItensTimer(FTimerHandle()),
  bExchangeInventoryItensEnabled(true),
  ExchangeInventoryItensTime(0.15f),
- bDebugSlotMessages(false) {
+ bDebugSlotMessages(false),
+ HighlightedSlot(-1) {
 
     PrimaryActorTick.bCanEverTick = true;
 
@@ -1560,6 +1561,22 @@ int32 AShooterCharacter::GetEmptyInventorySlot() {
     if (Inventory.Num() < InventoryCapacity) return Inventory.Num();
 
     return -1; //inventory is full
+}
+
+void AShooterCharacter::HighlightInventorySlot() {
+
+    const int32 EmptySlot {GetEmptyInventorySlot()};
+
+    HighlightIconDelegate.Broadcast(EmptySlot, true);
+
+    HighlightedSlot = EmptySlot;
+}
+
+void AShooterCharacter::UnHighlightInventorySlot() {
+
+    HighlightIconDelegate.Broadcast(HighlightedSlot, false);
+
+    HighlightedSlot = -1;
 }
 
 FInterpLocation AShooterCharacter::GetInterpLocation(int32 Index) {

@@ -303,6 +303,9 @@ protected:
 
     int32 GetEmptyInventorySlot();
 
+    void HighlightInventorySlot();
+    void UnHighlightInventorySlot();
+
     void HandleMouseWheel(float Value);
     void ScrollUp();
     void ScrollDown();
@@ -791,6 +794,11 @@ private:
     float ExchangeInventoryItensTime;
 
     bool bDebugSlotMessages;
+
+    /** The index for the currently highlighted slot */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Items|Inventory",
+      meta = (AllowPrivateAccess = "true"))
+    int32 HighlightedSlot;
 
 public:
     /**
