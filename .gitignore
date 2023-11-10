@@ -1,6 +1,5 @@
 /Binaries
 /DerivedDataCache
-/Intermediate
 /Saved
 /Download
 # Ignore everything in the Content directory
@@ -15,6 +14,9 @@ Content/*
 /Content/_Game/Mixamo/
 /Content/_Game/Maps/
 /Content/_Game/Assets
+
+/Intermediate
+!/Intermediate/ProjectFiles/
 
 .vscode
 .vs
