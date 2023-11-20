@@ -74,7 +74,7 @@ private:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
     float LastMovementOffsetYaw;
 
-    /** *@brief true if the Character is aiming. */
+    /**  true if the Character is aiming. */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
     bool bAiming;
 
@@ -92,18 +92,18 @@ private:
 	 */
     float TIPCharacterYawLastFrame;
 
-    /** *@brief Offset of the Yaw. */
+    /**  Offset of the Yaw. */
     UPROPERTY(
       VisibleAnywhere, BlueprintReadOnly, Category = "Turn In Place", meta = (AllowPrivateAccess = "true"))
     float RootYawOffset;
 
-    /** *@brief Rotation Curve Value this frame. */
+    /**  Rotation Curve Value this frame. */
     float RotationCurve;
 
-    /** *@brief Rotation Curve Value last frame. */
+    /**  Rotation Curve Value last frame. */
     float RotationCurveLastFrame;
 
-    /** *@brief The pitch of the aim rotation, used for Aim Offset. */
+    /**  The pitch of the aim rotation, used for Aim Offset. */
     UPROPERTY(
       VisibleAnywhere, BlueprintReadOnly, Category = "Turn In Place", meta = (AllowPrivateAccess = "true"))
     float Pitch;
@@ -126,10 +126,10 @@ private:
       VisibleAnywhere, BlueprintReadOnly, Category = "Turn In Place", meta = (AllowPrivateAccess = "true"))
     EOffsetState OffsetState;
 
-    /** *@brief Character Yaw this frame. */
+    /**  Character Yaw this frame. */
     FRotator CharacterRotation;
 
-    /** *@brief Character Yaw last frame. */
+    /**  Character Yaw last frame. */
     FRotator CharacterRotationLastFrame;
 
     /**
@@ -140,25 +140,25 @@ private:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Lean", meta = (AllowPrivateAccess = "true"))
     float YawDelta;
 
-    /** *@brief True when crouching. */
+    /**  True when crouching. */
     UPROPERTY(
       VisibleAnywhere, BlueprintReadWrite, Category = "Crouching", meta = (AllowPrivateAccess = "true"))
     bool bCrouching;
 
-     /** *@brief True when Equipping. */
+     /**  True when Equipping. */
     UPROPERTY(
       VisibleAnywhere, BlueprintReadWrite, Category = "Equipping", meta = (AllowPrivateAccess = "true"))
     bool bEquipping;
 
     /**
-	  *@brief Change the recoil weight based on turning
+	   Change the recoil weight based on turning
 	  * in
      * place and aiming. 
 	  */
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
     float RecoilWeight;
 
-    /** *@brief True when turning in place. */
+    /**  True when turning in place. */
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
     bool bTurningInPlace;
 };

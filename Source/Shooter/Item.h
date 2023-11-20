@@ -106,7 +106,7 @@ protected:
 
     void DefaultConstructor_Curves();
 
-    /**@brief Called when item is overlapped with AreaSphere. */
+    /* Called when item is overlapped with AreaSphere. */
     UFUNCTION()
     void OnSphereOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor,
       UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult);
@@ -116,7 +116,7 @@ protected:
     void OnSphereEndOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor,
       UPrimitiveComponent *OtherComp, int32 OtherBodyIndex);
 
-    /** *@brief Sets active stars array based on rarity. */
+    /**  Sets active stars array based on rarity. */
     void SetActiveStars();
 
     /**
@@ -126,7 +126,7 @@ protected:
 	 */
     virtual void SetItemProperties(EItemState State);
 
-    /** *@brief Called when ItemInterpTimer is finished. */
+    /**  Called when ItemInterpTimer is finished. */
     void FinishInterping();
 
     /**
@@ -163,51 +163,51 @@ public:
 
 private:
 
-    /**@brief Default constructor for Collision Box. */
+    /* Default constructor for Collision Box. */
     void DefaultConstructor_CollisionBox();
 
-    /**@brief Skeletal mesh for the item. */
+    /* Skeletal mesh for the item. */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Mesh",
       meta = (AllowPrivateAccess = "true"))
     USkeletalMeshComponent *ItemMesh;
 
-    /**@brief Line trace collides with box to show HUD widgets. */
+    /* Line trace collides with box to show HUD widgets. */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Mesh",
       meta = (AllowPrivateAccess = "true"))
     class UBoxComponent *CollisionBox;
 
-    /**@brief Popup widget for when the player look at item. */
+    /* Popup widget for when the player look at item. */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Interface|PickupWidget",
       meta = (AllowPrivateAccess = "true"))
     class UWidgetComponent *PickupWidget;
 
-    /**@brief Enables item tracing when overlapped. */
+    /* Enables item tracing when overlapped. */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Interface|PickupWidget",
       meta = (AllowPrivateAccess = "true"))
     class USphereComponent *AreaSphere;
 
-    /**@brief The name which appears on the pickup widget. */
+    /* The name which appears on the pickup widget. */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Interface|PickupWidget",
       meta = (AllowPrivateAccess = "true"))
     FString ItemName;
 
-    /**@brief The item count for this pickup. */
+    /* The item count for this pickup. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Interface|PickupWidget",
       meta = (AllowPrivateAccess = "true"))
     int32 ItemCount;
 
-    /**@brief The item rarity determines the number of stars in the pickup
+    /* The item rarity determines the number of stars in the pickup
      * widget. */
     UPROPERTY(EditAnywhere, BlueprintReadOnly,
       Category = "My Custom Properties|Interface|PickupWidget|Rarity", meta = (AllowPrivateAccess = "true"))
     EItemRarity ItemRarity;
 
-    /** *@brief State of the item. */
+    /**  State of the item. */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Interface|PickupWidget",
       meta = (AllowPrivateAccess = "true"))
     EItemState ItemState;
 
-    /**@brief Array of bools for each star in pickup widget. */
+    /* Array of bools for each star in pickup widget. */
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly,
       Category = "My Custom Properties|Interface|PickupWidget|Rarity", meta = (AllowPrivateAccess = "true"))
     TArray<bool> ActiveStars;
@@ -217,65 +217,65 @@ private:
       meta = (AllowPrivateAccess = "true"))
     class UCurveFloat *ItemZ_Curve;
 
-    /** *@brief Starting location when interping begins. */
+    /**  Starting location when interping begins. */
     UPROPERTY(
       BlueprintReadOnly, Category = "My Custom Properties|Interp", meta = (AllowPrivateAccess = "true"))
     FVector ItemInterpStartLocation;
 
-    /** *@brief Target interp location in front of the camera. */
+    /**  Target interp location in front of the camera. */
     UPROPERTY(
       BlueprintReadOnly, Category = "My Custom Properties|Interp", meta = (AllowPrivateAccess = "true"))
     FVector CameraTargetLocation;
 
-    /** *@brief True when interping. */
+    /**  True when interping. */
     UPROPERTY(
       BlueprintReadOnly, Category = "My Custom Properties|Interp", meta = (AllowPrivateAccess = "true"))
     bool bInterping;
 
-    /** *@brief Plays when we start interping. */
+    /**  Plays when we start interping. */
     FTimerHandle ItemInterpTimer;
 
-    /** *@brief Duration of the curve and timer. */
+    /**  Duration of the curve and timer. */
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Interp",
       meta = (AllowPrivateAccess = "true"))
     float Z_CurveTime;
 
-    /** *@brief Pointer to the character. */
+    /**  Pointer to the character. */
     UPROPERTY(BlueprintReadOnly, Category = "My Custom Properties|Interp|Character",
       meta = (AllowPrivateAccess = "true"))
     class AShooterCharacter *Character;
 
-    /** *@brief X for the Item while interping in the EquipInterping State. */
+    /**  X for the Item while interping in the EquipInterping State. */
     float ItemInterpX;
 
-    /** *@brief Y for the Item while interping in the EquipInterping State. */
+    /**  Y for the Item while interping in the EquipInterping State. */
     float ItemInterpY;
 
-    /** *@brief Initial Yaw offset between the camera and the interping item. */
+    /**  Initial Yaw offset between the camera and the interping item. */
     float InterpInitialYawOffset;
 
-    /** *@brief Curve used for scale the item when interping. */
+    /**  Curve used for scale the item when interping. */
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Interp|Curves",
       meta = (AllowPrivateAccess = "true"))
     UCurveFloat *ItemScaleCurve;
 
-    /** *@brief Sound played when item is picked up. */
+    /**  Sound played when item is picked up. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Interp|Sound",
       meta = (AllowPrivateAccess = "true"))
     class USoundCue *PickupSound;
 
-    /** *@brief Sound played when item is equipped. */
+    /**  Sound played when item is equipped. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Interp|Sound",
       meta = (AllowPrivateAccess = "true"))
     USoundCue *EquipSound;
 
-    /** *@brief Enum for the type this item is. */
+    /**  Enum for the type this item is. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Interface|PickupWidget",
       meta = (AllowPrivateAccess = "true"))
     EItemType ItemType;
 
     /**
-	  *@brief Index for the interp location this item is
+	   Index for the interp location this item is
 	  *
      * interping to.
 	  */
@@ -283,17 +283,17 @@ private:
       meta = (AllowPrivateAccess = "true"))
     int32 InterpLocIndex;
 
-    /** *@brief Index for the material we'd like to change at runtime. */
+    /**  Index for the material we'd like to change at runtime. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Materials",
       meta = (AllowPrivateAccess = "true"))
     int32 MaterialIndex;
 
-    /** *@brief Dynamic instance that we can change at runtime. */
+    /**  Dynamic instance that we can change at runtime. */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Materials",
       meta = (AllowPrivateAccess = "true"))
     UMaterialInstanceDynamic *DynamicMaterialInstance;
 
-    /** *@brief Material instance used with the Dynamic Material instance. */
+    /**  Material instance used with the Dynamic Material instance. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Materials",
       meta = (AllowPrivateAccess = "true"))
     UMaterialInstance *MaterialInstance;

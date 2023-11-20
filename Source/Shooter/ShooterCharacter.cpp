@@ -436,6 +436,15 @@ bool AShooterCharacter::GetBeanEndLocation(const FVector &MuzzleSocketLocation, 
     GetWorld()->LineTraceSingleByChannel(
       WeaponTraceHit, WeaponTraceStart, WeaponTraceEnd, ECollisionChannel::ECC_Visibility);
 
+    float ImpulseStrength {20'000.f};
+
+    if (WeaponTraceHit.GetComponent() && WeaponTraceHit.GetComponent()->IsSimulatingPhysics()) {
+        
+        FVector Impulse = WeaponTraceHit.ImpactNormal * -1.0f * ImpulseStrength;
+
+        WeaponTraceHit.GetComponent()->AddImpulseAtLocation(Impulse, WeaponTraceHit.ImpactPoint);
+    }
+
     // Object between barrel and BeanEndPoint?
     if (WeaponTraceHit.bBlockingHit) {
 
@@ -1483,7 +1492,8 @@ inline void AShooterCharacter::ResetEquipSoundTimer() { bShouldPlayEquipSound = 
 void AShooterCharacter::ExchangeInventoryItens(int32 CurrentItemindex, int32 NewItemIndex) {
 
     const bool CanExchange {
-      ((CurrentItemindex != NewItemIndex) && (NewItemIndex < Inventory.Num())
+      ((CurrentItemindex != NewItemIndex)
+        && (NewItemIndex < Inventory.Num())
         && ((CombatState == ECombatState::ECS_Unoccupied || CombatState == ECombatState::ECS_Equipping))
         && (bExchangeInventoryItensEnabled))};
 

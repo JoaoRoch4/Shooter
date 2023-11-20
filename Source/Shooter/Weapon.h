@@ -117,53 +117,53 @@ private:
     UPROPERTY()
     FTimerHandle ThrowWeaponTimer;
 
-    /** *@brief Ammo count for this weapon. */
+    /**  Ammo count for this weapon. */
     UPROPERTY(EditAnywhere,
         BlueprintReadWrite,
         Category = "My Custom Properties|Item",
         meta     = (AllowPrivateAccess = "true"))
     int32 Ammo;
 
-    /** *@brief The maximum ammo count for this weapon. */
+    /**  The maximum ammo count for this weapon. */
     UPROPERTY(EditAnywhere,
         BlueprintReadWrite,
         Category = "My Custom Properties|Item",
         meta     = (AllowPrivateAccess = "true"))
     int32 MagazineCapacity;
 
-    /** *@brief The type of weapon. */
+    /**  The type of weapon. */
     UPROPERTY(EditAnywhere,
         BlueprintReadWrite,
         Category = "My Custom Properties|Item",
         meta     = (AllowPrivateAccess = "true"))
     EWeaponType WeaponType;
 
-    /** *@brief The type of ammo for this weapon. */
+    /**  The type of ammo for this weapon. */
     UPROPERTY(EditAnywhere,
         BlueprintReadWrite,
         Category = "My Custom Properties|Item",
         meta     = (AllowPrivateAccess = "true"))
     EAmmoType AmmoType;
 
-    /** *@brief FName for the reload montage section. */
+    /**  FName for the reload montage section. */
     UPROPERTY(BlueprintReadWrite,
         Category = "My Custom Properties|Item",
         meta     = (AllowPrivateAccess = "true"))
     FName ReloadMontageSection;
 
-    /** *@brief True when moving the clip while reloading. */
+    /**  True when moving the clip while reloading. */
     UPROPERTY(BlueprintReadOnly,
         Category = "My Custom Properties|Item",
         meta     = (AllowPrivateAccess = "true"))
     bool bMovingClip;
 
-    /** *@brief Name for the clip bone. */
+    /**  Name for the clip bone. */
     UPROPERTY(BlueprintReadWrite,
         Category = "My Custom Properties|Item",
         meta     = (AllowPrivateAccess = "true"))
     FName ClipBoneName;
 
-    /** *@brief Pointer to the item class. */
+    /**  Pointer to the item class. */
     class AItem *ItemInstance;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Item",

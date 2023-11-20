@@ -75,6 +75,12 @@
     <ClInclude Include="..\..\Source\Shooter\MyItem.h">
       <Filter>Source\Shooter</Filter>
     </ClInclude>
+    <ClCompile Include="..\..\Source\Shooter\MyTriggerBox.cpp">
+      <Filter>Source\Shooter</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\Shooter\MyTriggerBox.h">
+      <Filter>Source\Shooter</Filter>
+    </ClInclude>
     <None Include="..\..\Source\Shooter\Shooter.Build.cs">
       <Filter>Source\Shooter</Filter>
     </None>
@@ -114,6 +120,5 @@
     <ClInclude Include="..\..\Source\Shooter\Weapon.h">
       <Filter>Source\Shooter</Filter>
     </ClInclude>
-    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

@@ -44,28 +44,28 @@ protected:
 
 
 private:
-    /** *@brief Mesh for the Ammo Pickup. */
+    /**  Mesh for the Ammo Pickup. */
     UPROPERTY(VisibleAnywhere,
         BlueprintReadOnly,
         Category = "My Custom Properties|Item",
         meta     = (AllowPrivateAccess = "true"))
     UStaticMeshComponent *AmmoMesh;
 
-    /** *@brief The type of ammo. */
+    /**  The type of ammo. */
     UPROPERTY(EditAnywhere,
         BlueprintReadWrite,
         Category = "My Custom Properties|Item",
         meta     = (AllowPrivateAccess = "true"))
     EAmmoType AmmoType;
 
-    /** *@brief The texture for the ammo icon. */
+    /**  The texture for the ammo icon. */
     UPROPERTY(EditAnywhere,
         BlueprintReadWrite,
         Category = "My Custom Properties|Mesh",
         meta     = (AllowPrivateAccess = "true"))
     UTexture2D *AmmoIconTexture;
 
-    /** *@brief Overlap Sphere for picking up ammo. */
+    /**  Overlap Sphere for picking up ammo. */
     UPROPERTY(EditAnywhere,
         BlueprintReadOnly,
         Category = "My Custom Properties|Mesh",
