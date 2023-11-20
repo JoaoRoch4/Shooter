@@ -92,7 +92,7 @@ BreakBeforeConceptDeclarations: false
 BreakBeforeInheritanceComma: true
 BreakBeforeInlineASMColon: Never
 BreakBeforeTernaryOperators: false
-BreakConstructorInitializers: AfterColon
+BreakConstructorInitializers: BeforeComma
 BreakInheritanceList: AfterColon
 BreakStringLiterals: true
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
@@ -100,7 +100,7 @@ ConstructorInitializerIndentWidth : 1
 ContinuationIndentWidth: 2
 Cpp11BracedListStyle: true
 DeriveLineEnding: true
-ColumnLimit: 110
+ColumnLimit: 100
 
 DerivePointerAlignment: false
 EmptyLineBeforeAccessModifier: Always

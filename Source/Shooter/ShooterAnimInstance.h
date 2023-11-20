@@ -1,12 +1,11 @@
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "CoreMinimal.h"
+#include "Custom.h"
 #include "ShooterAnimInstance.generated.h"
 
-using namespace UP;
-using namespace UF;
-using namespace UM;
+using namespace UnrealBasic;
 
 UENUM(BlueprintType)
 enum class EOffsetState : uint8 {
