@@ -17,12 +17,10 @@ class SHOOTER_API AMyTriggerBox : public ATriggerBox {
 
 public:
 
-    AMyTriggerBox();
-
-    
+    AMyTriggerBox();    
 
 protected:
-    // Called when the game starts or when spawned
+
     virtual void BeginPlay() override;
 
     virtual void Tick(float DeltaTime) override;
@@ -40,5 +38,20 @@ private:
 
     UPROPERTY()
     class AShooterCharacter *ShooterCharacter;
+
+    UPROPERTY()
+    class ADebugSounds *DebugSounds;
+
+    UPROPERTY()
+    FTimerHandle TimerHandle;
+
+    UPROPERTY(
+      EditAnywhere, BlueprintReadWrite, Category = "CoolDown", meta = (AllowPrivateAccess = "true"))
+    float CoolDown;
+
+    UFUNCTION(BlueprintCallable)
+    void CoolDownOver();
+
+    bool bCanOverlap;
 
 };

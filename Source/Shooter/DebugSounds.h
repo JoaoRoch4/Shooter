@@ -24,24 +24,39 @@ protected:
 
 private:
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Sounds", 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sounds", 
         meta = (AllowPrivateAccess = "true"))
     class USoundCue *BeginOverlapSound;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Sounds",
+    UPROPERTY(
+      EditAnywhere, BlueprintReadWrite, Category = "Sounds",
       meta = (AllowPrivateAccess = "true"))
     USoundCue *EndOverlapSound;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Sounds",
+    UPROPERTY(
+      EditAnywhere, BlueprintReadWrite, Category = "Sounds",
       meta = (AllowPrivateAccess = "true"))
     USoundCue *NullptrSound;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Sounds",
+    UPROPERTY(
+      EditAnywhere, BlueprintReadWrite, Category = "Sounds",
       meta = (AllowPrivateAccess = "true"))
-    USoundCue *CustomSound;
-
+    USoundCue *CustomSound_1;
 
 public:
     // Called every frame
     virtual void Tick(float DeltaTime) override;
+
+    // crate a play sound function for each sound
+    UFUNCTION(BlueprintCallable)
+    void PlayBeginOverlapSound();
+
+    UFUNCTION(BlueprintCallable)
+    void PlayEndOverlapSound();
+
+    UFUNCTION(BlueprintCallable)
+    void PlayNullptrSound();
+
+    UFUNCTION(BlueprintCallable)
+    void PlayCustomSound_1();
 };
