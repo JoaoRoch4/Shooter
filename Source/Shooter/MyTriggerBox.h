@@ -15,6 +15,11 @@ class SHOOTER_API AMyTriggerBox : public ATriggerBox {
 
     GENERATED_BODY()
 
+public:
+
+    AMyTriggerBox();
+
+    
 
 protected:
     // Called when the game starts or when spawned
@@ -22,29 +27,18 @@ protected:
 
     virtual void Tick(float DeltaTime) override;
 
-    void SetTriggerBoxProperties();
+    UFUNCTION()
+    void OnOverlapBegin(class AActor *OverlappedActor, class AActor *OtherActor);
 
-public:
-    AMyTriggerBox();
+    UFUNCTION()
+    void OnOverlapEnd(class AActor *OverlappedActor, class AActor *OtherActor);
 
-    void BeginOverlapHapped();
-    void EndOverlapHapped();
+    void OverlapBeginHappened();
+    void OverlapEndHappened();
     
 private:
 
-    class UBoxComponent *TriggerBox;
+    UPROPERTY()
     class AShooterCharacter *ShooterCharacter;
-
-
-    UFUNCTION()
-    void OnOverlapBegin(class UPrimitiveComponent *OverlappedComp, class AActor *OtherActor,
-      class UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep,
-      const FHitResult &SweepResult);
-
-    // declare overlap end function
-    UFUNCTION()
-    void OnOverlapEnd(class UPrimitiveComponent *OverlappedComp, class AActor *OtherActor,
-      class UPrimitiveComponent *OtherComp, int32 OtherBodyIndex);
-
 
 };
