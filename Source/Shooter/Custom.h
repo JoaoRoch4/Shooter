@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #define elif else if
@@ -12,64 +10,47 @@
 #define PL_Err(Text)          UE_LOG(LogTemp, Error, TEXT(Text));
 #define PrintLogBreakLine()   UE_LOG(LogTemp, Error, TEXT(" "));
 #define PL_BreakLine()        UE_LOG(LogTemp, Error, TEXT(" "));
-#define PrintOnScr(Text)                                                                                     \
-    if (GEngine) {                                                                                           \
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, Text);                                        \
+#define PrintOnScr(Text)                                                                           \
+    if (GEngine) {                                                                                 \
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, Text);                              \
     }
-#define PrintOnScrColor(Color, Text)                                                                         \
-    if (GEngine) {                                                                                           \
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, Color, Text);                                              \
+#define PrintOnScrColor(Color, Text)                                                               \
+    if (GEngine) {                                                                                 \
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, Color, Text);                                    \
     }
-#define PrintOnScrColorTime(Time, Color, Text)                                                               \
-    if (GEngine) {                                                                                           \
-        GEngine->AddOnScreenDebugMessage(-1, Time, Color, Text);                                             \
-    }
-
-#define PrintOnScrTime(Time, Text)                                                                           \
-    if (GEngine) {                                                                                           \
-        GEngine->AddOnScreenDebugMessage(-1, Time, FColor::Red, Text);                                       \
+#define PrintOnScrColorTime(Time, Color, Text)                                                     \
+    if (GEngine) {                                                                                 \
+        GEngine->AddOnScreenDebugMessage(-1, Time, Color, Text);                                   \
     }
 
-#define PrintOnScrColorTimeW_Else(Time, Color, Text)                                                         \
+#define PrintOnScrTime(Time, Text)                                                                 \
+    if (GEngine) {                                                                                 \
+        GEngine->AddOnScreenDebugMessage(-1, Time, FColor::Red, Text);                             \
+    }
+
+#define PrintOnScrColorTimeW_Else(Time, Color, Text)                                               \
     PrintOnScrColorTime(Time, Color, Text) GEngineNullptrMessage
 
-#define PrintOnScrFS(text, fstring)                                                                          \
-    if (GEngine) {                                                                                           \
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT(text), fstring));        \
+#define PrintOnScrFS(text, fstring)                                                                \
+    if (GEngine) {                                                                                 \
+        GEngine->AddOnScreenDebugMessage(                                                          \
+          -1, 5.f, FColor::Red, FString::Printf(TEXT(text), fstring));                             \
     }
 
-#define GEngineNullptrMessage                                                                                \
-    else {                                                                                                   \
-        PL_Err("GEngine was Nullptr");                                                                       \
+#define GEngineNullptrMessage                                                                      \
+    else {                                                                                         \
+        PL_Err("GEngine was Nullptr");                                                             \
     }
 
 #define PrintLog_and_scr(Text) PrintLog(Text) PrintOnScr(Text) GEngineNullptrMessage
 
-#define OverlapArgumentsBegin                                                                                \
-    UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp,            \
+#define OverlapArgumentsBegin                                                                      \
+    UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp,  \
       int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult
 
-#define OverlapArgumentsEnd                                                                                  \
-    UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp,            \
+#define OverlapArgumentsEnd                                                                        \
+    UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp,  \
       int32 OtherBodyIndex
-
-#define MyMacros_BeginOverlapAddDynamic(func)                                                                \
-    OnActorBeginOverlap.__Internal_AddDynamic(                                                               \
-      this, func, UE4Delegates_Private::GetTrimmedMemberFunctionName((TEXT(#func))))
-#define BeginOverlapAddDynamic(func) MyMacros_BeginOverlapAddDynamic(func)
-
-#define MyMacros_EndOverlapAddDynamic(func)                                                                  \
-    OnActorEndOverlap.__Internal_AddDynamic(                                                                 \
-      this, func, UE4Delegates_Private::GetTrimmedMemberFunctionName((TEXT(#func))))
-
-#define BeginOverlap(func) MyMacros_BeginOverlapAddDynamic(func)
-#define EndOverlap(func)   MyMacros_EndOverlapAddDynamic(func)
-
-#define MyMacros_BeginOverlapComponent(func)                                                                 \
-    OnComponentBeginOverlap.__Internal_AddDynamic\(                                                          \
-      this, func, UE4Delegates_Private::GetTrimmedMemberFunctionName((TEXT(#func))))
-
-#define BeginOverlapComponent(func) MyMacros_BeginOverlapComponent(func)
 
 #define CDSO CreateDefaultSubobject
 
@@ -80,42 +61,41 @@ typedef FVector2d Fvc2;
 
 #define ZeroFVec FVector(0.f)
 
-
-#define CLS()                                                                                                \
+#define CLS()                                                                                      \
     if (GEngine) GEngine->ClearOnScreenDebugMessages()
 #define PrintCls()         CLS()
 #define PrintClearScreen() CLS()
 
 #define RR(X, Y) FMath::RandRange(X, Y)
 
-#define PrintLogFVec(FVec) PrintLog(FString::Printf(TEXT("X: %f, Y: %f, Z: %f"), FVec.X, FVec.Y, FVec.Z))
+#define PrintLogFVec(FVec)                                                                         \
+    PrintLog(FString::Printf(TEXT("X: %f, Y: %f, Z: %f"), FVec.X, FVec.Y, FVec.Z))
 
-#define ConsoleWrt(X)                                                                                        \
-    if (APlayerController *PlayerController = GetWorld()->GetFirstPlayerController())                        \
+#define ConsoleWrt(X)                                                                              \
+    if (APlayerController *PlayerController = GetWorld()->GetFirstPlayerController())              \
     PlayerController->ConsoleCommand(TEXT(X))
 
-#define ExitGame(X)                                                                                          \
-    if (APlayerController *PlayerController = GetWorld()->GetFirstPlayerController())                        \
-    PlayerController->ConsoleCommand(TEXT("Exit"))
+#include <Kismet/KismetSystemLibrary.h>
+#define ExitGame()\
+UKismetSystemLibrary::QuitGame(\
+  GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);
 
-#define ExitGameErr(X)                                                                                       \
-    if (APlayerController *PlayerController = GetWorld()->GetFirstPlayerController()) {                      \
-        checkf(false, TEXT(X)); \
+#define ExitGameErr(X)                                                                             \
+    if (APlayerController *PlayerController = GetWorld()->GetFirstPlayerController()) {            \
+        checkf(false, TEXT(X));                                                                    \
     }
 
-#define ExitPrintErr(X)                                                                                      \
-    if (APlayerController *PlayerController = GetWorld()->GetFirstPlayerController()) {                      \
-        PrintLogErr(X);                                                                                      \
-                              \
-        PlayerController->ConsoleCommand(TEXT("Exit"));                                                      \
-    }
+#define ExitPrintErr(X) PrintLogErr(X) ExitGame()
 
-#define ClearLog()                                                                                           \
-    if (GEngine) GEngine->Exec(GetWorld(), TEXT("Clear"));                                                   
-    
+#define ClearLog()                                                                                 \
+    if (GEngine) GEngine->Exec(GetWorld(), TEXT("Clear"));
+
+#define self this 
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Editor/EditorEngine.h"
+#include <Kismet/KismetSystemLibrary.h>
 #include "Custom.generated.h"
 
 /** Includes all the namespaces unreal have. */

@@ -9,13 +9,15 @@
 #include <Components/ShapeComponent.h>
 #include <GameFramework/Actor.h>
 #include <Kismet/GameplayStatics.h>
+#include <Kismet/KismetSystemLibrary.h>
 
 AMyTriggerBox::AMyTriggerBox()
  : ShooterCharacter(nullptr)
  , DebugSounds(nullptr)
  , TimerHandle(FTimerHandle())
  , CoolDown(0.7f)
- , bCanOverlap(true) {
+ , bCanOverlap(true)
+ , bExitGame(false) {
 
     PrimaryActorTick.bCanEverTick = true;
 
@@ -48,9 +50,12 @@ void AMyTriggerBox::OnOverlapBegin(class AActor *OverlappedActor, class AActor *
         if (bCanOverlap) {
 
             bCanOverlap = false;
+
+            if (bExitGame) ExitGame();
             OverlapBeginHappened();
 
-            GetWorldTimerManager().SetTimer(TimerHandle, this, &AMyTriggerBox::CoolDownOver, CoolDown);
+            GetWorldTimerManager().SetTimer(
+              TimerHandle, this, &AMyTriggerBox::CoolDownOver, CoolDown);
         }
     } else {
         ExitGameErr("OtherActor is nullptr");
@@ -66,7 +71,8 @@ void AMyTriggerBox::OnOverlapEnd(AActor *OverlappedActor, AActor *OtherActor) {
             bCanOverlap = false;
             OverlapEndHappened();
 
-            GetWorldTimerManager().SetTimer(TimerHandle, this, &AMyTriggerBox::CoolDownOver, CoolDown);
+            GetWorldTimerManager().SetTimer(
+              TimerHandle, this, &AMyTriggerBox::CoolDownOver, CoolDown);
         }
     } else {
         ExitGameErr("OtherActor is nullptr");
@@ -78,7 +84,10 @@ void AMyTriggerBox::OverlapBeginHappened() {
     PrintOnScr("OverlapBeginHappened");
     PrintOnScrFS("By: %s", *ShooterCharacter->GetName());
 
-    if (DebugSounds) DebugSounds->PlayBeginOverlapSound();
+    if (DebugSounds) {
+        DebugSounds->PlayBeginOverlapSound();
+        DebugSounds->PlayCustomSound_1();
+    }
 
     DrawDebugBox(GetWorld(), GetActorLocation(), GetComponentsBoundingBox().GetExtent(),
       FColor::Red, true, -1, 0, 10.f);
@@ -89,7 +98,10 @@ void AMyTriggerBox::OverlapEndHappened() {
     PrintOnScr("OverlapEndHappened");
     PrintOnScrFS("By: %s", *ShooterCharacter->GetName());
 
-    if (DebugSounds) DebugSounds->PlayEndOverlapSound();
+    if (DebugSounds) {
+        DebugSounds->PlayEndOverlapSound();
+        DebugSounds->PlayNullptrSound();
+    }
 
     DrawDebugBox(GetWorld(), GetActorLocation(), GetComponentsBoundingBox().GetExtent(),
       FColor::Purple, true, -1, 0, 10.f);

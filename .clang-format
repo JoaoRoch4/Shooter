@@ -124,7 +124,7 @@ IndentWrappedFunctionNames: true
 KeepEmptyLinesAtTheStartOfBlocks: true
 Language: Cpp
 LineEnding: CRLF
-MaxEmptyLinesToKeep: 2
+MaxEmptyLinesToKeep: 1
 NamespaceIndentation: All
 
 PointerAlignment: Right

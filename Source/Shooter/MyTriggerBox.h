@@ -46,12 +46,16 @@ private:
     FTimerHandle TimerHandle;
 
     UPROPERTY(
-      EditAnywhere, BlueprintReadWrite, Category = "CoolDown", meta = (AllowPrivateAccess = "true"))
+      EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|CoolDown", meta = (AllowPrivateAccess = "true"))
     float CoolDown;
 
     UFUNCTION(BlueprintCallable)
     void CoolDownOver();
 
     bool bCanOverlap;
+
+    UPROPERTY(
+      EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|ExitGame", meta = (AllowPrivateAccess = "true"))
+    bool bExitGame;
 
 };

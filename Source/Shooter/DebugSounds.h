@@ -43,6 +43,22 @@ private:
       meta = (AllowPrivateAccess = "true"))
     USoundCue *CustomSound_1;
 
+    UPROPERTY(
+      EditAnywhere, BlueprintReadWrite, Category = "Sounds", meta = (AllowPrivateAccess = "true"))
+    USoundCue *CustomSound_2;
+
+    UPROPERTY(
+      EditAnywhere, BlueprintReadWrite, Category = "Sounds", meta = (AllowPrivateAccess = "true"))
+    USoundCue *CustomSound_3;
+
+    UPROPERTY(
+      EditAnywhere, BlueprintReadWrite, Category = "Sounds", meta = (AllowPrivateAccess = "true"))
+    USoundCue *CustomSound_4;
+
+    UPROPERTY(
+      EditAnywhere, BlueprintReadWrite, Category = "Sounds", meta = (AllowPrivateAccess = "true"))
+    USoundCue *CustomSound_5;
+
 public:
     // Called every frame
     virtual void Tick(float DeltaTime) override;
@@ -59,4 +75,16 @@ public:
 
     UFUNCTION(BlueprintCallable)
     void PlayCustomSound_1();
+
+    UFUNCTION(BlueprintCallable)
+    void PlayCustomSound_2();
+
+    UFUNCTION(BlueprintCallable)
+    void PlayCustomSound_3();
+
+    UFUNCTION(BlueprintCallable)
+    void PlayCustomSound_4();
+
+    UFUNCTION(BlueprintCallable)
+    void PlayCustomSound_5();
 };
