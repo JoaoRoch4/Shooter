@@ -135,6 +135,7 @@ AShooterCharacter::AShooterCharacter()
     DefaultConstructor_SetCharacter();
     DefaultConstructor_CameraBoom();
     DefaultConstructor_FollowCamera();
+    DefaultConstructor_CustomCamera();
     DefaultConstructor_SetCombatCues();
 
     // Create Hand Scene Component
@@ -808,13 +809,13 @@ void AShooterCharacter::DefaultConstructor_SetCharacter() {
     AutoPossessPlayer = EAutoReceiveInput::Player0;
 
     // Configure character movement
-    GetCharacterMovement()->bOrientRotationToMovement = false; // Character moves in the direction of input...
-    GetCharacterMovement()->RotationRate              = FRotator(0.f, 540.f, 0.f); //... at this rotation rate
-    GetCharacterMovement()->JumpZVelocity             = 600.f;
-    GetCharacterMovement()->AirControl                = 0.2f;
-    GetCharacterMovement()->MaxWalkSpeed              = 1500.f;
-    GetCharacterMovement()->MaxWalkSpeedCrouched      = 150.f;
-    GetCharacterMovement()->MaxAcceleration           = 1020.f;
+    GetCharacterMovement()->bOrientRotationToMovement  = false; // Character moves in the direction of input...
+    GetCharacterMovement()->RotationRate               = FRotator(0.f, 540.f, 0.f); //... at this rotation rate
+    GetCharacterMovement()->JumpZVelocity              = 600.f;
+    GetCharacterMovement()->AirControl                 = 0.2f;
+    GetCharacterMovement()->MaxWalkSpeed               = 1500.f;
+    GetCharacterMovement()->MaxWalkSpeedCrouched       = 150.f;
+    GetCharacterMovement()->MaxAcceleration            = 1020.f;
     GetCharacterMovement()->BrakingDecelerationWalking = 50.f;
     GetCharacterMovement()->GroundFriction             = 1.5f;
 }
@@ -856,7 +857,7 @@ void AShooterCharacter::DefaultConstructor_CameraBoom() {
 void AShooterCharacter::DefaultConstructor_FollowCamera() {
 
     // Create a Follow Camera
-    FollowCamera = CDSubObj<UCameraComponent>(L"FollowCamera");
+    FollowCamera = CDSubObj<UShooterCharacterCamera>(L"FollowCamera");
 
     // attach camera to the end of boom
     FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
@@ -946,6 +947,19 @@ void AShooterCharacter::MoveRight(float Value) {
 
         AddMovementInput(Direction, Value);
     }
+}
+
+void AShooterCharacter::DefaultConstructor_CustomCamera() {
+
+    // Create a Follow Camera
+    CustomCamera = CDSubObj<UShooterCharacterCamera>(L"CustomCamera");
+
+    // attach camera to the end of boom
+    CustomCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+
+    // Camera does not rotate relative to arm
+    CustomCamera->bUsePawnControlRotation = false; 
+
 }
 
 void AShooterCharacter::TurnAtRate(float Rate) {

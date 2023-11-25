@@ -87,8 +87,11 @@ protected:
     /** @brief Set Character Defaults */
     void DefaultConstructor_SetCharacter();
 
+    void DefaultConstructor_CustomCamera();
+
     /** @brief Create Interp Components */
     void DefaultConstructor_InterpComponents();
+
 
     /** @brief Called for forwards / backwards input */
     void MoveForward(float Value);
@@ -362,6 +365,11 @@ private:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Camera",
       meta = (AllowPrivateAccess = "true"))
     class UCameraComponent *FollowCamera;
+
+    /* Camera that follows the character */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Camera",
+      meta = (AllowPrivateAccess = "true"))
+    class UShooterCharacterCamera *CustomCamera;
 
     /**
 	 * @brief Is transitioning for cinematic camera to normal

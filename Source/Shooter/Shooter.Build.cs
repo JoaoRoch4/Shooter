@@ -12,6 +12,9 @@ public class Shooter : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
+        bUseUnity = true;
+		        
+
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 		

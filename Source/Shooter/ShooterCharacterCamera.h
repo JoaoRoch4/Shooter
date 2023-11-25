@@ -4,13 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "Camera/CameraComponent.h"
+#include "Custom.h"
 #include "ShooterCharacterCamera.generated.h"
+
 
 /**
  *
  */
 UCLASS()
 class SHOOTER_API UShooterCharacterCamera : public UCameraComponent {
+
     GENERATED_BODY()
 
 public:
@@ -19,5 +22,18 @@ public:
 protected:
     virtual void BeginPlay() override;
 
-    virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
+    virtual void TickComponent(float DeltaTime, enum ELevelTick TickType,
+      FActorComponentTickFunction *ThisTickFunction) override;
+
+private:
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Camera|FOV",
+      meta = (AllowPrivateAccess = "true"))
+    float fDefaultFOV;
+
+public:
+
+    FORCEINLINE void SetFOV(float FOV);
+
+    FORCEINLINE float GetFOV() const;
 };
