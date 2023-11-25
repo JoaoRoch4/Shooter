@@ -36,8 +36,7 @@ protected:
     
 private:
 
-    UPROPERTY()
-    class AShooterCharacter *ShooterCharacter;
+    
 
     UPROPERTY()
     class ADebugSounds *DebugSounds;

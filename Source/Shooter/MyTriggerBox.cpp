@@ -14,8 +14,7 @@
 #include <Kismet/KismetSystemLibrary.h>
 
 AMyTriggerBox::AMyTriggerBox()
- : ShooterCharacter(nullptr)
- , DebugSounds(nullptr)
+ : DebugSounds(nullptr)
  , TimerHandle(FTimerHandle())
  , CoolDown(0.7f)
  , bCanOverlap(true)
@@ -23,8 +22,8 @@ AMyTriggerBox::AMyTriggerBox()
 
     PrimaryActorTick.bCanEverTick = true;
 
-    ShooterCharacter = CDSubObj<AShooterCharacter>(L"ShooterCharacter");
     DebugSounds      = CDSubObj<ADebugSounds>(L"DebugSounds");
+    Custom           = CDSubObj<ACustom>(L"Custom");
 
     OnActorBeginOverlap.AddDynamic(this, &AMyTriggerBox::OnOverlapBegin);
     OnActorEndOverlap.AddDynamic(this, &AMyTriggerBox::OnOverlapEnd);
@@ -34,12 +33,11 @@ void AMyTriggerBox::BeginPlay() {
 
     Super::BeginPlay();
 
-    ShooterCharacter = Cast<AShooterCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
     DebugSounds = Cast<ADebugSounds>(
       UGameplayStatics::GetActorOfClass(GetWorld(), ADebugSounds::StaticClass()));
 
-    Custom = Cast<ACustom>(UGameplayStatics::GetActorOfClass(GetWorld(), ACustom::StaticClass()));
+    //Custom = Cast<ACustom>(UGameplayStatics::GetActorOfClass(GetWorld(), ACustom::StaticClass()));
 
     DrawDebugBox(GetWorld(), GetActorLocation(), GetComponentsBoundingBox().GetExtent(),
       FColor::Purple, true, -1, 0, 10.f);
@@ -87,7 +85,7 @@ void AMyTriggerBox::OnOverlapEnd(AActor *OverlappedActor, AActor *OtherActor) {
 void AMyTriggerBox::OverlapBeginHappened(AActor *OverlappedActor, AActor *OtherActor) {
 
     PrintOnScr("OverlapBeginHappened");
-    PrintOnScrFS("By: %s", *ShooterCharacter->GetName());
+    PrintOnScrFS("By: %s", *OtherActor->GetName());
 
     if (DebugSounds) {
         DebugSounds->PlayBeginOverlapSound();

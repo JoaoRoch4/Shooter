@@ -1163,7 +1163,7 @@ void AShooterCharacter::EquipWeapon(AWeapon *WeaponToEquip, bool bSwapping) {
     if (WeaponToEquip) {
 
         // Get the Hand Socket
-        const USkeletalMeshSocket *HandSocket = GetMesh()->GetSocketByName(FName("RightHandSocket"));
+        const USkeletalMeshSocket *HandSocket = GetMesh()->GetSocketByName(FName(L"RightHandSocket"));
 
         if (HandSocket) {
 
