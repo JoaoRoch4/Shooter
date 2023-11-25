@@ -177,4 +177,4 @@ void AWeapon::ReloadAmmo(int32 Amount) {
     Ammo += Amount;
 }
 
-inline bool AWeapon::ClipIsFull() const { return Ammo >= MagazineCapacity; }
+bool AWeapon::ClipIsFull() const { return Ammo >= MagazineCapacity; }

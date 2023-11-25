@@ -76,9 +76,9 @@ typedef FVector2d Fvc2;
     PlayerController->ConsoleCommand(TEXT(X))
 
 #include <Kismet/KismetSystemLibrary.h>
-#define ExitGame()\
-UKismetSystemLibrary::QuitGame(\
-  GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);
+#define ExitGame()                                                                                 \
+    UKismetSystemLibrary::QuitGame(                                                                \
+      GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);
 
 #define ExitGameErr(X)                                                                             \
     if (APlayerController *PlayerController = GetWorld()->GetFirstPlayerController()) {            \
@@ -87,15 +87,26 @@ UKismetSystemLibrary::QuitGame(\
 
 #define ExitPrintErr(X) PrintLogErr(X) ExitGame()
 
+#define QuitGamePrintErr(X) ExitPrintErr(X)
+
+#include <GenericPlatform/GenericPlatformApplicationMisc.h>
+#define ExitEngine() FGenericPlatformMisc::RequestExit(false)
+
+//#define QuitGame() ExitGame()
+
 #define ClearLog()                                                                                 \
     if (GEngine) GEngine->Exec(GetWorld(), TEXT("Clear"));
 
-#define self this 
+#define self this
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Editor/EditorEngine.h"
 #include <Kismet/KismetSystemLibrary.h>
+
+#include <iostream>
+#include <random>
+#include <limits>
+
 #include "Custom.generated.h"
 
 /** Includes all the namespaces unreal have. */
@@ -131,9 +142,17 @@ protected:
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
 
+    std::mt19937                         RandomEngine32;
+    std::mt19937_64                      RandomEngine64;
+    std::uniform_int_distribution<int32> RandomInt32Distribution;
+    std::uniform_int_distribution<int64> RandomInt64Distribution;
+
 public:
     // Called every frame
     virtual void Tick(float DeltaTime) override;
+
+    FORCEINLINE int32 GenerateRandomInt32();
+    FORCEINLINE int64 GenerateRandomInt64();
 
     /**
     * @brief Get a int and convert it to FString
@@ -142,7 +161,7 @@ public:
     * @return FString of the value of the Int
     */
     UFUNCTION(BlueprintCallable, Category = "Conversion")
-    static FString IntToString(const int32 Int);
+    FString IntToString(const int32 Int);
 
     /**
     * @brief Get a real number and convert it to FString
@@ -151,11 +170,11 @@ public:
     * @return FString of the value of the float
  */
     UFUNCTION(BlueprintCallable, Category = "Conversion")
-    static FString RealToString(const float Float);
+    FString RealToString(const float Float);
 
     UFUNCTION(BlueprintCallable, Category = "Conversion")
-    static FString DoubleToString(const double Double);
+    FString DoubleToString(const double Double);
 
     UFUNCTION(BlueprintCallable, Category = "Conversion")
-    static float DoubleToFloat(const double Double);
+    float DoubleToFloat(const double Double);
 };

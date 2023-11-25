@@ -31,8 +31,8 @@ protected:
     UFUNCTION()
     void OnOverlapEnd(class AActor *OverlappedActor, class AActor *OtherActor);
 
-    void OverlapBeginHappened();
-    void OverlapEndHappened();
+    void OverlapBeginHappened(AActor *OverlappedActor = nullptr, AActor *OtherActor = nullptr);
+    void OverlapEndHappened(AActor *OverlappedActor = nullptr, AActor *OtherActor = nullptr);
     
 private:
 
@@ -57,5 +57,7 @@ private:
     UPROPERTY(
       EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|ExitGame", meta = (AllowPrivateAccess = "true"))
     bool bExitGame;
+
+    ACustom *Custom;
 
 };

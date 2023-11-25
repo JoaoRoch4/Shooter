@@ -3,6 +3,7 @@
 #include "Ammo.h"
 #include "Custom.h"
 #include "Item.h"
+#include "ShooterCharacterCamera.h"
 #include "Weapon.h"
 
 #include <Animation\AnimInstance.h>

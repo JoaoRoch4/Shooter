@@ -102,6 +102,12 @@
     <ClInclude Include="..\..\Source\Shooter\ShooterCharacter.h">
       <Filter>Source\Shooter</Filter>
     </ClInclude>
+    <ClCompile Include="..\..\Source\Shooter\ShooterCharacterCamera.cpp">
+      <Filter>Source\Shooter</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\Shooter\ShooterCharacterCamera.h">
+      <Filter>Source\Shooter</Filter>
+    </ClInclude>
     <ClCompile Include="..\..\Source\Shooter\ShooterGameModeBase.cpp">
       <Filter>Source\Shooter</Filter>
     </ClCompile>

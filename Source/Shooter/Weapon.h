@@ -200,7 +200,7 @@ public:
 
     FORCEINLINE void SetMovingClip(bool Move) { bMovingClip = Move; }
 
-    FORCEINLINE bool ClipIsFull() const;
+    bool ClipIsFull() const;
 
      FORCEINLINE int32 GetMaxSlotNumber() const { return MaxSlotNumber; }
 };
