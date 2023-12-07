@@ -113,10 +113,6 @@ void ADebugSounds::PlayCustomSound_1() {
         UGameplayStatics::PlaySound2D(GetWorld(), CustomSound_1);
     } else {
         PrintLogErr("CustomSound_1 is nullptr");
-        PlayNullptrSound();
-
-        // UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(),
-        // EQuitPreference::Quit, false);
     }
 }
 

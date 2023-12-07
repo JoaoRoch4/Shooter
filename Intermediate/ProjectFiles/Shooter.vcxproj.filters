@@ -63,6 +63,12 @@
     <ClInclude Include="..\..\Source\Shooter\DebugSounds.h">
       <Filter>Source\Shooter</Filter>
     </ClInclude>
+    <ClCompile Include="..\..\Source\Shooter\DefaultRandom.cpp">
+      <Filter>Source\Shooter</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\Shooter\DefaultRandom.h">
+      <Filter>Source\Shooter</Filter>
+    </ClInclude>
     <ClCompile Include="..\..\Source\Shooter\Item.cpp">
       <Filter>Source\Shooter</Filter>
     </ClCompile>

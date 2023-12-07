@@ -16,11 +16,9 @@ class SHOOTER_API AMyTriggerBox : public ATriggerBox {
     GENERATED_BODY()
 
 public:
-
-    AMyTriggerBox();    
+    AMyTriggerBox();
 
 protected:
-
     virtual void BeginPlay() override;
 
     virtual void Tick(float DeltaTime) override;
@@ -33,19 +31,16 @@ protected:
 
     void OverlapBeginHappened(AActor *OverlappedActor = nullptr, AActor *OtherActor = nullptr);
     void OverlapEndHappened(AActor *OverlappedActor = nullptr, AActor *OtherActor = nullptr);
-    
+
 private:
-
-    
-
     UPROPERTY()
     class ADebugSounds *DebugSounds;
 
     UPROPERTY()
     FTimerHandle TimerHandle;
 
-    UPROPERTY(
-      EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|CoolDown", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|CoolDown",
+      meta = (AllowPrivateAccess = "true"))
     float CoolDown;
 
     UFUNCTION(BlueprintCallable)
@@ -53,10 +48,11 @@ private:
 
     bool bCanOverlap;
 
-    UPROPERTY(
-      EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|ExitGame", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|ExitGame",
+      meta = (AllowPrivateAccess = "true"))
     bool bExitGame;
 
     ACustom *Custom;
 
+    class ADefaultRandom *DefaultRandom;
 };

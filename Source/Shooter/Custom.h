@@ -102,11 +102,6 @@ typedef FVector2d Fvc2;
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include <Kismet/KismetSystemLibrary.h>
-
-#include <iostream>
-#include <random>
-#include <limits>
-
 #include "Custom.generated.h"
 
 /** Includes all the namespaces unreal have. */
@@ -142,17 +137,11 @@ protected:
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
 
-    std::mt19937                         RandomEngine32;
-    std::mt19937_64                      RandomEngine64;
-    std::uniform_int_distribution<int32> RandomInt32Distribution;
-    std::uniform_int_distribution<int64> RandomInt64Distribution;
+    
 
 public:
     // Called every frame
     virtual void Tick(float DeltaTime) override;
-
-    FORCEINLINE int32 GenerateRandomInt32();
-    FORCEINLINE int64 GenerateRandomInt64();
 
     /**
     * @brief Get a int and convert it to FString
