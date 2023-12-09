@@ -35,6 +35,8 @@ AShooterCharacter::AShooterCharacter()
  , SkeletalMeshContainer(nullptr)
  , CameraBoom(nullptr)
  , FollowCamera(nullptr)
+ , CustomCamera(nullptr)
+ , bUseCustomCamera(false)
  , bIsTransitioning(true)
  , bCinematicCameraSwitch(true)
  , bUseBezierCurve(true)
@@ -990,11 +992,14 @@ void AShooterCharacter::MoveRight(float Value) {
 
 void AShooterCharacter::DefaultConstructor_CustomCamera() {
 
+    if (!bUseCustomCamera) return;
+
     // Create a Follow Camera
     CustomCamera = CDSubObj<UShooterCharacterCamera>(L"CustomCamera");
 
     // attach camera to the end of boom
-    CustomCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+    CustomCamera->SetupAttachment(
+      CustomCamera->GetCustomCameraBoom(), USpringArmComponent::SocketName);
 
     // Camera does not rotate relative to arm
     CustomCamera->bUsePawnControlRotation = false;

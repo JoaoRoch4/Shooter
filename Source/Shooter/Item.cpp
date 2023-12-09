@@ -101,16 +101,7 @@ void AItem::BeginPlay() {
 }
 
 void AItem::OnConstruction(const FTransform &Transform) {
-
-    if (MaterialInstance) {
-
-        DynamicMaterialInstance = UMaterialInstanceDynamic::Create(MaterialInstance, this);
-
-        ItemMesh->SetMaterial(MaterialIndex, DynamicMaterialInstance);
-    }
-
-    EnableGlowMaterial();
-
+        
     // Load the data table for item rarity
     FString RarityTablePath {L"/Script/Engine.DataTable'"
                              L"/Game/_Game/DataTable/ItemRarityDataTable.ItemRarityDataTable'"};
@@ -149,7 +140,8 @@ void AItem::OnConstruction(const FTransform &Transform) {
 
             } break;
             default : {
-                ExitGameErr("AItem::OnConstruction(const FTransform &Transform):->switch (ItemRarity): case "
+                ExitPrintErr(
+                  "AItem::OnConstruction(const FTransform &Transform):->switch (ItemRarity): case "
                             "default reached!");
             } break;
         }
@@ -163,11 +155,22 @@ void AItem::OnConstruction(const FTransform &Transform) {
             IconBackground = RarityRow->IconBackground;
 
         } else {
-            ExitGameErr(
+            ExitPrintErr(
               "AItem::OnConstruction(const FTransform &Transform):->if (RarityRow): RarityRow is nullptr");
         }
+
+        if (MaterialInstance) {
+
+            DynamicMaterialInstance = UMaterialInstanceDynamic::Create(MaterialInstance, this);
+
+            DynamicMaterialInstance->SetVectorParameterValue(L"FresnelColor", GlowColor);
+
+            ItemMesh->SetMaterial(MaterialIndex, DynamicMaterialInstance);
+            EnableGlowMaterial();
+        }  
+
     } else {
-        ExitGameErr("AItem::OnConstruction(const FTransform &Transform):->if (RarityTableObject): "
+        ExitPrintErr("AItem::OnConstruction(const FTransform &Transform):->if (RarityTableObject): "
                            "RarityTableObject is nullptr");
     }
 }
@@ -208,7 +211,7 @@ void AItem::DefaultConstructor_Curves() {
         if (M_PulseCurve.Succeeded()) {
             PulseCurve = M_PulseCurve.Object;
         } else {
-            ExitGameErr("AItem::DefaultConstructor_Curves(): M_PulseCurve "
+            ExitPrintErr("AItem::DefaultConstructor_Curves(): M_PulseCurve "
                         "failed to load");
         }
     }
@@ -224,7 +227,7 @@ void AItem::DefaultConstructor_Curves() {
         if (M_InterpPulseCurve.Succeeded()) {
             InterpPulseCurve = M_InterpPulseCurve.Object;
         } else {
-            ExitGameErr("AItem::DefaultConstructor_Curves(): M_InterpPulseCurve "
+            ExitPrintErr("AItem::DefaultConstructor_Curves(): M_InterpPulseCurve "
                         "failed to load");
         }
     }
@@ -265,7 +268,7 @@ void AItem::PlayPickupSound(bool bForcePlaySound) {
             if (PickupSound) UGameplayStatics::PlaySound2D(this, PickupSound);
         }
     } else {
-        ExitGameErr("AItem::PlayPickupSound(): Character was nullptr");
+        ExitPrintErr("AItem::PlayPickupSound(): Character was nullptr");
     }
 }
 
@@ -305,7 +308,7 @@ void AItem::UpdatePulse() {
                 CurveValue  = PulseCurve->GetVectorValue(ElapsedTime);
 
             } else {
-                ExitGameErr("AItem::UpdatePulse(): Case EItemState::EIS_Pickup: "
+                ExitPrintErr("AItem::UpdatePulse(): Case EItemState::EIS_Pickup: "
                             "PulseCurve was nullptr");
             }
         } break;
@@ -318,7 +321,7 @@ void AItem::UpdatePulse() {
                 CurveValue  = InterpPulseCurve->GetVectorValue(ElapsedTime);
 
             } else {
-                ExitGameErr("AItem::UpdatePulse(): Case "
+                ExitPrintErr("AItem::UpdatePulse(): Case "
                             "EItemState::EIS_EquipInterping: "
                             "InterpPulseCurve was nullptr");
             }
@@ -376,7 +379,7 @@ void AItem::PlayEquipSound(bool bForcePlaySound) {
             if (EquipSound) UGameplayStatics::PlaySound2D(this, EquipSound);
         }
     } else {
-        ExitGameErr("AItem::PlayEquipSound(): Character was nullptr");
+        ExitPrintErr("AItem::PlayEquipSound(): Character was nullptr");
     }
 }
 
@@ -435,7 +438,7 @@ void AItem::OnSphereOverlap(UPrimitiveComponent *OverlappedComponent, AActor *Ot
             ShooterCharacter->IncrementOverlappedItemCount(1);
         }
     } else {
-        ExitGameErr("AItem::OnSphereOverlap(): OtherActor was nullptr");
+        ExitPrintErr("AItem::OnSphereOverlap(): OtherActor was nullptr");
     }
 }
 
@@ -452,7 +455,7 @@ void AItem::OnSphereEndOverlap(UPrimitiveComponent *OverlappedComponent, AActor 
             ShooterCharacter->UnHighlightInventorySlot();
         }
     } else {
-        ExitGameErr("AItem::OnSphereEndOverlap(): OtherActor was nullptr");
+        ExitPrintErr("AItem::OnSphereEndOverlap(): OtherActor was nullptr");
     }
 }
 
@@ -612,7 +615,7 @@ void AItem::FinishInterping() {
         Character->UnHighlightInventorySlot();
 
     } else {
-        ExitGameErr("AItem::FinishInterping(): Character was nullptr");
+        ExitPrintErr("AItem::FinishInterping(): Character was nullptr");
     }
     // Set item state back to normal
     SetActorScale3D(FVector(1.f));
@@ -693,14 +696,14 @@ void AItem::ItemInterp(float DeltaTime) {
 
                 SetActorScale3D(FVector(ScaleCurveValue, ScaleCurveValue, ScaleCurveValue));
             } else {
-                ExitGameErr("AItem::ItemInterp(float DeltaTime):->if("
+                ExitPrintErr("AItem::ItemInterp(float DeltaTime):->if("
                             "ItemZ_Curve): ItemScaleCurve was nullptr");
             }
         } else {
-            ExitGameErr("AItem::ItemInterp(float DeltaTime) ItemZ_Curve was nullptr");
+            ExitPrintErr("AItem::ItemInterp(float DeltaTime) ItemZ_Curve was nullptr");
         }
     } else {
-        ExitGameErr("AItem::ItemInterp(float DeltaTime)"
+        ExitPrintErr("AItem::ItemInterp(float DeltaTime)"
                     "Character was nullptr");
     }
 }

@@ -374,6 +374,10 @@ private:
       meta = (AllowPrivateAccess = "true"))
     class UShooterCharacterCamera *CustomCamera;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Camera",
+      meta = (AllowPrivateAccess = "true"))
+    bool bUseCustomCamera;
+
     /**
 	 * @brief Is transitioning for cinematic camera to normal
      * camera

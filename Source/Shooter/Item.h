@@ -289,7 +289,7 @@ private:
     int32 MaterialIndex;
 
     /**  Dynamic instance that we can change at runtime. */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Materials",
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Materials",
       meta = (AllowPrivateAccess = "true"))
     UMaterialInstanceDynamic *DynamicMaterialInstance;
 

@@ -1,11 +1,16 @@
-
 #include "ShooterCharacterCamera.h"
 
-UShooterCharacterCamera::UShooterCharacterCamera() : fDefaultFOV(110.f) {
+#include <GameFramework/SpringArmComponent.h>
+
+UShooterCharacterCamera::UShooterCharacterCamera()
+    : fDefaultFOV(110.f)
+    , CustomCameraBoom (nullptr){
 
     PrimaryComponentTick.bStartWithTickEnabled = true;
-    PrimaryComponentTick.bCanEverTick = true;
-    bUsePawnControlRotation = false;
+    PrimaryComponentTick.bCanEverTick          = true;
+    bUsePawnControlRotation                    = false;
+
+    //CustomCameraBoom = CDSubObj<USpringArmComponent>(L"CustomCameraBoom");
 
     SetFieldOfView(fDefaultFOV);
 }
@@ -20,3 +25,7 @@ void UShooterCharacterCamera::TickComponent(
 void UShooterCharacterCamera::SetFOV(float FOV) {}
 
 float UShooterCharacterCamera::GetFOV() const { return fDefaultFOV; }
+
+USpringArmComponent *UShooterCharacterCamera::GetCustomCameraBoom() const {
+    return CustomCameraBoom;
+}

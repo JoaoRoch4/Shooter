@@ -1,9 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
+#include <Camera/CameraComponent.h>
+
 #include "CoreMinimal.h"
-#include "Camera/CameraComponent.h"
+
 #include "Custom.h"
 #include "ShooterCharacterCamera.generated.h"
 
@@ -31,9 +31,15 @@ private:
       meta = (AllowPrivateAccess = "true"))
     float fDefaultFOV;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Camera",
+      meta = (AllowPrivateAccess = "true"))
+    class USpringArmComponent *CustomCameraBoom;
+
 public:
 
     FORCEINLINE void SetFOV(float FOV);
 
     FORCEINLINE float GetFOV() const;
+
+    FORCEINLINE USpringArmComponent *GetCustomCameraBoom() const;
 };
