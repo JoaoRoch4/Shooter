@@ -38,6 +38,8 @@ AShooterCharacter::AShooterCharacter()
  , CustomCamera(nullptr)
  , bUseCustomCamera(false)
  , bIsTransitioning(true)
+ , bDKey_Pressed(false)
+ , bDKey_Released(false)
  , bCinematicCameraSwitch(true)
  , bUseBezierCurve(true)
  , CameraArmLengthStart(200.f)
@@ -191,7 +193,7 @@ void AShooterCharacter::Tick(float DeltaTime) {
 
     if (bDebugSlotMessages) DebugSlotsItens();
 
-    DisableCameraLagWhenMovingRight();
+    DisableCameraLagWhenMovingRight(DeltaTime);
 }
 
 void AShooterCharacter::InterpCapsuleHalfHeight(float DeltaTime) {
@@ -622,6 +624,11 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent *PlayerInputCo
 
         PlayerInputComponent->BindAction(
           "Fkey", IE_Pressed, this, &AShooterCharacter::KEY_FkeyPressed);
+
+        PlayerInputComponent->BindAction(
+          "DKey", IE_Pressed, this, &AShooterCharacter::DKey_D_Pressed);
+        PlayerInputComponent->BindAction(
+          "DKey", IE_Released, this, &AShooterCharacter::DKey_D_Released);
     }
 
     /* Number keys */ {
@@ -957,37 +964,23 @@ void AShooterCharacter::CinematicCameraOn() {
     CameraBoom->CameraLagMaxTimeStep     = 0.016667f;
 }
 
-bool AShooterCharacter::IsMovingRight() {
+void AShooterCharacter::DisableCameraLagWhenMovingRight(float DeltaTime) {
 
-    // Get the character's current velocity
-    FVector Velocity = GetVelocity();
+    if (bDKey_Pressed) {
 
-    int8 MovementThreshold {100};
+        CameraBoom->CameraLagMaxDistance
+          = FMath::FInterpTo(CameraBoom->CameraLagMaxDistance, 180.f, DeltaTime, 3.f);
 
-    // Check if the rightward movement is significant
-    return Velocity.Y > MovementThreshold;
-}
+        CameraBoom->SocketOffset
+          = FMath::VInterpTo(CameraBoom->SocketOffset, FVector(0.f, 190.f, 27.f), DeltaTime, 2.f);
 
-void AShooterCharacter::DisableCameraLagWhenMovingRight() {
+    } else if (bDKey_Released) {
 
-    bool bIsMovingRight {IsMovingRight()};
-
-    switch (bIsMovingRight) {
-
-        case true : {
-
-            CameraBoom->bEnableCameraLag         = false;
-            CameraBoom->bEnableCameraRotationLag = false;
-            CameraBoom->bUseCameraLagSubstepping = false;
-            
-        } break;
-        case false : {
-
-            CameraBoom->bEnableCameraLag         = true;
-            CameraBoom->bEnableCameraRotationLag = true;
-            CameraBoom->bUseCameraLagSubstepping = true;
-            
-        } break;
+        CameraBoom->CameraLagMaxDistance
+          = FMath::FInterpTo(CameraBoom->CameraLagMaxDistance, 200.f, DeltaTime, 0.75f);
+        
+        CameraBoom->SocketOffset
+          = FMath::VInterpTo(CameraBoom->SocketOffset, FVector(0.f, 87.f, 27.f), DeltaTime, 5.f);
     }
 }
 
@@ -1790,6 +1783,20 @@ void AShooterCharacter::ScrollDown() {
     } else {
         ExitPrintErr("AShooterCharacter::ScrollDown(): EquippedWeapon is nullptr");
     }
+}
+
+void AShooterCharacter::DKey_D_Pressed() { KeyMethodDKey(); }
+void AShooterCharacter::KeyMethodDKey() {
+
+    bDKey_Released = false;
+    bDKey_Pressed  = true;
+}
+
+void AShooterCharacter::DKey_D_Released() { KeyMethodDKeyReleased(); }
+void AShooterCharacter::KeyMethodDKeyReleased() {
+
+    bDKey_Released = true;
+    bDKey_Pressed  = false;
 }
 
 void AShooterCharacter::KEY_FkeyPressed() { KeyMethodFKey(); }

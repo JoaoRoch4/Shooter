@@ -135,7 +135,7 @@ protected:
 
     bool IsMovingRight();
 
-    void DisableCameraLagWhenMovingRight();
+    void DisableCameraLagWhenMovingRight(float DeltaTime);
 
     /** @brief Called when the fire button is pressed */
     void FireWeapon();
@@ -343,8 +343,15 @@ protected:
     void KEY_9_NineKeyPressed();
     void KEY_0_ZeroKeyPressed();
 
+    void DKey_D_Pressed();
+    void DKey_D_Released();
+
     /* Key Methods */
     void KeyMethodFKey();
+
+    void KeyMethodDKey();
+    void KeyMethodDKeyReleased();
+
     void KeyMethod1Key();
     void KeyMethod2Key();
     void KeyMethod3Key();
@@ -389,6 +396,12 @@ private:
 	 */
     UPROPERTY()
     bool bIsTransitioning;
+
+    UPROPERTY()
+    bool bDKey_Pressed;
+
+    UPROPERTY()
+    bool bDKey_Released;
 
     /** Is true for Cinematic camera */
     UPROPERTY()
