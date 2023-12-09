@@ -190,6 +190,8 @@ void AShooterCharacter::Tick(float DeltaTime) {
     InterpCapsuleHalfHeight(DeltaTime);
 
     if (bDebugSlotMessages) DebugSlotsItens();
+
+    DisableCameraLagWhenMovingRight();
 }
 
 void AShooterCharacter::InterpCapsuleHalfHeight(float DeltaTime) {
@@ -953,6 +955,40 @@ void AShooterCharacter::CinematicCameraOn() {
     CameraBoom->CameraLagSpeed           = 6.f;
     CameraBoom->CameraRotationLagSpeed   = 10.f;
     CameraBoom->CameraLagMaxTimeStep     = 0.016667f;
+}
+
+bool AShooterCharacter::IsMovingRight() {
+
+    // Get the character's current velocity
+    FVector Velocity = GetVelocity();
+
+    int8 MovementThreshold {100};
+
+    // Check if the rightward movement is significant
+    return Velocity.Y > MovementThreshold;
+}
+
+void AShooterCharacter::DisableCameraLagWhenMovingRight() {
+
+    bool bIsMovingRight {IsMovingRight()};
+
+    switch (bIsMovingRight) {
+
+        case true : {
+
+            CameraBoom->bEnableCameraLag         = false;
+            CameraBoom->bEnableCameraRotationLag = false;
+            CameraBoom->bUseCameraLagSubstepping = false;
+            
+        } break;
+        case false : {
+
+            CameraBoom->bEnableCameraLag         = true;
+            CameraBoom->bEnableCameraRotationLag = true;
+            CameraBoom->bUseCameraLagSubstepping = true;
+            
+        } break;
+    }
 }
 
 void AShooterCharacter::CinematicCameraOff() {
