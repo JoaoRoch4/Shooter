@@ -133,6 +133,10 @@ protected:
 	 */
     void LookUp(float Value);
 
+    bool IsMovingRight();
+
+    void DisableCameraLagWhenMovingRight();
+
     /** @brief Called when the fire button is pressed */
     void FireWeapon();
 

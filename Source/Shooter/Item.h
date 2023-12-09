@@ -56,7 +56,7 @@ USTRUCT(BlueprintType, Category = "DataTables|ItemRarityTable")
 struct FItemRarityTable : public FTableRowBase {
 
     GENERATED_BODY()
-      
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FLinearColor GlowColor;
 
@@ -70,23 +70,18 @@ struct FItemRarityTable : public FTableRowBase {
     int32 NumberOfStars;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    UTexture2D* IconBackground;
+    UTexture2D *IconBackground;
 
-    FItemRarityTable() :
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 CustomDepthStencil;
 
-     GlowColor(FLinearColor()),
-     LightColor(FLinearColor()),
-     DarkColor(FLinearColor()),
-     NumberOfStars(0),
-     IconBackground(nullptr) {}
-
-    FItemRarityTable(const FLinearColor &GlowColor, const FLinearColor &LightColor,
-      const FLinearColor &DarkColor, const int32 &NumberOfStars, UTexture2D *IconBackground) :
-     GlowColor(GlowColor),
-     LightColor(LightColor),
-     DarkColor(DarkColor),
-     NumberOfStars(NumberOfStars),
-     IconBackground(IconBackground) {}
+    FItemRarityTable()
+     : GlowColor(FLinearColor())
+     , LightColor(FLinearColor())
+     , DarkColor(FLinearColor())
+     , NumberOfStars(0)
+     , IconBackground(nullptr)
+     , CustomDepthStencil(0) {}
 };
 
 UCLASS()
@@ -109,7 +104,8 @@ protected:
     /* Called when item is overlapped with AreaSphere. */
     UFUNCTION()
     void OnSphereOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor,
-      UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult);
+      UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+      const FHitResult &SweepResult);
 
     /** Called when end overlapping with AreaSphere */
     UFUNCTION()
@@ -158,11 +154,9 @@ protected:
     void UpdatePulse();
 
 public:
-
     virtual void Tick(float DeltaTime) override;
 
 private:
-
     /* Default constructor for Collision Box. */
     void DefaultConstructor_CollisionBox();
 
@@ -177,39 +171,46 @@ private:
     class UBoxComponent *CollisionBox;
 
     /* Popup widget for when the player look at item. */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Interface|PickupWidget",
-      meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadOnly,
+      Category = "My Custom Properties|Interface|PickupWidget",
+      meta     = (AllowPrivateAccess = "true"))
     class UWidgetComponent *PickupWidget;
 
     /* Enables item tracing when overlapped. */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Interface|PickupWidget",
-      meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadOnly,
+      Category = "My Custom Properties|Interface|PickupWidget",
+      meta     = (AllowPrivateAccess = "true"))
     class USphereComponent *AreaSphere;
 
     /* The name which appears on the pickup widget. */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Interface|PickupWidget",
-      meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadOnly,
+      Category = "My Custom Properties|Interface|PickupWidget",
+      meta     = (AllowPrivateAccess = "true"))
     FString ItemName;
 
     /* The item count for this pickup. */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Interface|PickupWidget",
-      meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|Interface|PickupWidget",
+      meta     = (AllowPrivateAccess = "true"))
     int32 ItemCount;
 
     /* The item rarity determines the number of stars in the pickup
      * widget. */
     UPROPERTY(EditAnywhere, BlueprintReadOnly,
-      Category = "My Custom Properties|Interface|PickupWidget|Rarity", meta = (AllowPrivateAccess = "true"))
+      Category = "My Custom Properties|Interface|PickupWidget|Rarity",
+      meta     = (AllowPrivateAccess = "true"))
     EItemRarity ItemRarity;
 
     /**  State of the item. */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Interface|PickupWidget",
-      meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
+      Category = "My Custom Properties|Interface|PickupWidget",
+      meta     = (AllowPrivateAccess = "true"))
     EItemState ItemState;
 
     /* Array of bools for each star in pickup widget. */
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly,
-      Category = "My Custom Properties|Interface|PickupWidget|Rarity", meta = (AllowPrivateAccess = "true"))
+      Category = "My Custom Properties|Interface|PickupWidget|Rarity",
+      meta     = (AllowPrivateAccess = "true"))
     TArray<bool> ActiveStars;
 
     /**	The curve asset to use for the item's Z location when interping. */
@@ -218,18 +219,18 @@ private:
     class UCurveFloat *ItemZ_Curve;
 
     /**  Starting location when interping begins. */
-    UPROPERTY(
-      BlueprintReadOnly, Category = "My Custom Properties|Interp", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(BlueprintReadOnly, Category = "My Custom Properties|Interp",
+      meta = (AllowPrivateAccess = "true"))
     FVector ItemInterpStartLocation;
 
     /**  Target interp location in front of the camera. */
-    UPROPERTY(
-      BlueprintReadOnly, Category = "My Custom Properties|Interp", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(BlueprintReadOnly, Category = "My Custom Properties|Interp",
+      meta = (AllowPrivateAccess = "true"))
     FVector CameraTargetLocation;
 
     /**  True when interping. */
-    UPROPERTY(
-      BlueprintReadOnly, Category = "My Custom Properties|Interp", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(BlueprintReadOnly, Category = "My Custom Properties|Interp",
+      meta = (AllowPrivateAccess = "true"))
     bool bInterping;
 
     /**  Plays when we start interping. */
@@ -270,8 +271,9 @@ private:
     USoundCue *EquipSound;
 
     /**  Enum for the type this item is. */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Interface|PickupWidget",
-      meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|Interface|PickupWidget",
+      meta     = (AllowPrivateAccess = "true"))
     EItemType ItemType;
 
     /**
@@ -301,13 +303,15 @@ private:
     bool bCanChangeCustomDepth;
 
     /** Curve to drive the dynamic material parameters */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Interp|Curves|PulseCurve",
-      meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|Interp|Curves|PulseCurve",
+      meta     = (AllowPrivateAccess = "true"))
     class UCurveVector *PulseCurve;
 
     /** Curve to drive the dynamic material parameters */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Interp|Curves|PulseCurve",
-      meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|Interp|Curves|PulseCurve",
+      meta     = (AllowPrivateAccess = "true"))
     UCurveVector *InterpPulseCurve;
 
     UPROPERTY(BlueprintReadOnly, Category = "My Custom Properties|Interp|Curves|PulseCurve",
@@ -328,17 +332,20 @@ private:
 
     /** Time for the PulseTimer */
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
-      Category = "My Custom Properties|Interp|Curves|PulseCurve|Values", meta = (AllowPrivateAccess = "true"))
-    float PulseCurveTime;      
+      Category = "My Custom Properties|Interp|Curves|PulseCurve|Values",
+      meta     = (AllowPrivateAccess = "true"))
+    float PulseCurveTime;
 
     /** Icon for this item in the inventory */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Interface|PickupWidget|",
-      meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadOnly,
+      Category = "My Custom Properties|Interface|PickupWidget|",
+      meta     = (AllowPrivateAccess = "true"))
     UTexture2D *IconItem;
 
     /** Ammo Icon for this item in the inventory */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Interface|PickupWidget|",
-      meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditAnywhere, BlueprintReadOnly,
+      Category = "My Custom Properties|Interface|PickupWidget|",
+      meta     = (AllowPrivateAccess = "true"))
     UTexture2D *AmmoItem;
 
     /** Slot in the inventory array */
@@ -352,37 +359,42 @@ private:
     bool bCharacterInventoryFull;
 
     /** item Rarity Data table */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Interface|PickupWidget|Rarity|DataTable",
-      meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
+      Category = "My Custom Properties|Interface|PickupWidget|Rarity|DataTable",
+      meta     = (AllowPrivateAccess = "true"))
     class UDataTable *ItemRarityDataTable;
 
     /** Color in the glow material */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Interface|PickupWidget|Rarity|DataTable",
-      meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
+      Category = "My Custom Properties|Interface|PickupWidget|Rarity|DataTable",
+      meta     = (AllowPrivateAccess = "true"))
     FLinearColor GlowColor;
 
     /** Light color in the pickup widget */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Interface|PickupWidget|Rarity|DataTable",
-      meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
+      Category = "My Custom Properties|Interface|PickupWidget|Rarity|DataTable",
+      meta     = (AllowPrivateAccess = "true"))
     FLinearColor LightColor;
 
     /** Dark color in the pickup widget */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Interface|PickupWidget|Rarity|DataTable",
-      meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
+      Category = "My Custom Properties|Interface|PickupWidget|Rarity|DataTable",
+      meta     = (AllowPrivateAccess = "true"))
     FLinearColor DarkColor;
 
     /** Number of Stars in the pickup widget */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Interface|PickupWidget|Rarity|DataTable",
-      meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
+      Category = "My Custom Properties|Interface|PickupWidget|Rarity|DataTable",
+      meta     = (AllowPrivateAccess = "true"))
     int32 NumberOfStars;
 
     /** Background icon for the inventory */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Interface|PickupWidget|Rarity|DataTable",
-      meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
+      Category = "My Custom Properties|Interface|PickupWidget|Rarity|DataTable",
+      meta     = (AllowPrivateAccess = "true"))
     UTexture2D *IconBackground;
 
 public:
-
     FORCEINLINE UWidgetComponent *GetPickupWidget() const { return PickupWidget; }
 
     FORCEINLINE USphereComponent *GetAreaSphere() const { return AreaSphere; }
