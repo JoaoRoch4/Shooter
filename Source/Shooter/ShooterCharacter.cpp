@@ -39,15 +39,21 @@ AShooterCharacter::AShooterCharacter()
  , bUseCustomCamera(false)
  , bIsTransitioning(true)
  , bDKey_Pressed(false)
- , bDKey_Released(false)
+ , bDKey_Released(true)
+ , bSKey_Pressed(false)
+ , bSKey_Released(true)
+ , bWKey_Pressed(false)
+ , bWKey_Released(true)
+ , bAKey_Pressed(false)
+ , bAKey_Released(true)
  , bCinematicCameraSwitch(true)
  , bUseBezierCurve(true)
  , CameraArmLengthStart(200.f)
  , CameraArmLengthEnd(300.f)
  , TransitionDuration(0.2f)
- , PreviousYaw(0.f)
- , LerpedArmLength(0.f)
- , CurrentTime(0.0f)
+ , PreviousYaw(NULL)
+ , LerpedArmLength(NULL)
+ , CurrentTime(NULL)
  , BaseTurnRate(45.f)
  , BaseLookUpRate(45.f)
  , HipTurnRate(90.f)
@@ -68,15 +74,15 @@ AShooterCharacter::AShooterCharacter()
  , EquipMontage(nullptr)
  , bShowCustomDebugMessages(false)
  , bAiming(false)
- , CameraDefaultAimFOV(0.f)
+ , CameraDefaultAimFOV(NULL)
  , CameraZoomedAimFOV(40.f)
  , CameraCurrentAimFOV(0.f)
  , ZoomInterpSpeed(20.f)
  , CrosshairHeight(50.f)
- , CrosshairSpreadMultiplier(0.f)
- , CrosshairVelocityFactor(0.f)
- , CrosshairInAirFactor(0.f)
- , CrosshairAimFactor(0.f)
+ , CrosshairSpreadMultiplier(NULL)
+ , CrosshairVelocityFactor(NULL)
+ , CrosshairInAirFactor(NULL)
+ , CrosshairAimFactor(NULL)
  , CrosshairShootingFactor(0.f)
  , ShootTimeDuration(0.05f)
  , bFiringBullet(false)
@@ -86,7 +92,7 @@ AShooterCharacter::AShooterCharacter()
  , AutomaticFireRate(0.1f)
  , AutoFireTimer(FTimerHandle())
  , bShouldTraceForItems(false)
- , OverlappedItemCount(0)
+ , OverlappedItemCount(NULL)
  , TraceHitItemLastFrame(nullptr)
  , EquippedWeapon(nullptr)
  , DefaultWeaponClass(nullptr)
@@ -103,7 +109,7 @@ AShooterCharacter::AShooterCharacter()
  , bCrouching(false)
  , BaseMovementSpeed(650.f)
  , CrouchMovementSpeed(300.f)
- , CurrentCapsuleHalfHeight(0.f)
+ , CurrentCapsuleHalfHeight(NULL)
  , StandingCapsuleHalfHeight(88.f)
  , CrouchingCapsuleHalfHeight(44.f)
  , BaseGroundFriction(2.f)
@@ -125,15 +131,37 @@ AShooterCharacter::AShooterCharacter()
  , EquipSoundResetTime(0.2f)
  , Inventory(TArray<AItem *>())
  , DebugKeys(false)
- , CurrentSlotIndex(0)
- , InventoryCount(0)
+ , CurrentSlotIndex(NULL)
+ , InventoryCount(NULL)
  , ExchangeInventoryItensTimer(FTimerHandle())
  , bExchangeInventoryItensEnabled(true)
  , ExchangeInventoryItensTime(0.15f)
  , bDebugSlotMessages(false)
  , HighlightedSlot(-1)
+ , GlobalDeltaTime(NULL)
  , BulletHoleDecal(nullptr)
- , BulletHoleDecalMat(nullptr) {
+ , BulletHoleDecalMat(nullptr)
+ , bDisableCameraLagWhenMoving(false)
+ , bDisableCameraLagWhenMovingRight(false)
+ , MovingDirection(EMovingDirection::EMD_None)
+ , ShowEMovingDirection(true)
+ , OriginalCameraSocketOffset(FVector::Zero())
+ , OriginalCameraLagSpeed(NULL)
+ , OriginalCameraLagMaxDistance(NULL)
+ , CustomCameraSocketOffset(FVector::Zero())
+ , CustomCameraLagSpeed(NULL)
+ , CustomCameraLagMaxDistance(NULL)
+ , FrowardZOffset_Froward__LEGACY(60.0)
+ , OffsetFroward(FVector::Zero())
+ , CustomCameraLagMaxDistance_Froward(200.0)
+ , BackwardXOffset_Backwards__LEGACY(-140.0)
+ , OffsetBackwards(FVector::Zero())
+ , CustomCameraLagMaxDistance_Backwards(100.0)
+ , XOffset_Right__LEGACY(140.0)
+ , OffsetRight(FVector::Zero())
+ , CustomCameraLagMaxDistance_Right(100.0)
+
+{
 
     PrimaryActorTick.bCanEverTick = true;
 
@@ -150,6 +178,8 @@ AShooterCharacter::AShooterCharacter()
     GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
 
     DefaultConstructor_InterpComponents();
+
+    AdjustVectors();
 }
 
 void AShooterCharacter::BeginPlay() {
@@ -158,23 +188,23 @@ void AShooterCharacter::BeginPlay() {
 
     SetupFollowCamera();
 
-    // Spawn Default Weapon and equip it
-    EquipWeapon(SpawnDefaultWeapon());
-    Inventory.Add(EquippedWeapon);
-    EquippedWeapon->SetSlotIndex(0);
-    EquippedWeapon->DisableCustomDepth();
-    EquippedWeapon->DisableGlowMaterial();
-    EquippedWeapon->SetCharacter(this);
+    EquipWeapon();
 
     InitializeAmmoMap();
     InitializeInterpLocations();
 
     UpdateSlotsItens();
+
+    GetOriginalCameraLagOffset();
+
+    AdjustVectors();
 }
 
 void AShooterCharacter::Tick(float DeltaTime) {
 
     Super::Tick(DeltaTime);
+
+    GlobalDeltaTime = DeltaTime;
 
     if (bIsTransitioning) StartCameraLerp(DeltaTime);
 
@@ -193,7 +223,11 @@ void AShooterCharacter::Tick(float DeltaTime) {
 
     if (bDebugSlotMessages) DebugSlotsItens();
 
-    DisableCameraLagWhenMovingRight(DeltaTime);
+    // DisableCameraLagWhenMovingRight(DeltaTime);
+
+    if (ShowEMovingDirection) ShowMovingDirectionActions();
+
+    if (!bDisableCameraLagWhenMovingRight) SetMovingDirectionActions(DeltaTime);
 }
 
 void AShooterCharacter::InterpCapsuleHalfHeight(float DeltaTime) {
@@ -626,9 +660,24 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent *PlayerInputCo
           "Fkey", IE_Pressed, this, &AShooterCharacter::KEY_FkeyPressed);
 
         PlayerInputComponent->BindAction(
-          "DKey", IE_Pressed, this, &AShooterCharacter::DKey_D_Pressed);
+          "DKey", IE_Pressed, this, &AShooterCharacter::KEY_DKey_D_Pressed);
         PlayerInputComponent->BindAction(
-          "DKey", IE_Released, this, &AShooterCharacter::DKey_D_Released);
+          "DKey", IE_Released, this, &AShooterCharacter::KEY_DKey_D_Released);
+
+        PlayerInputComponent->BindAction(
+          "SKey", IE_Pressed, this, &AShooterCharacter::KEY_SKey_S_Pressed);
+        PlayerInputComponent->BindAction(
+          "SKey", IE_Released, this, &AShooterCharacter::KEY_SKey_S_Released);
+
+        PlayerInputComponent->BindAction(
+          "WKey", IE_Pressed, this, &AShooterCharacter::KEY_WKey_W_Pressed);
+        PlayerInputComponent->BindAction(
+          "WKey", IE_Released, this, &AShooterCharacter::KEY_WKey_W_Released);
+
+        PlayerInputComponent->BindAction(
+          "AKey", IE_Pressed, this, &AShooterCharacter::KEY_AKey_A_Pressed);
+        PlayerInputComponent->BindAction(
+          "AKey", IE_Released, this, &AShooterCharacter::KEY_AKey_A_Released);
     }
 
     /* Number keys */ {
@@ -966,21 +1015,72 @@ void AShooterCharacter::CinematicCameraOn() {
 
 void AShooterCharacter::DisableCameraLagWhenMovingRight(float DeltaTime) {
 
+    const static double ExtraRightSocket {300.0};
+
     if (bDKey_Pressed) {
 
-        CameraBoom->CameraLagMaxDistance
-          = FMath::FInterpTo(CameraBoom->CameraLagMaxDistance, 180.f, DeltaTime, 3.f);
+        PrintOnScr("bDKey_Pressed")
+
+          CameraBoom->CameraLagMaxDistance
+          = FMath::FInterpTo(CameraBoom->CameraLagMaxDistance, 220.f, DeltaTime, 3.f);
+
+        const static double NewSocketOffsetY {CameraBoom->SocketOffset.Y + ExtraRightSocket};
+
+        Fvc NewSocketOffset {
+          Fvc(CameraBoom->SocketOffset.X, NewSocketOffsetY, CameraBoom->SocketOffset.Z)};
 
         CameraBoom->SocketOffset
-          = FMath::VInterpTo(CameraBoom->SocketOffset, FVector(0.f, 190.f, 27.f), DeltaTime, 2.f);
+          = FMath::VInterpTo(CameraBoom->SocketOffset, NewSocketOffset, DeltaTime, 30.f);
+    }
 
-    } else if (bDKey_Released) {
+    else if (bDKey_Released) {
 
         CameraBoom->CameraLagMaxDistance
-          = FMath::FInterpTo(CameraBoom->CameraLagMaxDistance, 200.f, DeltaTime, 0.75f);
-        
+          = FMath::FInterpTo(CameraBoom->CameraLagMaxDistance, 200.f, DeltaTime, 50.f);
+
+        Fvc NewSocketOffset {(CameraBoom->SocketOffset.X,
+          CameraBoom->SocketOffset.Y - ExtraRightSocket, CameraBoom->SocketOffset.Z)};
+
+        CameraBoom->SocketOffset
+          = FMath::VInterpTo(CameraBoom->SocketOffset, NewSocketOffset, DeltaTime, 50.f);
+    }
+
+    else if (bSKey_Pressed) {
+
+        CameraBoom->CameraLagMaxDistance
+          = FMath::FInterpTo(CameraBoom->CameraLagMaxDistance, 10.f, DeltaTime, 3.f);
+
+        CameraBoom->SocketOffset
+          = FMath::VInterpTo(CameraBoom->SocketOffset, FVector(-80.f, 87.f, 27.f), DeltaTime, 50.f);
+    }
+
+    else if (bSKey_Released) {
+
+        CameraBoom->CameraLagMaxDistance
+          = FMath::FInterpTo(CameraBoom->CameraLagMaxDistance, 200.f, DeltaTime, 100.f);
+
         CameraBoom->SocketOffset
           = FMath::VInterpTo(CameraBoom->SocketOffset, FVector(0.f, 87.f, 27.f), DeltaTime, 5.f);
+    }
+}
+
+void AShooterCharacter::DisableCameraLagWhenMovingBackwards(float DeltaTime) {
+
+    if (bSKey_Pressed) {
+
+        CameraBoom->CameraLagMaxDistance
+          = FMath::FInterpTo(CameraBoom->CameraLagMaxDistance, 10.f, DeltaTime, 3.f);
+
+        CameraBoom->SocketOffset
+          = FMath::VInterpTo(CameraBoom->SocketOffset, FVector(-80.f, 87.f, 27.f), DeltaTime, 0.5f);
+
+    } else {
+
+        CameraBoom->CameraLagMaxDistance
+          = FMath::FInterpTo(CameraBoom->CameraLagMaxDistance, 200.f, DeltaTime, 100.f);
+
+        CameraBoom->SocketOffset
+          = FMath::VInterpTo(CameraBoom->SocketOffset, FVector(0.f, 87.f, 27.f), DeltaTime, 50.f);
     }
 }
 
@@ -1502,6 +1602,33 @@ void AShooterCharacter::SelectButtonPressed() {
 
 void AShooterCharacter::SelectButtonReleased() {}
 
+void AShooterCharacter::GetOriginalCameraLagOffset() {
+
+    if (OriginalCameraSocketOffset == FVector::ZeroVector) {
+
+        OriginalCameraSocketOffset = CameraBoom->SocketOffset;
+    }
+
+    OriginalCameraLagSpeed = CameraBoom->CameraLagSpeed;
+
+    OriginalCameraLagMaxDistance = CameraBoom->CameraLagMaxDistance;
+}
+
+void AShooterCharacter::AdjustVectors() {
+
+    if (OffsetFroward.X == 0) OffsetFroward.X = CameraBoom->SocketOffset.X;
+    if (OffsetFroward.Y == 0) OffsetFroward.Y = CameraBoom->SocketOffset.Y;
+    if (OffsetFroward.Z == 0) OffsetFroward.Z = CameraBoom->SocketOffset.Z;
+
+    if (OffsetBackwards.X == 0) OffsetBackwards.X = CameraBoom->SocketOffset.X;
+    if (OffsetBackwards.Y == 0) OffsetBackwards.Y = CameraBoom->SocketOffset.Y;
+    if (OffsetBackwards.Z == 0) OffsetBackwards.Z = CameraBoom->SocketOffset.Z;
+
+    if (OffsetRight.X == 0) OffsetRight.X = CameraBoom->SocketOffset.X;
+    if (OffsetRight.Y == 0) OffsetRight.Y = CameraBoom->SocketOffset.Y;
+    if (OffsetRight.Z == 0) OffsetRight.Z = CameraBoom->SocketOffset.Z;
+}
+
 float AShooterCharacter::GetCrosshairHeight() const { return CrosshairHeight; }
 
 float AShooterCharacter::GetCrosshairSpreadMultiplier() const { return CrosshairSpreadMultiplier; }
@@ -1742,6 +1869,17 @@ void AShooterCharacter::UpdateSlotsItens() {
     InventoryCount   = Inventory.Num();
 }
 
+void AShooterCharacter::EquipWeapon() {
+
+    // Spawn Default Weapon and equip it
+    EquipWeapon(SpawnDefaultWeapon());
+    Inventory.Add(EquippedWeapon);
+    EquippedWeapon->SetSlotIndex(0);
+    EquippedWeapon->DisableCustomDepth();
+    EquippedWeapon->DisableGlowMaterial();
+    EquippedWeapon->SetCharacter(this);
+}
+
 void AShooterCharacter::ScrollUp() {
 
     if (EquippedWeapon) {
@@ -1785,18 +1923,76 @@ void AShooterCharacter::ScrollDown() {
     }
 }
 
-void AShooterCharacter::DKey_D_Pressed() { KeyMethodDKey(); }
+void AShooterCharacter::KEY_DKey_D_Pressed() { KeyMethodDKey(); }
 void AShooterCharacter::KeyMethodDKey() {
 
     bDKey_Released = false;
     bDKey_Pressed  = true;
+
+    SetMovingDirection();
 }
 
-void AShooterCharacter::DKey_D_Released() { KeyMethodDKeyReleased(); }
+void AShooterCharacter::KEY_DKey_D_Released() { KeyMethodDKeyReleased(); }
 void AShooterCharacter::KeyMethodDKeyReleased() {
 
     bDKey_Released = true;
     bDKey_Pressed  = false;
+
+    SetMovingDirection();
+}
+
+void AShooterCharacter::KEY_SKey_S_Pressed() { KeyMethodSKey(); }
+void AShooterCharacter::KeyMethodSKey() {
+
+    bSKey_Pressed  = true;
+    bSKey_Released = false;
+
+    SetMovingDirection();
+}
+
+void AShooterCharacter::KEY_SKey_S_Released() { KeyMethodSKeyReleased(); }
+void AShooterCharacter::KeyMethodSKeyReleased() {
+
+    bSKey_Pressed  = false;
+    bSKey_Released = true;
+
+    SetMovingDirection();
+}
+
+void AShooterCharacter::KEY_WKey_W_Pressed() { KeyMethodWKey(); }
+void AShooterCharacter::KeyMethodWKey() {
+
+    bWKey_Pressed  = true;
+    bWKey_Released = false;
+
+    SetMovingDirection();
+}
+
+void AShooterCharacter::KEY_WKey_W_Released() { KeyMethodWKeyReleased(); }
+void AShooterCharacter::KeyMethodWKeyReleased() {
+
+    bWKey_Pressed  = false;
+    bWKey_Released = true;
+
+    SetMovingDirection();
+}
+
+void AShooterCharacter::KEY_AKey_A_Pressed() { KeyMethodAKey(); }
+void AShooterCharacter::KeyMethodAKey() {
+
+    bAKey_Pressed  = true;
+    bAKey_Released = false;
+
+    SetMovingDirection();
+}
+
+void AShooterCharacter::KEY_AKey_A_Released() { KeyMethodAKeyReleased(); }
+void AShooterCharacter::KeyMethodAKeyReleased() {
+
+    bAKey_Pressed  = false;
+    bAKey_Released = true;
+
+    SetMovingDirection();
 }
 
 void AShooterCharacter::KEY_FkeyPressed() { KeyMethodFKey(); }
@@ -1915,3 +2111,190 @@ void AShooterCharacter::KeyMethod9Key() { return; }
 
 void AShooterCharacter::KEY_0_ZeroKeyPressed() { KeyMethod0Key(); }
 void AShooterCharacter::KeyMethod0Key() { return; }
+
+void AShooterCharacter::SetMovingDirection() {
+
+    bool bMovingForward {bWKey_Pressed && !bWKey_Released};
+    bool bMovingBackward {bSKey_Pressed && !bSKey_Released};
+    bool bMovingRight {bDKey_Pressed && !bDKey_Released};
+    bool bMovingLeft {bAKey_Pressed && !bAKey_Released};
+    bool bMovingForwardRight {bMovingForward && bMovingRight};
+    bool bMovingForwardLeft {bMovingForward && bMovingLeft};
+    bool bMovingBackwardRight {bMovingBackward && bMovingRight};
+    bool bMovingBackwardLeft {bMovingBackward && bMovingLeft};
+
+    bool bNotMoving {!(bMovingForward && bMovingBackward && bMovingRight && bMovingLeft)
+                     || !(bMovingForwardRight && bMovingForwardLeft && bMovingBackwardRight
+                          && bMovingBackwardLeft)};
+
+    if (bNotMoving) MovingDirection = EMovingDirection::EMD_None;
+
+    if (bMovingForward) MovingDirection = EMovingDirection::EMD_Forward;
+    else if (bMovingBackward) MovingDirection = EMovingDirection::EMD_Backward;
+    else if (bMovingRight) MovingDirection = EMovingDirection::EMD_Right;
+    else if (bMovingLeft) MovingDirection = EMovingDirection::EMD_Left;
+
+    if (bMovingForwardRight) MovingDirection = EMovingDirection::EMD_ForwardRight;
+    else if (bMovingForwardLeft) MovingDirection = EMovingDirection::EMD_ForwardLeft;
+    else if (bMovingBackwardRight) MovingDirection = EMovingDirection::EMD_BackwardRight;
+    else if (bMovingBackwardLeft) MovingDirection = EMovingDirection::EMD_BackwardLeft;
+
+    else if (!bMovingRight) EMovingDirection_None(GlobalDeltaTime);
+}
+
+void AShooterCharacter::ShowMovingDirectionActions() const {
+
+    int8 MessageTime {-1};
+
+    switch (MovingDirection) {
+
+        case EMovingDirection::EMD_Forward : {
+
+            PrintOnScrTime(MessageTime, "EMovingDirection::EMD_Forward");
+
+        } break;
+
+        case EMovingDirection::EMD_Backward : {
+
+            PrintOnScrTime(MessageTime, "EMovingDirection::EMD_Backward");
+
+        } break;
+
+        case EMovingDirection::EMD_Right : {
+
+            PrintOnScrTime(MessageTime, "EMovingDirection::EMD_Right");
+
+        } break;
+
+        case EMovingDirection::EMD_Left : {
+
+            PrintOnScrTime(MessageTime, "EMovingDirection::EMD_Left");
+        } break;
+
+        case EMovingDirection::EMD_ForwardRight : {
+
+            PrintOnScrTime(MessageTime, "EMovingDirection::EMD_ForwardRight");
+        } break;
+
+        case EMovingDirection::EMD_ForwardLeft : {
+
+            PrintOnScrTime(MessageTime, "EMovingDirection::EMD_ForwardLeft");
+        } break;
+
+        case EMovingDirection::EMD_BackwardRight : {
+
+            PrintOnScrTime(MessageTime, "EMovingDirection::EMD_BackwardRight");
+
+        } break;
+
+        case EMovingDirection::EMD_BackwardLeft : {
+
+            PrintOnScrTime(MessageTime, "EMovingDirection::EMD_BackwardLeft");
+        } break;
+
+        case EMovingDirection::EMD_None : {
+
+            PrintOnScrTime(MessageTime, "EMovingDirection::EMD_None");
+        } break;
+
+        default : {
+
+            ExitGameErr("AShooterCharacter::SetMovingDirectionActions(): Invalid EMovingDirection");
+        } break;
+    }
+}
+
+void AShooterCharacter::SetMovingDirectionActions(float &DeltaTime) {
+
+    switch (MovingDirection) {
+
+        case EMovingDirection::EMD_Forward :
+            return AdjustCameraLag(OffsetFroward, CustomCameraLagMaxDistance_Froward, DeltaTime);
+
+        case EMovingDirection::EMD_Backward :
+            return AdjustCameraLag(OffsetBackwards, CustomCameraLagMaxDistance_Backwards, DeltaTime);
+
+        case EMovingDirection::EMD_Right :
+            return AdjustCameraLag(OffsetRight, CustomCameraLagMaxDistance_Right, DeltaTime);
+            
+
+        case EMovingDirection::EMD_Left : return EMovingDirection_Left(DeltaTime);
+
+        case EMovingDirection::EMD_ForwardRight : return EMovingDirection_ForwardRight(DeltaTime);
+
+        case EMovingDirection::EMD_ForwardLeft : return EMovingDirection_ForwardLeft(DeltaTime);
+
+        case EMovingDirection::EMD_BackwardRight : return EMovingDirection_BackwardRight(DeltaTime);
+
+        case EMovingDirection::EMD_BackwardLeft : return EMovingDirection_BackwardLeft(DeltaTime);
+
+        case EMovingDirection::EMD_None : return EMovingDirection_None(DeltaTime);
+
+        default : {
+            ExitGameErr("AShooterCharacter::SetMovingDirectionActions(): Invalid EMovingDirection");
+        } break;
+    }
+}
+
+void AShooterCharacter::EMovingDirection_Right(float DeltaTime) {
+
+    PrintOnScrTime(-1, "EMovingDirection_Backward");
+
+    FVector LegacyCustomSocket {
+      FVector(XOffset_Right__LEGACY, OriginalCameraSocketOffset.Y, OriginalCameraSocketOffset.Z)};
+
+    FVector CustomSocket {OffsetRight};
+
+    CustomCameraSocketOffset = CustomSocket;
+
+    double GetInterpMaxDistance {FMath::FInterpTo(
+      CameraBoom->CameraLagMaxDistance, CustomCameraLagMaxDistance_Right, DeltaTime, 5.f)};
+
+    FVector GetInterpSocket {
+      FMath::VInterpTo(CameraBoom->SocketOffset, CustomCameraSocketOffset, DeltaTime, 5.f)};
+
+    CameraBoom->CameraLagMaxDistance = GetInterpMaxDistance;
+    CameraBoom->SocketOffset         = GetInterpSocket;
+}
+
+void AShooterCharacter::EMovingDirection_Left(float DeltaTime) {}
+
+void AShooterCharacter::EMovingDirection_ForwardRight(float DeltaTime) {}
+
+void AShooterCharacter::EMovingDirection_ForwardLeft(float DeltaTime) {}
+
+void AShooterCharacter::EMovingDirection_BackwardRight(float DeltaTime) {}
+
+void AShooterCharacter::EMovingDirection_BackwardLeft(float DeltaTime) {}
+
+void AShooterCharacter::EMovingDirection_None(float DeltaTime) {
+
+    CustomCameraLagMaxDistance = OriginalCameraLagMaxDistance;
+    CustomCameraSocketOffset   = OriginalCameraSocketOffset;
+
+    double GetInterpMaxDistance {FMath::FInterpTo(
+      CameraBoom->CameraLagMaxDistance, CustomCameraLagMaxDistance, DeltaTime, 5.f)};
+
+    FVector GetInterpSocket {
+      FMath::VInterpTo(CameraBoom->SocketOffset, OriginalCameraSocketOffset, DeltaTime, 5.f)};
+
+    CameraBoom->CameraLagMaxDistance = GetInterpMaxDistance;
+    CameraBoom->SocketOffset         = GetInterpSocket;
+}
+
+void AShooterCharacter::AdjustCameraLag(
+  const FVector &Offset, const double &CameraLagMaxDistance, float DeltaTime) {
+
+    FVector CustomSocket {Offset};
+
+    CustomCameraSocketOffset = CustomSocket;
+
+    double GetInterpMaxDistance {
+      FMath::FInterpTo(CameraBoom->CameraLagMaxDistance, CameraLagMaxDistance, DeltaTime, 5.f)};
+
+    FVector GetInterpSocket {
+      FMath::VInterpTo(CameraBoom->SocketOffset, CustomCameraSocketOffset, DeltaTime, 5.f)};
+
+    CameraBoom->CameraLagMaxDistance = GetInterpMaxDistance;
+    CameraBoom->SocketOffset         = GetInterpSocket;
+}

@@ -24,6 +24,31 @@ enum class ECombatState : uint8 {
     ECS_MAX UMETA(DisplayName = "Default MAX")
 };
 
+UENUM(BlueprintType)
+enum class EMovingDirection : uint8 {
+
+    EMD_Forward UMETA(DisplayName = "Forward"),
+
+    EMD_Backward UMETA(DisplayName = "Backward"),
+
+    EMD_Right UMETA(DisplayName = "Right"),
+
+    EMD_Left UMETA(DisplayName = "Left"),
+
+    EMD_ForwardRight UMETA(DisplayName = "ForwardRight"),
+
+    EMD_ForwardLeft UMETA(DisplayName = "ForwardLeft"),
+
+    EMD_BackwardRight UMETA(DisplayName = "BackwardRight"),
+
+    EMD_BackwardLeft UMETA(DisplayName = "BackwardLeft"),
+
+    EMD_None UMETA(DisplayName = "None"),
+
+    EMD_MAX UMETA(DisplayName = "Default MAX")
+
+};
+
 USTRUCT(BlueprintType)
 struct FInterpLocation {
 
@@ -136,6 +161,8 @@ protected:
     bool IsMovingRight();
 
     void DisableCameraLagWhenMovingRight(float DeltaTime);
+
+    void DisableCameraLagWhenMovingBackwards(float DeltaTime);
 
     /** @brief Called when the fire button is pressed */
     void FireWeapon();
@@ -322,6 +349,8 @@ protected:
     void DebugSlotsItens();
     void UpdateSlotsItens();
 
+    void EquipWeapon();
+
     int32 GetEmptyInventorySlot();
 
     void HighlightInventorySlot();
@@ -332,6 +361,7 @@ protected:
 
     /* Key Bindings */
     void KEY_FkeyPressed();
+
     void KEY_1_OneKeyPressed();
     void KEY_2_TwoKeyPressed();
     void KEY_3_ThreeKeyPressed();
@@ -343,14 +373,32 @@ protected:
     void KEY_9_NineKeyPressed();
     void KEY_0_ZeroKeyPressed();
 
-    void DKey_D_Pressed();
-    void DKey_D_Released();
+    void KEY_DKey_D_Pressed();
+    void KEY_DKey_D_Released();
+
+    void KEY_SKey_S_Pressed();
+    void KEY_SKey_S_Released();
+
+    void KEY_WKey_W_Pressed();
+    void KEY_WKey_W_Released();
+
+    void KEY_AKey_A_Pressed();
+    void KEY_AKey_A_Released();
 
     /* Key Methods */
     void KeyMethodFKey();
 
     void KeyMethodDKey();
     void KeyMethodDKeyReleased();
+
+    void KeyMethodSKey();
+    void KeyMethodSKeyReleased();
+
+    void KeyMethodWKey();
+    void KeyMethodWKeyReleased();
+
+    void KeyMethodAKey();
+    void KeyMethodAKeyReleased();
 
     void KeyMethod1Key();
     void KeyMethod2Key();
@@ -362,6 +410,38 @@ protected:
     void KeyMethod8Key();
     void KeyMethod9Key();
     void KeyMethod0Key();
+
+    void SetMovingDirection();
+
+    void ShowMovingDirectionActions() const;
+    void SetMovingDirectionActions(float &DeltaTime);
+
+    UFUNCTION(BlueprintCallable)
+    void EMovingDirection_Right(float DeltaTime);
+
+    UFUNCTION(BlueprintCallable)
+    void EMovingDirection_Left(float DeltaTime);
+
+    UFUNCTION(BlueprintCallable)
+    void EMovingDirection_ForwardRight(float DeltaTime);
+
+    UFUNCTION(BlueprintCallable)
+    void EMovingDirection_ForwardLeft(float DeltaTime);
+
+    UFUNCTION(BlueprintCallable)
+    void EMovingDirection_BackwardRight(float DeltaTime);
+
+    UFUNCTION(BlueprintCallable)
+    void EMovingDirection_BackwardLeft(float DeltaTime);
+
+    UFUNCTION(BlueprintCallable)
+    void EMovingDirection_None(float DeltaTime);
+
+    void GetOriginalCameraLagOffset();
+
+    void AdjustVectors();
+
+    void AdjustCameraLag(const FVector &Offset, const double &CameraLagMaxDistance, float DeltaTime);
 
 private:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Mesh",
@@ -399,9 +479,23 @@ private:
 
     UPROPERTY()
     bool bDKey_Pressed;
-
     UPROPERTY()
     bool bDKey_Released;
+
+    UPROPERTY()
+    bool bSKey_Pressed;
+    UPROPERTY()
+    bool bSKey_Released;
+
+    UPROPERTY()
+    bool bWKey_Pressed;
+    UPROPERTY()
+    bool bWKey_Released;
+
+    UPROPERTY()
+    bool bAKey_Pressed;
+    UPROPERTY()
+    bool bAKey_Released;
 
     /** Is true for Cinematic camera */
     UPROPERTY()
@@ -853,6 +947,8 @@ private:
       meta = (AllowPrivateAccess = "true"))
     int32 HighlightedSlot;
 
+    float GlobalDeltaTime;
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "My Custom Properties|Decals",
       meta = (AllowPrivateAccess = "true"))
     class UDecalComponent *BulletHoleDecal;
@@ -860,6 +956,88 @@ private:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "My Custom Properties|Decals",
       meta = (AllowPrivateAccess = "true"))
     class UMaterialInterface *BulletHoleDecalMat;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|Camera|Custom Camera Lag|Disable Camera Lag When Moving",
+      meta     = (AllowPrivateAccess = "true"))
+    bool bDisableCameraLagWhenMoving;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category
+      = "My Custom Properties|Camera|Custom Camera Lag|Disable Custom Camera Lag When Moving",
+      meta = (AllowPrivateAccess = "true"))
+    bool bDisableCameraLagWhenMovingRight;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|Camera|Custom Camera Lag|Disable Custom Camera Lag When Moving",            
+      meta     = (AllowPrivateAccess = "true"))
+    bool bDisableCameraLagWhenMovingBackwards;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
+      Category = "My Custom Properties|Camera|Custom Camera Lag",
+      meta     = (AllowPrivateAccess = "true"))
+    EMovingDirection MovingDirection;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category
+      = "My Custom Properties|Camera|Custom Camera Lag|Disable Camera Lag When Moving|Debug",
+      meta = (AllowPrivateAccess = "true"))
+    bool ShowEMovingDirection;
+
+    FVector OriginalCameraSocketOffset;
+    float OriginalCameraLagSpeed;
+    float OriginalCameraLagMaxDistance;
+
+    FVector CustomCameraSocketOffset;
+    float CustomCameraLagSpeed;
+    float CustomCameraLagMaxDistance;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category
+      = "My Custom Properties|Camera|Custom Camera Lag|Moving Froward",
+      meta = (AllowPrivateAccess = "true"))
+    double FrowardZOffset_Froward__LEGACY;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|Camera|Custom Camera Lag|Moving Froward",
+      meta     = (AllowPrivateAccess = "true"))
+    FVector OffsetFroward;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|Camera|Custom Camera Lag|Moving Froward",
+      meta     = (AllowPrivateAccess = "true"))
+    double CustomCameraLagMaxDistance_Froward;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category
+      = "My Custom Properties|Camera|Custom Camera Lag|Moving Backwards",
+      meta = (AllowPrivateAccess = "true"))
+    double BackwardXOffset_Backwards__LEGACY;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|Camera|Custom Camera Lag|Moving Backwards",
+      meta     = (AllowPrivateAccess = "true"))
+    FVector OffsetBackwards;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|Camera|Custom Camera Lag|Moving Backwards",
+      meta = (AllowPrivateAccess = "true"))
+    double CustomCameraLagMaxDistance_Backwards;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|Camera|Custom Camera Lag|Moving Right",
+      meta = (AllowPrivateAccess = "true"))
+    double XOffset_Right__LEGACY;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|Camera|Custom Camera Lag|Moving Right",
+      meta     = (AllowPrivateAccess = "true"))
+    FVector OffsetRight;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|Camera|Custom Camera Lag|Moving Right",
+      meta = (AllowPrivateAccess = "true"))
+    double CustomCameraLagMaxDistance_Right;
 
 public:
     /**
