@@ -419,6 +419,10 @@ public:
 
     FORCEINLINE USoundCue *GetEquipSound() const { return EquipSound; }
 
+    FORCEINLINE void SetPickupSound(USoundCue *Sound) { PickupSound = Sound; }
+
+    FORCEINLINE void SetEquipSound(USoundCue *Sound) { EquipSound = Sound; }
+
     /**
      * @brief Called from the AShooterCharacter class.
      * @param Char
@@ -440,4 +444,17 @@ public:
     FORCEINLINE void  SetSlotIndex(int32 Index) { SlotIndex = Index; }
     FORCEINLINE void  SetCharacter(AShooterCharacter *GetCharacter) { Character = GetCharacter; }
     FORCEINLINE void  SetCharacterInventoryFull(bool bIsFull) { bCharacterInventoryFull = bIsFull; }
+    FORCEINLINE void  SetItemName(const FString Name) { ItemName = Name; }
+
+    /**
+     * @brief Set icon for the inventory
+     * @param Icon an UTexture2D pointer to the icon
+     */
+    FORCEINLINE void SetIconItem(UTexture2D *Icon) { IconItem = Icon; }
+
+    /**
+     * @brief Set icon for the inventory
+     * @param Icon an UTexture2D pointer to the icon
+     */
+    FORCEINLINE void SetAmmoIcon(UTexture2D *AmmoIcon) { AmmoItem = AmmoIcon; }
 };

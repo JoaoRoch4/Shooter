@@ -7,28 +7,29 @@
 #include <Engine\World.h>
 #include <Kismet\GameplayStatics.h>
 
-AWeapon::AWeapon() :
+AWeapon::AWeapon()
+ :
 
- ThrowWeaponTime(0.7f),
- bFalling(false),
- bNotRandValues(false),
- ThrowHeight(10.f),
- ThrowDirection(FVector(0.f, 0.f, 0.f)),
- MultiplyImpulse(180.f),
- ThrowHeightRandRange(FVector2D(90.f, 180.f)),
- ThrowDirectionRandRange(FVector2D(90.f, 180.f)),
- ThrowDirection_X_RandRange(FVector2D(0.f, 0.f)),
- ThrowDirection_Y_RandRange(FVector2D(0.f, 0.f)),
- ThrowDirection_Z_RandRange(FVector2D(0.f, 0.f)),
- MultiplyImpulseRandRange(FVector2D(150.f, 180.f)),
- ThrowWeaponTimer(FTimerHandle()),
- Ammo(40),
- MagazineCapacity(120),
- WeaponType(EWeaponType::EWT_SubmachineGun),
- AmmoType(EAmmoType::EAT_9mm),
- ReloadMontageSection(FName(L"Reload SMG")),
- ClipBoneName(FName(L"smg_clip")),
- ItemInstance(nullptr)
+ ThrowWeaponTime(0.7f)
+ , bFalling(false)
+ , bNotRandValues(false)
+ , ThrowHeight(10.f)
+ , ThrowDirection(FVector(0.f, 0.f, 0.f))
+ , MultiplyImpulse(180.f)
+ , ThrowHeightRandRange(FVector2D(90.f, 180.f))
+ , ThrowDirectionRandRange(FVector2D(90.f, 180.f))
+ , ThrowDirection_X_RandRange(FVector2D(0.f, 0.f))
+ , ThrowDirection_Y_RandRange(FVector2D(0.f, 0.f))
+ , ThrowDirection_Z_RandRange(FVector2D(0.f, 0.f))
+ , MultiplyImpulseRandRange(FVector2D(150.f, 180.f))
+ , ThrowWeaponTimer(FTimerHandle())
+ , Ammo(40)
+ , MagazineCapacity(120)
+ , WeaponType(EWeaponType::EWT_SubmachineGun)
+ , AmmoType(EAmmoType::EAT_9mm)
+ , ReloadMontageSection(FName(L"Reload SMG"))
+ , ClipBoneName(FName(L"smg_clip"))
+ , ItemInstance(nullptr)
 
 {
     PrimaryActorTick.bCanEverTick = true;
@@ -39,6 +40,90 @@ void AWeapon::BeginPlay() {
     Super::BeginPlay();
 
     // SyncItemMunition();
+}
+
+void AWeapon::OnConstruction(const FTransform &Transform) {
+
+    const FString WeaponTablePath {L"/Script/Engine.DataTable'"
+                                   L"/Game/_Game/DataTable/WeaponDataTable.WeaponDataTable'"};
+
+    UObject *GetWeaponTableObject {
+      StaticLoadObject(UDataTable::StaticClass(), nullptr, *WeaponTablePath)};
+
+    UDataTable *WeaponTableObject {};
+
+    if (GetWeaponTableObject) {
+
+        WeaponTableObject = Cast<UDataTable>(GetWeaponTableObject);
+
+    } else {
+
+        ExitPrintErr(
+          "AWeapon::OnConstruction()-> if (WeaponTableObject): GetWeaponTableObject was nullptr")
+    }
+
+    if (WeaponTableObject) {
+
+        SetWeaponTableObject(WeaponTableObject);
+
+    } else {
+
+        ExitPrintErr(
+          "AWeapon::OnConstruction()-> if (WeaponTableObject): WeaponTableObject was nullptr")
+    }
+}
+
+void AWeapon::SetWeaponTableObject(UDataTable *WeaponTableObject) {
+
+    FWeaponDataTable *WeaponDataRow {};
+
+    switch (WeaponType) {
+
+        case EWeaponType::EWT_SubmachineGun : {
+
+            WeaponDataRow = WeaponTableObject->FindRow<FWeaponDataTable>(
+              FName(L"SubmachineGun"), TEXT(""), true);
+
+        } break;
+
+        case EWeaponType::EWT_AssaultRifle : {
+
+            WeaponDataRow = WeaponTableObject->FindRow<FWeaponDataTable>(
+              FName(L"AssaultRifle"), TEXT(""), true);
+
+        } break;
+
+        case EWeaponType::EWT_MAX : {
+
+            ExitPrintErr("AWeapon::SetWeaponTableObject(): -> switch (WeaponType):"
+                         "EWeaponType::EWT_MAX cannot be used")
+        };
+
+        default : {
+
+            ExitPrintErr("AWeapon::SetWeaponTableObject(): -> switch (WeaponType):"
+                         "Invalid EWeaponType! default case reached!")
+        };
+    }
+
+    if (WeaponDataRow) {
+
+        AmmoType         = WeaponDataRow->AmmoType;
+        Ammo             = WeaponDataRow->WeaponAmmo;
+        MagazineCapacity = WeaponDataRow->MagazineCapacity;
+
+        SetPickupSound(WeaponDataRow->PickupSound);
+        SetEquipSound(WeaponDataRow->EquipSound);
+        GetItemMesh()->SetSkeletalMesh(WeaponDataRow->ItemMesh);
+        SetItemName(WeaponDataRow->ItemName);
+        SetIconItem(WeaponDataRow->InventoryIcon);
+        SetAmmoIcon(WeaponDataRow->AmmoIcon);
+
+    } else {
+
+        ExitPrintErr(
+          "AWeapon::SetWeaponTableObject(): -> if (WeaponDataRow): WeaponDataRow was nullptr")
+    }
 }
 
 void AWeapon::SyncItemMunition() {
@@ -74,7 +159,8 @@ void AWeapon::Tick(float DeltaTime) {
 
         const FRotator MeshRotation {0.f, GetItemMesh()->GetComponentRotation().Yaw, 0.f};
 
-        GetItemMesh()->SetWorldRotation(MeshRotation, false, nullptr, ETeleportType::TeleportPhysics);
+        GetItemMesh()->SetWorldRotation(
+          MeshRotation, false, nullptr, ETeleportType::TeleportPhysics);
     }
 }
 
@@ -173,7 +259,8 @@ void AWeapon::DecrementAmmo() {
 
 void AWeapon::ReloadAmmo(int32 Amount) {
 
-    checkf(Ammo + Amount <= MagazineCapacity, L"Attempted to reload with more than magazine capacity!");
+    checkf(
+      Ammo + Amount <= MagazineCapacity, L"Attempted to reload with more than magazine capacity!");
     Ammo += Amount;
 }
 

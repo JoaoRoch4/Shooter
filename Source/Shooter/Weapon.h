@@ -36,10 +36,7 @@ struct FWeaponDataTable : public FTableRowBase {
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     USoundCue* EquipSound;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    class UWidgetComponent *PickupWidget;
-
+        
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     class USkeletalMesh *ItemMesh;
 
@@ -67,6 +64,10 @@ public:
 
 protected:
     virtual void BeginPlay() override;
+
+    virtual void OnConstruction(const FTransform &Transform) override;
+
+    void SetWeaponTableObject(UDataTable *WeaponTableObject);
 
     void SyncItemMunition();
 
@@ -187,11 +188,6 @@ public:
 
     FORCEINLINE int32 GetMagazineCapacity() const { return MagazineCapacity; }
 
-    /**
-	 * @brief Called From Character Class when firing
-	 *
-     * Weapon.
-	 */
     void DecrementAmmo();
 
     FORCEINLINE EWeaponType GetWeaponType() const { return WeaponType; }
