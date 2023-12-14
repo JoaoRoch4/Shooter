@@ -99,6 +99,10 @@ protected:
 
     virtual void OnConstruction(const FTransform &Transform) override;
 
+    void Construct_RarityTableObject();
+
+    void SetRarityTableObject(class UDataTable *RarityTableObject);
+
     void DefaultConstructor_Curves();
 
     /* Called when item is overlapped with AreaSphere. */

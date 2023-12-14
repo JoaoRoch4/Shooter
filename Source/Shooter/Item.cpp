@@ -101,7 +101,9 @@ void AItem::BeginPlay() {
     StartPulseTimer();
 }
 
-void AItem::OnConstruction(const FTransform &Transform) {
+void AItem::OnConstruction(const FTransform &Transform) { Construct_RarityTableObject(); }
+
+void AItem::Construct_RarityTableObject() {
 
     // Load the data table for item rarity
     FString RarityTablePath {L"/Script/Engine.DataTable'"
@@ -125,83 +127,85 @@ void AItem::OnConstruction(const FTransform &Transform) {
 
     if (RarityTableObject) {
 
-        FItemRarityTable *RarityRow {};
-
-        switch (ItemRarity) {
-
-            case EItemRarity::EIR_Damaged : {
-
-                RarityRow
-                  = RarityTableObject->FindRow<FItemRarityTable>(FName(L"Damaged"), TEXT(""), true);
-
-            } break;
-            case EItemRarity::EIR_Common : {
-
-                RarityRow
-                  = RarityTableObject->FindRow<FItemRarityTable>(FName(L"Common"), TEXT(""), true);
-
-            } break;
-            case EItemRarity::EIR_Uncommon : {
-
-                RarityRow = RarityTableObject->FindRow<FItemRarityTable>(
-                  FName(L"Uncommon"), TEXT(""), true);
-
-            } break;
-            case EItemRarity::EIR_Rare : {
-
-                RarityRow
-                  = RarityTableObject->FindRow<FItemRarityTable>(FName(L"Rare"), TEXT(""), true);
-
-            } break;
-            case EItemRarity::EIR_Legendary : {
-
-                RarityRow = RarityTableObject->FindRow<FItemRarityTable>(
-                  FName(L"Legendary"), TEXT(""), true);
-
-            } break;
-            default : {
-                ExitPrintErr(
-                  "AItem::OnConstruction(const FTransform &Transform):->switch (ItemRarity): case "
-                  "default reached!");
-            } break;
-        }
-
-        if (RarityRow) {
-
-            GlowColor      = RarityRow->GlowColor;
-            LightColor     = RarityRow->LightColor;
-            DarkColor      = RarityRow->DarkColor;
-            NumberOfStars  = RarityRow->NumberOfStars;
-            IconBackground = RarityRow->IconBackground;
-
-            int32 Stencil {RarityRow->CustomDepthStencil};
-
-            if (GetItemMesh())
-                GetItemMesh()->CustomDepthStencilValue = Stencil;
-            else {
-                ExitPrintErr(
-                  "AItem::OnConstruction(const FTransform &Transform):->if (GetItemMesh()): "
-                  "GetItemMesh() is nullptr");
-            }
-
-        } else {
-            ExitPrintErr("AItem::OnConstruction(const FTransform &Transform):->if (RarityRow): "
-                         "RarityRow is nullptr");
-        }
-
-        if (MaterialInstance) {
-
-            DynamicMaterialInstance = UMaterialInstanceDynamic::Create(MaterialInstance, this);
-
-            DynamicMaterialInstance->SetVectorParameterValue(L"FresnelColor", GlowColor);
-
-            ItemMesh->SetMaterial(MaterialIndex, DynamicMaterialInstance);
-            EnableGlowMaterial();
-        }
+        SetRarityTableObject(RarityTableObject);
 
     } else {
         ExitPrintErr("AItem::OnConstruction(const FTransform &Transform):->if (RarityTableObject): "
                      "RarityTableObject is nullptr");
+    }
+}
+
+void AItem::SetRarityTableObject(UDataTable *RarityTableObject) {
+
+    FItemRarityTable *RarityRow {};
+
+    switch (ItemRarity) {
+
+        case EItemRarity::EIR_Damaged : {
+
+            RarityRow
+              = RarityTableObject->FindRow<FItemRarityTable>(FName(L"Damaged"), TEXT(""), true);
+
+        } break;
+        case EItemRarity::EIR_Common : {
+
+            RarityRow
+              = RarityTableObject->FindRow<FItemRarityTable>(FName(L"Common"), TEXT(""), true);
+
+        } break;
+        case EItemRarity::EIR_Uncommon : {
+
+            RarityRow
+              = RarityTableObject->FindRow<FItemRarityTable>(FName(L"Uncommon"), TEXT(""), true);
+
+        } break;
+        case EItemRarity::EIR_Rare : {
+
+            RarityRow
+              = RarityTableObject->FindRow<FItemRarityTable>(FName(L"Rare"), TEXT(""), true);
+
+        } break;
+        case EItemRarity::EIR_Legendary : {
+
+            RarityRow
+              = RarityTableObject->FindRow<FItemRarityTable>(FName(L"Legendary"), TEXT(""), true);
+
+        } break;
+        default : {
+            ExitPrintErr("AItem::SetRarityTableObject(): switch (ItemRarity): "
+                                       "ItemRarity is not valid");
+        } break;
+    }
+
+    if (RarityRow) {
+
+        GlowColor      = RarityRow->GlowColor;
+        LightColor     = RarityRow->LightColor;
+        DarkColor      = RarityRow->DarkColor;
+        NumberOfStars  = RarityRow->NumberOfStars;
+        IconBackground = RarityRow->IconBackground;
+
+        int32 Stencil {RarityRow->CustomDepthStencil};
+
+        if (GetItemMesh()) GetItemMesh()->CustomDepthStencilValue = Stencil;
+        else {
+            ExitPrintErr("AItem::SetRarityTableObject(): if (GetItemMesh()): "
+                         "GetItemMesh() is nullptr");
+        }
+
+    } else {
+        ExitPrintErr("AItem::SetRarityTableObject(): if (RarityRow): "
+                     "RarityRow is nullptr");
+    }
+
+    if (MaterialInstance) {
+
+        DynamicMaterialInstance = UMaterialInstanceDynamic::Create(MaterialInstance, this);
+
+        DynamicMaterialInstance->SetVectorParameterValue(L"FresnelColor", GlowColor);
+
+        ItemMesh->SetMaterial(MaterialIndex, DynamicMaterialInstance);
+        EnableGlowMaterial();
     }
 }
 

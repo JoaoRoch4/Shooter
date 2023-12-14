@@ -52,7 +52,7 @@ void AWeapon::SyncItemMunition() {
 
         ItemCapacity = ItemInstance->GetItemCount();
 
-        if ((Ammo != ItemCapacity)) {
+        if (Ammo != ItemCapacity) {
 
             Ammo = ItemCapacity;
 

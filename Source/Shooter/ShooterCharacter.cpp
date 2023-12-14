@@ -2139,7 +2139,7 @@ void AShooterCharacter::SetMovingDirection() {
     else if (bMovingBackwardRight) MovingDirection = EMovingDirection::EMD_BackwardRight;
     else if (bMovingBackwardLeft) MovingDirection = EMovingDirection::EMD_BackwardLeft;
 
-    else if (!bMovingRight) EMovingDirection_None(GlobalDeltaTime);
+    //else if (!bMovingRight) EMovingDirection_None(GlobalDeltaTime);
 }
 
 void AShooterCharacter::ShowMovingDirectionActions() const {
