@@ -1442,7 +1442,7 @@ void AShooterCharacter::SendBullet() {
             if (Beam) Beam->SetVectorParameter(FName("Target"), BeamEnd);
         }
     } else {
-        ExitGameErr("AShooterCharacter::SendBullet(): BarrelSocket is nullptr");
+        ExitPrintErr("AShooterCharacter::SendBullet(): BarrelSocket is nullptr");
     }
 }
 

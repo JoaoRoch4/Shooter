@@ -44,6 +44,13 @@ void AWeapon::BeginPlay() {
 
 void AWeapon::OnConstruction(const FTransform &Transform) {
 
+    Super::OnConstruction(Transform);
+
+    Construct_WeaponTableObject();
+}
+
+void AWeapon::Construct_WeaponTableObject() {
+
     const FString WeaponTablePath {L"/Script/Engine.DataTable'"
                                    L"/Game/_Game/DataTable/WeaponDataTable.WeaponDataTable'"};
 

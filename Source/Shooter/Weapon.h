@@ -67,6 +67,8 @@ protected:
 
     virtual void OnConstruction(const FTransform &Transform) override;
 
+    void Construct_WeaponTableObject();
+
     void SetWeaponTableObject(UDataTable *WeaponTableObject);
 
     void SyncItemMunition();
