@@ -142,9 +142,10 @@ AShooterCharacter::AShooterCharacter()
  , BulletHoleDecal(nullptr)
  , BulletHoleDecalMat(nullptr)
  , bDisableCameraLagWhenMoving(false)
- , bDisableCameraLagWhenMovingRight(false)
  , MovingDirection(EMovingDirection::EMD_None)
  , ShowEMovingDirection(true)
+ , InterpTimeMaxDistance(5.f)
+ , InterpTimeSocketOffset(5.f)
  , OriginalCameraSocketOffset(FVector::Zero())
  , OriginalCameraLagSpeed(NULL)
  , OriginalCameraLagMaxDistance(NULL)
@@ -225,7 +226,7 @@ void AShooterCharacter::Tick(float DeltaTime) {
 
     // DisableCameraLagWhenMovingRight(DeltaTime);
 
-    if (!bDisableCameraLagWhenMovingRight) SetMovingDirectionActions(DeltaTime);
+    if (!bDisableCameraLagWhenMoving) SetMovingDirectionActions(DeltaTime);
 }
 
 void AShooterCharacter::InterpCapsuleHalfHeight(float DeltaTime) {
@@ -2163,7 +2164,7 @@ void AShooterCharacter::SetMovingDirectionActions(float &DeltaTime) {
                   OffsetLeft, CameraLagMaxDistance_Left, DeltaTime, "EMovingDirection::EMD_Right");
 
             case EMovingDirection::EMD_ForwardRight :
-                return AdjustCameraLag(OffsetBackwardRight, CameraLagMaxDistance_BackwardRight,
+                return AdjustCameraLag(OffsetForwardRight, CameraLagMaxDistance_ForwardRight,
                   DeltaTime, "EMovingDirection::EMD_ForwardRight");
 
             case EMovingDirection::EMD_ForwardLeft :
@@ -2205,7 +2206,7 @@ void AShooterCharacter::SetMovingDirectionActions(float &DeltaTime) {
 
             case EMovingDirection::EMD_ForwardRight :
                 return AdjustCameraLag(
-                  OffsetBackwardRight, CameraLagMaxDistance_BackwardRight, DeltaTime);
+                  OffsetForwardRight, CameraLagMaxDistance_ForwardRight, DeltaTime);
 
             case EMovingDirection::EMD_ForwardLeft :
                 return AdjustCameraLag(
@@ -2263,13 +2264,17 @@ void AShooterCharacter::AdjustCameraLag(
 
     FVector CustomSocket {Offset};
 
+    if (CustomSocket.X == 0) CustomSocket.X = CameraBoom->SocketOffset.X;
+    if (CustomSocket.Y == 0) CustomSocket.Y = CameraBoom->SocketOffset.Y;
+    if (CustomSocket.Z == 0) CustomSocket.Z = CameraBoom->SocketOffset.Z;
+
     CustomCameraSocketOffset = CustomSocket;
 
-    double GetInterpMaxDistance {
-      FMath::FInterpTo(CameraBoom->CameraLagMaxDistance, CameraLagMaxDistance, DeltaTime, 5.f)};
+    double GetInterpMaxDistance {FMath::FInterpTo(
+      CameraBoom->CameraLagMaxDistance, CameraLagMaxDistance, DeltaTime, InterpTimeMaxDistance)};
 
-    FVector GetInterpSocket {
-      FMath::VInterpTo(CameraBoom->SocketOffset, CustomCameraSocketOffset, DeltaTime, 5.f)};
+    FVector GetInterpSocket {FMath::VInterpTo(
+      CameraBoom->SocketOffset, CustomCameraSocketOffset, DeltaTime, InterpTimeSocketOffset)};
 
     CameraBoom->CameraLagMaxDistance = GetInterpMaxDistance;
     CameraBoom->SocketOffset         = GetInterpSocket;
