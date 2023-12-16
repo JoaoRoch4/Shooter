@@ -153,13 +153,13 @@ AShooterCharacter::AShooterCharacter()
  , CustomCameraLagMaxDistance(NULL)
  , FrowardZOffset_Froward__LEGACY(60.0)
  , OffsetFroward(FVector::Zero())
- , CustomCameraLagMaxDistance_Froward(200.0)
+ , CameraLagMaxDistance_Froward(200.0)
  , BackwardXOffset_Backwards__LEGACY(-140.0)
  , OffsetBackwards(FVector::Zero())
- , CustomCameraLagMaxDistance_Backwards(100.0)
+ , CameraLagMaxDistance_Backwards(100.0)
  , XOffset_Right__LEGACY(140.0)
  , OffsetRight(FVector::Zero())
- , CustomCameraLagMaxDistance_Right(100.0)
+ , CameraLagMaxDistance_Right(100.0)
 
 {
 
@@ -224,8 +224,6 @@ void AShooterCharacter::Tick(float DeltaTime) {
     if (bDebugSlotMessages) DebugSlotsItens();
 
     // DisableCameraLagWhenMovingRight(DeltaTime);
-
-    if (ShowEMovingDirection) ShowMovingDirectionActions();
 
     if (!bDisableCameraLagWhenMovingRight) SetMovingDirectionActions(DeltaTime);
 }
@@ -2139,133 +2137,98 @@ void AShooterCharacter::SetMovingDirection() {
     else if (bMovingBackwardRight) MovingDirection = EMovingDirection::EMD_BackwardRight;
     else if (bMovingBackwardLeft) MovingDirection = EMovingDirection::EMD_BackwardLeft;
 
-    //else if (!bMovingRight) EMovingDirection_None(GlobalDeltaTime);
-}
-
-void AShooterCharacter::ShowMovingDirectionActions() const {
-
-    int8 MessageTime {-1};
-
-    switch (MovingDirection) {
-
-        case EMovingDirection::EMD_Forward : {
-
-            PrintOnScrTime(MessageTime, "EMovingDirection::EMD_Forward");
-
-        } break;
-
-        case EMovingDirection::EMD_Backward : {
-
-            PrintOnScrTime(MessageTime, "EMovingDirection::EMD_Backward");
-
-        } break;
-
-        case EMovingDirection::EMD_Right : {
-
-            PrintOnScrTime(MessageTime, "EMovingDirection::EMD_Right");
-
-        } break;
-
-        case EMovingDirection::EMD_Left : {
-
-            PrintOnScrTime(MessageTime, "EMovingDirection::EMD_Left");
-        } break;
-
-        case EMovingDirection::EMD_ForwardRight : {
-
-            PrintOnScrTime(MessageTime, "EMovingDirection::EMD_ForwardRight");
-        } break;
-
-        case EMovingDirection::EMD_ForwardLeft : {
-
-            PrintOnScrTime(MessageTime, "EMovingDirection::EMD_ForwardLeft");
-        } break;
-
-        case EMovingDirection::EMD_BackwardRight : {
-
-            PrintOnScrTime(MessageTime, "EMovingDirection::EMD_BackwardRight");
-
-        } break;
-
-        case EMovingDirection::EMD_BackwardLeft : {
-
-            PrintOnScrTime(MessageTime, "EMovingDirection::EMD_BackwardLeft");
-        } break;
-
-        case EMovingDirection::EMD_None : {
-
-            PrintOnScrTime(MessageTime, "EMovingDirection::EMD_None");
-        } break;
-
-        default : {
-
-            ExitGameErr("AShooterCharacter::SetMovingDirectionActions(): Invalid EMovingDirection");
-        } break;
-    }
+    // else if (!bMovingRight) EMovingDirection_None(GlobalDeltaTime);
 }
 
 void AShooterCharacter::SetMovingDirectionActions(float &DeltaTime) {
 
-    switch (MovingDirection) {
+    if (ShowEMovingDirection) {
 
-        case EMovingDirection::EMD_Forward :
-            return AdjustCameraLag(OffsetFroward, CustomCameraLagMaxDistance_Froward, DeltaTime);
+        switch (MovingDirection) {
 
-        case EMovingDirection::EMD_Backward :
-            return AdjustCameraLag(OffsetBackwards, CustomCameraLagMaxDistance_Backwards, DeltaTime);
+            case EMovingDirection::EMD_Forward :
+                return AdjustCameraLag(OffsetFroward, CameraLagMaxDistance_Froward, DeltaTime,
+                  "EMovingDirection::EMD_Forward");
 
-        case EMovingDirection::EMD_Right :
-            return AdjustCameraLag(OffsetRight, CustomCameraLagMaxDistance_Right, DeltaTime);
-            
+            case EMovingDirection::EMD_Backward :
+                return AdjustCameraLag(OffsetBackwards, CameraLagMaxDistance_Backwards, DeltaTime,
+                  "EMovingDirection::EMD_Backward");
 
-        case EMovingDirection::EMD_Left : return EMovingDirection_Left(DeltaTime);
+            case EMovingDirection::EMD_Right :
+                return AdjustCameraLag(OffsetRight, CameraLagMaxDistance_Right, DeltaTime,
+                  "EMovingDirection::EMD_Backward");
 
-        case EMovingDirection::EMD_ForwardRight : return EMovingDirection_ForwardRight(DeltaTime);
+            case EMovingDirection::EMD_Left :
+                return AdjustCameraLag(
+                  OffsetLeft, CameraLagMaxDistance_Left, DeltaTime, "EMovingDirection::EMD_Right");
 
-        case EMovingDirection::EMD_ForwardLeft : return EMovingDirection_ForwardLeft(DeltaTime);
+            case EMovingDirection::EMD_ForwardRight :
+                return AdjustCameraLag(OffsetBackwardRight, CameraLagMaxDistance_BackwardRight,
+                  DeltaTime, "EMovingDirection::EMD_ForwardRight");
 
-        case EMovingDirection::EMD_BackwardRight : return EMovingDirection_BackwardRight(DeltaTime);
+            case EMovingDirection::EMD_ForwardLeft :
+                return AdjustCameraLag(OffsetForwardLeft, CameraLagMaxDistance_ForwardLeft,
+                  DeltaTime, "EMovingDirection::EMD_ForwardLeft");
 
-        case EMovingDirection::EMD_BackwardLeft : return EMovingDirection_BackwardLeft(DeltaTime);
+            case EMovingDirection::EMD_BackwardRight :
+                return AdjustCameraLag(OffsetBackwardRight, CameraLagMaxDistance_BackwardRight,
+                  DeltaTime, "EMovingDirection::EMD_BackwardRight");
 
-        case EMovingDirection::EMD_None : return EMovingDirection_None(DeltaTime);
+            case EMovingDirection::EMD_BackwardLeft :
+                return AdjustCameraLag(OffsetBackwardLeft, CameraLagMaxDistance_BackwardLeft,
+                  DeltaTime, "EMovingDirection::EMD_BackwardLeft");
 
-        default : {
-            ExitGameErr("AShooterCharacter::SetMovingDirectionActions(): Invalid EMovingDirection");
-        } break;
+            case EMovingDirection::EMD_MAX  : [[fallthrough]];
+            case EMovingDirection::EMD_None : return EMovingDirection_None(DeltaTime);
+
+            default : {
+                ExitGameErr(
+                  "AShooterCharacter::SetMovingDirectionActions(): Invalid EMovingDirection");
+            } break;
+        }
+
+    } else {
+
+        switch (MovingDirection) {
+
+            case EMovingDirection::EMD_Forward :
+                return AdjustCameraLag(OffsetFroward, CameraLagMaxDistance_Froward, DeltaTime);
+
+            case EMovingDirection::EMD_Backward :
+                return AdjustCameraLag(OffsetBackwards, CameraLagMaxDistance_Backwards, DeltaTime);
+
+            case EMovingDirection::EMD_Right :
+                return AdjustCameraLag(OffsetRight, CameraLagMaxDistance_Right, DeltaTime);
+
+            case EMovingDirection::EMD_Left :
+                return AdjustCameraLag(OffsetLeft, CameraLagMaxDistance_Left, DeltaTime);
+
+            case EMovingDirection::EMD_ForwardRight :
+                return AdjustCameraLag(
+                  OffsetBackwardRight, CameraLagMaxDistance_BackwardRight, DeltaTime);
+
+            case EMovingDirection::EMD_ForwardLeft :
+                return AdjustCameraLag(
+                  OffsetForwardLeft, CameraLagMaxDistance_ForwardLeft, DeltaTime);
+
+            case EMovingDirection::EMD_BackwardRight :
+                return AdjustCameraLag(
+                  OffsetBackwardRight, CameraLagMaxDistance_BackwardRight, DeltaTime);
+
+            case EMovingDirection::EMD_BackwardLeft :
+                return AdjustCameraLag(
+                  OffsetBackwardLeft, CameraLagMaxDistance_BackwardLeft, DeltaTime);
+
+            case EMovingDirection::EMD_MAX : [[fallthrough]];
+            case EMovingDirection::EMD_None : return EMovingDirection_None(DeltaTime);
+
+            default : {
+                ExitGameErr(
+                  "AShooterCharacter::SetMovingDirectionActions(): Invalid EMovingDirection");
+            } break;
+        }
     }
 }
-
-void AShooterCharacter::EMovingDirection_Right(float DeltaTime) {
-
-    PrintOnScrTime(-1, "EMovingDirection_Backward");
-
-    FVector LegacyCustomSocket {
-      FVector(XOffset_Right__LEGACY, OriginalCameraSocketOffset.Y, OriginalCameraSocketOffset.Z)};
-
-    FVector CustomSocket {OffsetRight};
-
-    CustomCameraSocketOffset = CustomSocket;
-
-    double GetInterpMaxDistance {FMath::FInterpTo(
-      CameraBoom->CameraLagMaxDistance, CustomCameraLagMaxDistance_Right, DeltaTime, 5.f)};
-
-    FVector GetInterpSocket {
-      FMath::VInterpTo(CameraBoom->SocketOffset, CustomCameraSocketOffset, DeltaTime, 5.f)};
-
-    CameraBoom->CameraLagMaxDistance = GetInterpMaxDistance;
-    CameraBoom->SocketOffset         = GetInterpSocket;
-}
-
-void AShooterCharacter::EMovingDirection_Left(float DeltaTime) {}
-
-void AShooterCharacter::EMovingDirection_ForwardRight(float DeltaTime) {}
-
-void AShooterCharacter::EMovingDirection_ForwardLeft(float DeltaTime) {}
-
-void AShooterCharacter::EMovingDirection_BackwardRight(float DeltaTime) {}
-
-void AShooterCharacter::EMovingDirection_BackwardLeft(float DeltaTime) {}
 
 void AShooterCharacter::EMovingDirection_None(float DeltaTime) {
 
@@ -2282,8 +2245,21 @@ void AShooterCharacter::EMovingDirection_None(float DeltaTime) {
     CameraBoom->SocketOffset         = GetInterpSocket;
 }
 
+void AShooterCharacter::AdjustCameraLag(const FVector &Offset, const double &CameraLagMaxDistance,
+  float &DeltaTime, const char *DebugMessage) {
+
+    if (ShowEMovingDirection) PrintOnScrColorTime(-1, FColor::Emerald, DebugMessage);
+
+    AdjustCameraLag(Offset, CameraLagMaxDistance, DeltaTime);
+}
+
 void AShooterCharacter::AdjustCameraLag(
   const FVector &Offset, const double &CameraLagMaxDistance, float DeltaTime) {
+
+    if (Offset == FVector::ZeroVector) {
+
+        return AShooterCharacter::EMovingDirection_None(DeltaTime);
+    }
 
     FVector CustomSocket {Offset};
 

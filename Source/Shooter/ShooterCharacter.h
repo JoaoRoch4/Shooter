@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
 #include "GameFramework/Character.h"
 
 #include "AmmoType.h"
@@ -75,11 +76,6 @@ struct FInterpLocation {
      , ItemCount(ItemCount) {}
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(
-  FEquipItemDelegate, int32, CurrentSlotIndex, int32, NewSlotIndex);
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(
-  FHighlightIconDelegate, int32, SlotIndex, bool, bStartAnimation);
 /*
 * 
 */
@@ -97,6 +93,12 @@ public:
 
     // Called to bind functionality to input
     virtual void SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent) override;
+
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(
+      FEquipItemDelegate, int32, CurrentSlotIndex, int32, NewSlotIndex);
+
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(
+      FHighlightIconDelegate, int32, SlotIndex, bool, bStartAnimation);
 
 protected:
     // Called when the game starts or when spawned
@@ -413,26 +415,7 @@ protected:
 
     void SetMovingDirection();
 
-    void ShowMovingDirectionActions() const;
     void SetMovingDirectionActions(float &DeltaTime);
-
-    UFUNCTION(BlueprintCallable)
-    void EMovingDirection_Right(float DeltaTime);
-
-    UFUNCTION(BlueprintCallable)
-    void EMovingDirection_Left(float DeltaTime);
-
-    UFUNCTION(BlueprintCallable)
-    void EMovingDirection_ForwardRight(float DeltaTime);
-
-    UFUNCTION(BlueprintCallable)
-    void EMovingDirection_ForwardLeft(float DeltaTime);
-
-    UFUNCTION(BlueprintCallable)
-    void EMovingDirection_BackwardRight(float DeltaTime);
-
-    UFUNCTION(BlueprintCallable)
-    void EMovingDirection_BackwardLeft(float DeltaTime);
 
     UFUNCTION(BlueprintCallable)
     void EMovingDirection_None(float DeltaTime);
@@ -440,6 +423,9 @@ protected:
     void GetOriginalCameraLagOffset();
 
     void AdjustVectors();
+
+    void AdjustCameraLag(
+      const FVector &Offset, const double &CameraLagMaxDistance, float &DeltaTime, const char* DebugMessage);
 
     void AdjustCameraLag(const FVector &Offset, const double &CameraLagMaxDistance, float DeltaTime);
 
@@ -451,21 +437,21 @@ private:
     class TUniquePtr<ConstructorHelpers::FObjectFinder<USkeletalMesh>> SkeletalMeshContainer;
 
     /* Camera boom positioning the camera behind the character */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Camera",
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Category = "My Custom Properties|My Custom Camera|",
       meta = (AllowPrivateAccess = "true"))
     class USpringArmComponent *CameraBoom;
 
     /* Camera that follows the character */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Camera",
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Category = "My Custom Properties|My Custom Camera|",
       meta = (AllowPrivateAccess = "true"))
     class UCameraComponent *FollowCamera;
 
     /* Camera that follows the character */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Camera",
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Category = "My Custom Properties|My Custom Camera|",
       meta = (AllowPrivateAccess = "true"))
     class UShooterCharacterCamera *CustomCamera;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Camera",
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Category = "My Custom Properties|My Custom Camera|",
       meta = (AllowPrivateAccess = "true"))
     bool bUseCustomCamera;
 
@@ -503,93 +489,93 @@ private:
 
     /** Use bezier curve for Cinematic camera */
     UPROPERTY(EditAnywhere, BlueprintReadWrite,
-      Category = "My Custom Properties|Camera|Cinematic Camera",
+      Category = "My Custom Properties|My Custom Camera|Cinematic Camera",
       meta     = (AllowPrivateAccess = "true"))
     bool bUseBezierCurve;
 
     /** Camera Arm Length Start Editable on editor */
     UPROPERTY(EditAnywhere, BlueprintReadWrite,
-      Category = "My Custom Properties|Camera|Cinematic Camera",
+      Category = "My Custom Properties|My Custom Camera|Cinematic Camera",
       meta     = (AllowPrivateAccess = "true"))
     float CameraArmLengthStart;
 
     /** Camera Arm Length End Editable on editor */
     UPROPERTY(EditAnywhere, BlueprintReadWrite,
-      Category = "My Custom Properties|Camera|Cinematic Camera",
+      Category = "My Custom Properties|My Custom Camera|Cinematic Camera",
       meta     = (AllowPrivateAccess = "true"))
     float CameraArmLengthEnd;
 
     /** Duration of the transition */
     UPROPERTY(EditAnywhere, BlueprintReadWrite,
-      Category = "My Custom Properties|Camera|Cinematic Camera",
+      Category = "My Custom Properties|My Custom Camera|Cinematic Camera",
       meta     = (AllowPrivateAccess = "true"))
     float TransitionDuration;
 
-    UPROPERTY(BlueprintReadOnly, Category = "My Custom Properties|Camera|Cinematic Camera",
+    UPROPERTY(BlueprintReadOnly, Category = "My Custom Properties|My Custom Camera|Cinematic Camera",
       meta = (AllowPrivateAccess = "true"))
     float PreviousYaw;
 
-    UPROPERTY(BlueprintReadOnly, Category = "My Custom Properties|Camera|Cinematic Camera",
+    UPROPERTY(BlueprintReadOnly, Category = "My Custom Properties|My Custom Camera|Cinematic Camera",
       meta = (AllowPrivateAccess = "true"))
     float LerpedArmLength;
 
     /** Current time of the transition */
-    UPROPERTY(BlueprintReadOnly, Category = "My Custom Properties|Camera|Cinematic Camera",
+    UPROPERTY(BlueprintReadOnly, Category = "My Custom Properties|My Custom Camera|Cinematic Camera",
       meta = (AllowPrivateAccess = "true"))
     float CurrentTime;
 
     /** Base turn rate, in deg / sec. Other scaling may affect final turn rate
      */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Camera|Aim",
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|My Custom Camera|Aim",
       meta = (AllowPrivateAccess))
     float BaseTurnRate;
 
     /** Base look up/down rate, in deg/sec. Other scaling may affect final turn
      * rate */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Camera|Aim",
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|My Custom Camera|Aim",
       meta = (AllowPrivateAccess))
     float BaseLookUpRate;
 
     /** Turn rate while not aiming */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Camera|Aim",
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|My Custom Camera|Aim",
       meta = (AllowPrivateAccess))
     float HipTurnRate;
 
     /** Look up rate while not aiming */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Camera|Aim",
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|My Custom Camera|Aim",
       meta = (AllowPrivateAccess))
     float HipLookUpRate;
 
     /** Turn rate while aiming */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Camera|Aim",
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|My Custom Camera|Aim",
       meta = (AllowPrivateAccess))
     float AimingTurnRate;
 
     /**  Look up rate while aiming. */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Camera|Aim",
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|My Custom Camera|Aim",
       meta = (AllowPrivateAccess))
     float AimingLookUpRate;
 
     /**  Mouse turn rate while not aiming. */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Camera|Aim",
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|My Custom Camera|Aim",
       meta = (AllowPrivateAccess),
       meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
     float MouseHipTurnRate;
 
     /**  Mouse look up rate while not aiming. */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Camera|Aim",
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|My Custom Camera|Aim",
       meta = (AllowPrivateAccess),
       meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
     float MouseHipLookUpRate;
 
     /**  Mouse turn rate while aiming. */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Camera|Aim",
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|My Custom Camera|Aim",
       meta = (AllowPrivateAccess),
       meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
     float MouseAimingTurnRate;
 
     /**  Mouse look up rate while aiming. */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Camera|Aim",
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|My Custom Camera|Aim",
       meta = (AllowPrivateAccess),
       meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
     float MouseAimingLookUpRate;
@@ -638,27 +624,27 @@ private:
     bool bShowCustomDebugMessages;
 
     /** True when Aiming */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Camera|Aim",
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|My Custom Camera|Aim",
       meta = (AllowPrivateAccess = "true"))
     bool bAiming;
 
     /**  Default camera field of view value. */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Camera|Aim",
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|My Custom Camera|Aim",
       meta = (AllowPrivateAccess = "true"))
     float CameraDefaultAimFOV;
 
     /**  Field of view value for when zoomed in. */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Camera|Aim",
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|My Custom Camera|Aim",
       meta = (AllowPrivateAccess = "true"))
     float CameraZoomedAimFOV;
 
     /**  Current field of view this frame. */
-    UPROPERTY(BlueprintReadOnly, Category = "My Custom Properties|Camera|Aim",
+    UPROPERTY(BlueprintReadOnly, Category = "My Custom Properties|My Custom Camera|Aim",
       meta = (AllowPrivateAccess = "true"))
     float CameraCurrentAimFOV;
 
     /**  Interp speed for zooming when aiming. */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Camera|Aim",
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|My Custom Camera|Aim",
       meta = (AllowPrivateAccess = "true"))
     float ZoomInterpSpeed;
 
@@ -958,90 +944,139 @@ private:
     class UMaterialInterface *BulletHoleDecalMat;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite,
-      Category = "My Custom Properties|Camera|Custom Camera Lag|Disable Camera Lag When Moving",
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Disable Camera Lag When Moving",
       meta     = (AllowPrivateAccess = "true"))
     bool bDisableCameraLagWhenMoving;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite,
       Category
-      = "My Custom Properties|Camera|Custom Camera Lag|Disable Custom Camera Lag When Moving",
+      = Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Disable Custom Camera Lag When Moving",
       meta = (AllowPrivateAccess = "true"))
     bool bDisableCameraLagWhenMovingRight;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite,
-      Category = "My Custom Properties|Camera|Custom Camera Lag|Disable Custom Camera Lag When Moving",            
-      meta     = (AllowPrivateAccess = "true"))
+      Category
+      = Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Disable Custom Camera Lag When Moving",
+      meta = (AllowPrivateAccess = "true"))
     bool bDisableCameraLagWhenMovingBackwards;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
-      Category = "My Custom Properties|Camera|Custom Camera Lag",
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag",
       meta     = (AllowPrivateAccess = "true"))
     EMovingDirection MovingDirection;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite,
       Category
-      = "My Custom Properties|Camera|Custom Camera Lag|Disable Camera Lag When Moving|Debug",
+      = Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Disable Camera Lag When Moving|Debug",
       meta = (AllowPrivateAccess = "true"))
     bool ShowEMovingDirection;
 
     FVector OriginalCameraSocketOffset;
-    float OriginalCameraLagSpeed;
-    float OriginalCameraLagMaxDistance;
+    float   OriginalCameraLagSpeed;
+    float   OriginalCameraLagMaxDistance;
 
     FVector CustomCameraSocketOffset;
-    float CustomCameraLagSpeed;
-    float CustomCameraLagMaxDistance;
+    float   CustomCameraLagSpeed;
+    float   CustomCameraLagMaxDistance;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite,
-      Category
-      = "My Custom Properties|Camera|Custom Camera Lag|Moving Froward",
-      meta = (AllowPrivateAccess = "true"))
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Moving Froward",
+      meta     = (AllowPrivateAccess = "true"))
     double FrowardZOffset_Froward__LEGACY;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite,
-      Category = "My Custom Properties|Camera|Custom Camera Lag|Moving Froward",
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Moving Froward",
       meta     = (AllowPrivateAccess = "true"))
     FVector OffsetFroward;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite,
-      Category = "My Custom Properties|Camera|Custom Camera Lag|Moving Froward",
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Moving Froward",
       meta     = (AllowPrivateAccess = "true"))
-    double CustomCameraLagMaxDistance_Froward;
+    double CameraLagMaxDistance_Froward;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite,
-      Category
-      = "My Custom Properties|Camera|Custom Camera Lag|Moving Backwards",
-      meta = (AllowPrivateAccess = "true"))
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Moving Backwards",
+      meta     = (AllowPrivateAccess = "true"))
     double BackwardXOffset_Backwards__LEGACY;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite,
-      Category = "My Custom Properties|Camera|Custom Camera Lag|Moving Backwards",
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Moving Backwards",
       meta     = (AllowPrivateAccess = "true"))
     FVector OffsetBackwards;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite,
-      Category = "My Custom Properties|Camera|Custom Camera Lag|Moving Backwards",
-      meta = (AllowPrivateAccess = "true"))
-    double CustomCameraLagMaxDistance_Backwards;
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Moving Backwards",
+      meta     = (AllowPrivateAccess = "true"))
+    double CameraLagMaxDistance_Backwards;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite,
-      Category = "My Custom Properties|Camera|Custom Camera Lag|Moving Right",
-      meta = (AllowPrivateAccess = "true"))
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Moving Right",
+      meta     = (AllowPrivateAccess = "true"))
     double XOffset_Right__LEGACY;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite,
-      Category = "My Custom Properties|Camera|Custom Camera Lag|Moving Right",
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Moving Right",
       meta     = (AllowPrivateAccess = "true"))
     FVector OffsetRight;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite,
-      Category = "My Custom Properties|Camera|Custom Camera Lag|Moving Right",
-      meta = (AllowPrivateAccess = "true"))
-    double CustomCameraLagMaxDistance_Right;
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Moving Right",
+      meta     = (AllowPrivateAccess = "true"))
+    double CameraLagMaxDistance_Right;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Moving Left",
+      meta     = (AllowPrivateAccess = "true"))
+    FVector OffsetLeft;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Moving Left",
+      meta     = (AllowPrivateAccess = "true"))
+    double CameraLagMaxDistance_Left;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Moving Forward Right",
+      meta     = (AllowPrivateAccess = "true"))
+    FVector OffsetForwardRight;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Moving ForwardRight",
+      meta     = (AllowPrivateAccess = "true"))
+    double CameraLagMaxDistance_ForwardRight;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Moving ForwardLeft",
+      meta     = (AllowPrivateAccess = "true"))
+    FVector OffsetForwardLeft;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Moving ForwardLeft",
+      meta     = (AllowPrivateAccess = "true"))
+    double CameraLagMaxDistance_ForwardLeft;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Moving BackwardRight",
+      meta     = (AllowPrivateAccess = "true"))
+    FVector OffsetBackwardRight;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Moving BackwardRight",
+      meta     = (AllowPrivateAccess = "true"))
+    double CameraLagMaxDistance_BackwardRight;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Moving BackwardLeft",
+      meta     = (AllowPrivateAccess = "true"))
+    FVector OffsetBackwardLeft;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Moving BackwardLeft",
+      meta     = (AllowPrivateAccess = "true"))
+    double CameraLagMaxDistance_BackwardLeft;
 
 public:
     /**
-	 * @brief Returns Cameraboom subObject.
+	 * @brief Returns CameraBoom subObject.
 	 */
     FORCEINLINE USpringArmComponent *GetCameraBoom() const { return CameraBoom; };
 

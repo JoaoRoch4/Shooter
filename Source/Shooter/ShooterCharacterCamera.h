@@ -27,11 +27,11 @@ protected:
 
 private:
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Camera|FOV",
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|My Custom Camera|FOV",
       meta = (AllowPrivateAccess = "true"))
     float fDefaultFOV;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Camera",
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Category = "My Custom Properties|My Custom Camera|",
       meta = (AllowPrivateAccess = "true"))
     class USpringArmComponent *CustomCameraBoom;
 
