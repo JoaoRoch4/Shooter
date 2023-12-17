@@ -1,3 +1,11 @@
+/*****************************************************************//**
+ * \file   ShooterCharacter.h
+ * \brief  Main Character Class
+ * 
+ * \author João Rocha
+ * \date   December 2023 - January 2024
+ *********************************************************************/
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -8,8 +16,6 @@
 #include "Custom.h"
 
 #include "ShooterCharacter.generated.h"
-
-using namespace UnrealBasic;
 
 UENUM(BlueprintType)
 enum class ECombatState : uint8 {
@@ -984,11 +990,6 @@ private:
     UPROPERTY(EditAnywhere, BlueprintReadWrite,
       Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Moving Froward",
       meta     = (AllowPrivateAccess = "true"))
-    double FrowardZOffset_Froward__LEGACY;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite,
-      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Moving Froward",
-      meta     = (AllowPrivateAccess = "true"))
     FVector OffsetFroward;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite,
@@ -999,22 +1000,12 @@ private:
     UPROPERTY(EditAnywhere, BlueprintReadWrite,
       Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Moving Backwards",
       meta     = (AllowPrivateAccess = "true"))
-    double BackwardXOffset_Backwards__LEGACY;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite,
-      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Moving Backwards",
-      meta     = (AllowPrivateAccess = "true"))
     FVector OffsetBackwards;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite,
       Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Moving Backwards",
       meta     = (AllowPrivateAccess = "true"))
     double CameraLagMaxDistance_Backwards;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite,
-      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Moving Right",
-      meta     = (AllowPrivateAccess = "true"))
-    double XOffset_Right__LEGACY;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite,
       Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Moving Right",

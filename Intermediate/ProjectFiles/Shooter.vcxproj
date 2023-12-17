@@ -30,6 +30,10 @@
     <ProjectGuid>{DA1587E2-D52B-3344-9A87-6E5499B72C21}</ProjectGuid>
     <RootNamespace>Shooter</RootNamespace>
   </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Development_Editor|x64'">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <CLRSupport>true</CLRSupport>
+  </PropertyGroup>
   <Import Project="UECommon.props" />
   <ImportGroup Label="ExtensionSettings" />
   <PropertyGroup Label="UserMacros" />
@@ -75,6 +79,7 @@
     <NMakeCleanCommandLine>$(CleanBatchScript) ShooterEditor Win64 Development -Project="$(SolutionDir)Shooter.uproject" -WaitMutex -FromMsBuild</NMakeCleanCommandLine>
     <NMakeOutput>C:\Program Files\Epic Games\UE_5.3\Engine\Binaries\Win64\UnrealEditor.exe</NMakeOutput>
     <AdditionalOptions>/std:c++20  /DSAL_NO_ATTRIBUTE_DECLARATIONS=1 /permissive- /Zc:strictStrings- /Zc:__cplusplus</AdditionalOptions>
+    <AllProjectIncludesArePublic>true</AllProjectIncludesArePublic>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Development_Editor|x64'">
     <NMakeCompile>

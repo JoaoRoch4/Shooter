@@ -1,3 +1,12 @@
+/*****************************************************************//**
+ * \file   ShooterCharacter.cpp
+ * \brief  Main Character Class Code
+ * 
+ * \author João Rocha
+ * \date   December 2023 - January 2024
+ *********************************************************************/
+
+
 #include "ShooterCharacter.h"
 
 #include "Ammo.h"
@@ -146,21 +155,28 @@ AShooterCharacter::AShooterCharacter()
  , ShowEMovingDirection(true)
  , InterpTimeMaxDistance(5.f)
  , InterpTimeSocketOffset(5.f)
- , OriginalCameraSocketOffset(FVector::Zero())
+ , OriginalCameraSocketOffset(FVector::ZeroVector)
  , OriginalCameraLagSpeed(NULL)
  , OriginalCameraLagMaxDistance(NULL)
- , CustomCameraSocketOffset(FVector::Zero())
+ , CustomCameraSocketOffset(FVector::ZeroVector)
  , CustomCameraLagSpeed(NULL)
  , CustomCameraLagMaxDistance(NULL)
- , FrowardZOffset_Froward__LEGACY(60.0)
- , OffsetFroward(FVector::Zero())
+ , OffsetFroward(FVector(-40.f, 0.f, 60.f))
  , CameraLagMaxDistance_Froward(200.0)
- , BackwardXOffset_Backwards__LEGACY(-140.0)
- , OffsetBackwards(FVector::Zero())
+ , OffsetBackwards(FVector(-140.f, 0.f, 0.f))
  , CameraLagMaxDistance_Backwards(100.0)
- , XOffset_Right__LEGACY(140.0)
- , OffsetRight(FVector::Zero())
+ , OffsetRight(FVector(0.f, 180.f, 40.f))
  , CameraLagMaxDistance_Right(100.0)
+ , OffsetLeft(FVector(-40.f, 40.f, 40.f))
+ , CameraLagMaxDistance_Left(100.f)
+ , OffsetForwardRight(FVector(-40.f, 180.f, 60.f))
+ , CameraLagMaxDistance_ForwardRight(100.f)
+ , OffsetForwardLeft(FVector(-40.f, 60.f, 60.f))
+ , CameraLagMaxDistance_ForwardLeft(100.f)
+ , OffsetBackwardRight(FVector(-140.f, 180.f, 60.f))
+ , CameraLagMaxDistance_BackwardRight(NULL)
+ , OffsetBackwardLeft(FVector(-140.f, 40.f, 60.f))
+ , CameraLagMaxDistance_BackwardLeft(NULL)
 
 {
 
@@ -2179,7 +2195,7 @@ void AShooterCharacter::SetMovingDirectionActions(float &DeltaTime) {
                 return AdjustCameraLag(OffsetBackwardLeft, CameraLagMaxDistance_BackwardLeft,
                   DeltaTime, "EMovingDirection::EMD_BackwardLeft");
 
-            case EMovingDirection::EMD_MAX  : [[fallthrough]];
+            case EMovingDirection::EMD_MAX : [[fallthrough]];
             case EMovingDirection::EMD_None : return EMovingDirection_None(DeltaTime);
 
             default : {
