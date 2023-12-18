@@ -76,9 +76,9 @@ struct FItemRarityTable : public FTableRowBase {
     int32 CustomDepthStencil;
 
     FItemRarityTable()
-     : GlowColor(FLinearColor())
-     , LightColor(FLinearColor())
-     , DarkColor(FLinearColor())
+     : GlowColor(FLinearColor(0.f, 0.f, 0.f, 1.f))
+     , LightColor(FLinearColor(0.f, 0.f, 0.f, 1.f))
+     , DarkColor(FLinearColor(0.f, 0.f, 0.f, 1.f))
      , NumberOfStars(0)
      , IconBackground(nullptr)
      , CustomDepthStencil(0) {}
@@ -90,10 +90,12 @@ class SHOOTER_API AItem : public AActor {
     GENERATED_BODY()
 
 public:
+
     // Sets default values for this actor's properties
     AItem();
 
 protected:
+
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
 
@@ -158,9 +160,11 @@ protected:
     void UpdatePulse();
 
 public:
+
     virtual void Tick(float DeltaTime) override;
 
 private:
+
     /* Default constructor for Collision Box. */
     void DefaultConstructor_CollisionBox();
 
@@ -297,7 +301,7 @@ private:
     /**  Dynamic instance that we can change at runtime. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Materials",
       meta = (AllowPrivateAccess = "true"))
-    UMaterialInstanceDynamic *DynamicMaterialInstance;
+    class UMaterialInstanceDynamic *DynamicMaterialInstance;
 
     /**  Material instance used with the Dynamic Material instance. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Materials",
@@ -399,6 +403,7 @@ private:
     UTexture2D *IconBackground;
 
 public:
+
     FORCEINLINE UWidgetComponent *GetPickupWidget() const { return PickupWidget; }
 
     FORCEINLINE USphereComponent *GetAreaSphere() const { return AreaSphere; }
@@ -457,4 +462,20 @@ public:
      * @param Icon an UTexture2D pointer to the icon
      */
     FORCEINLINE void SetAmmoIcon(UTexture2D *AmmoIcon) { AmmoItem = AmmoIcon; }
+
+    FORCEINLINE void SetMaterialInstance(UMaterialInstance *Material) {
+        MaterialInstance = Material;
+    }
+    FORCEINLINE UMaterialInstance *GetMaterialInstance() const { return MaterialInstance; }
+
+    FORCEINLINE void SetDynamicMaterialInstance(UMaterialInstanceDynamic *MaterialDynamic) {
+        DynamicMaterialInstance = MaterialDynamic;
+    }
+    FORCEINLINE UMaterialInstanceDynamic *GetDynamicMaterialInstance() const {
+        return DynamicMaterialInstance;
+    }
+
+    FORCEINLINE FLinearColor GetGlowColor() const { return GlowColor; }
+    FORCEINLINE int32        GetMaterialIndex() const { return MaterialIndex; }
+    FORCEINLINE void         SetMaterialIndex(const int32 Index) { MaterialIndex = Index; }
 };

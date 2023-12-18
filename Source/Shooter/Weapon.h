@@ -35,8 +35,8 @@ struct FWeaponDataTable : public FTableRowBase {
     class USoundCue *PickupSound;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    USoundCue* EquipSound;
-        
+    USoundCue *EquipSound;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     class USkeletalMesh *ItemMesh;
 
@@ -47,7 +47,26 @@ struct FWeaponDataTable : public FTableRowBase {
     class UTexture2D *InventoryIcon;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    UTexture2D* AmmoIcon;
+    UTexture2D *AmmoIcon;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    class UMaterialInstance *MaterialInstance;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 MaterialIndex;
+
+    FWeaponDataTable()
+     : AmmoType(EAmmoType::EAT_9mm)
+     , WeaponAmmo(0)
+     , MagazineCapacity(0)
+     , PickupSound(nullptr)
+     , EquipSound(nullptr)
+     , ItemMesh(nullptr)
+     , ItemName(FString())
+     , InventoryIcon(nullptr)
+     , AmmoIcon(nullptr)
+     , MaterialInstance(nullptr)
+     , MaterialIndex(0) {};
 };
 
 /**
@@ -180,6 +199,8 @@ private:
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|DataTable",
       meta = (AllowPrivateAccess = "true"))
     UDataTable *WeaponDataTable;
+
+    int32 PreviousMaterialIndex;
 
 public:
     /** Adds an im*pulse to the weapon */

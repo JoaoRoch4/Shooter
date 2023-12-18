@@ -113,24 +113,51 @@ void AWeapon::SetWeaponTableObject(UDataTable *WeaponTableObject) {
         };
     }
 
-    if (WeaponDataRow) {
-
-        AmmoType         = WeaponDataRow->AmmoType;
-        Ammo             = WeaponDataRow->WeaponAmmo;
-        MagazineCapacity = WeaponDataRow->MagazineCapacity;
-
-        SetPickupSound(WeaponDataRow->PickupSound);
-        SetEquipSound(WeaponDataRow->EquipSound);
-        GetItemMesh()->SetSkeletalMesh(WeaponDataRow->ItemMesh);
-        SetItemName(WeaponDataRow->ItemName);
-        SetIconItem(WeaponDataRow->InventoryIcon);
-        SetAmmoIcon(WeaponDataRow->AmmoIcon);
-
-    } else {
+    if (WeaponDataRow == nullptr) {
 
         ExitPrintErr(
           "AWeapon::SetWeaponTableObject(): -> if (WeaponDataRow): WeaponDataRow was nullptr")
     }
+
+    AmmoType         = WeaponDataRow->AmmoType;
+    Ammo             = WeaponDataRow->WeaponAmmo;
+    MagazineCapacity = WeaponDataRow->MagazineCapacity;
+    SetPickupSound(WeaponDataRow->PickupSound);
+    SetEquipSound(WeaponDataRow->EquipSound);
+    GetItemMesh()->SetSkeletalMesh(WeaponDataRow->ItemMesh);
+    SetItemName(WeaponDataRow->ItemName);
+    SetIconItem(WeaponDataRow->InventoryIcon);
+    SetAmmoIcon(WeaponDataRow->AmmoIcon);
+    SetMaterialInstance(WeaponDataRow->MaterialInstance);
+    PreviousMaterialIndex = GetMaterialIndex();
+    GetItemMesh()->SetMaterial(PreviousMaterialIndex, nullptr);
+    SetMaterialIndex(WeaponDataRow->MaterialIndex);
+
+    if (GetMaterialInstance()) {
+
+        SetDynamicMaterialInstance(UMaterialInstanceDynamic::Create(GetMaterialInstance(), this));
+
+    } else {
+        ExitPrintErr("AWeapon::SetWeaponTableObject(): -> if (GetMaterialInstance()):"
+                     "GetMaterialInstance() was nullptr");          
+    }
+
+    if (GetDynamicMaterialInstance()) {
+
+        GetDynamicMaterialInstance()->SetVectorParameterValue(L"FresnelColor", GetGlowColor());
+
+    } else {
+        ExitPrintErr("AWeapon::SetWeaponTableObject(): -> if (GetDynamicMaterialInstance()):"
+                     "GetDynamicMaterialInstance() was nullptr");
+
+    if (GetItemMesh()) {
+        GetItemMesh()->SetMaterial(GetMaterialIndex(), GetDynamicMaterialInstance());
+    } else {
+        ExitPrintErr(
+          "AWeapon::SetWeaponTableObject(): -> if (GetItemMesh()): GetItemMesh() was nullptr");
+    }
+
+    EnableGlowMaterial();
 }
 
 void AWeapon::SyncItemMunition() {
@@ -254,14 +281,9 @@ void AWeapon::StopFalling() {
 
 void AWeapon::DecrementAmmo() {
 
-    if (Ammo - 1 <= 0) {
+    if (Ammo - 1 <= 0) Ammo = 0;
 
-        Ammo = 0;
-
-    } else {
-
-        --Ammo;
-    }
+    else --Ammo;
 }
 
 void AWeapon::ReloadAmmo(int32 Amount) {

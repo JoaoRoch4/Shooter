@@ -104,6 +104,7 @@ ColumnLimit: 100
 
 DerivePointerAlignment: false
 EmptyLineBeforeAccessModifier: Always
+EmptyLineAfterAccessModifier : Always
 ExperimentalAutoDetectBinPacking: false
 FixNamespaceComments: false
 
@@ -121,7 +122,13 @@ IndentPPDirectives: None
 IndentRequires: true
 IndentWidth: 4
 IndentWrappedFunctionNames: true
-KeepEmptyLinesAtTheStartOfBlocks: true
+
+IntegerLiteralSeparator:
+    Binary: 3
+    Decimal: 3
+    DecimalMinDigits: 4
+    Hex: 0
+
 Language: Cpp
 LineEnding: CRLF
 MaxEmptyLinesToKeep: 1
@@ -168,6 +175,8 @@ SpacesInSquareBrackets: false
 Standard: c++20
 PackConstructorInitializers: NextLine
 PenaltyBreakAssignment: 2
+
+QualifierAlignment : Left
 
 TabWidth : 4
 UseCRLF: true

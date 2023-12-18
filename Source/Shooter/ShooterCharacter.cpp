@@ -1,11 +1,12 @@
-/*****************************************************************//**
- * \file   ShooterCharacter.cpp
- * \brief  Main Character Class Code
- * 
- * \author João Rocha
- * \date   December 2023 - January 2024
- *********************************************************************/
-
+/*****************************************************************/ /**
+                                                                     * \file   ShooterCharacter.cpp
+                                                                     * \brief  Main Character Class
+                                                                     *Code
+                                                                     *
+                                                                     * \author João Rocha
+                                                                     * \date   December 2023 -
+                                                                     *January 2024
+                                                                     *********************************************************************/
 
 #include "ShooterCharacter.h"
 
@@ -2035,7 +2036,6 @@ void AShooterCharacter::KeyMethod1Key() {
         UpdateSlotsItens();
 
         if (CurrentSlotIndex == 1) return;
-
         return ExchangeInventoryItens(CurrentSlotIndex, 1);
 
     } else {
@@ -2052,7 +2052,6 @@ void AShooterCharacter::KeyMethod2Key() {
         UpdateSlotsItens();
 
         if (CurrentSlotIndex == 2) return;
-
         return ExchangeInventoryItens(CurrentSlotIndex, 2);
 
     } else {
@@ -2069,7 +2068,6 @@ void AShooterCharacter::KeyMethod3Key() {
         UpdateSlotsItens();
 
         if (CurrentSlotIndex == 3) return;
-
         return ExchangeInventoryItens(CurrentSlotIndex, 3);
 
     } else {
@@ -2086,7 +2084,6 @@ void AShooterCharacter::KeyMethod4Key() {
         UpdateSlotsItens();
 
         if (CurrentSlotIndex == 4) return;
-
         return ExchangeInventoryItens(CurrentSlotIndex, 4);
 
     } else {
@@ -2103,7 +2100,6 @@ void AShooterCharacter::KeyMethod5Key() {
         UpdateSlotsItens();
 
         if (CurrentSlotIndex == 5) return;
-
         return ExchangeInventoryItens(CurrentSlotIndex, 5);
 
     } else {
