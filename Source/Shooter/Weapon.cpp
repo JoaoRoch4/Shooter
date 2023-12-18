@@ -139,7 +139,7 @@ void AWeapon::SetWeaponTableObject(UDataTable *WeaponTableObject) {
 
     } else {
         ExitPrintErr("AWeapon::SetWeaponTableObject(): -> if (GetMaterialInstance()):"
-                     "GetMaterialInstance() was nullptr");          
+                     "GetMaterialInstance() was nullptr");
     }
 
     if (GetDynamicMaterialInstance()) {
@@ -150,14 +150,15 @@ void AWeapon::SetWeaponTableObject(UDataTable *WeaponTableObject) {
         ExitPrintErr("AWeapon::SetWeaponTableObject(): -> if (GetDynamicMaterialInstance()):"
                      "GetDynamicMaterialInstance() was nullptr");
 
-    if (GetItemMesh()) {
-        GetItemMesh()->SetMaterial(GetMaterialIndex(), GetDynamicMaterialInstance());
-    } else {
-        ExitPrintErr(
-          "AWeapon::SetWeaponTableObject(): -> if (GetItemMesh()): GetItemMesh() was nullptr");
-    }
+        if (GetItemMesh()) {
+            GetItemMesh()->SetMaterial(GetMaterialIndex(), GetDynamicMaterialInstance());
+        } else {
+            ExitPrintErr(
+              "AWeapon::SetWeaponTableObject(): -> if (GetItemMesh()): GetItemMesh() was nullptr");
+        }
 
-    EnableGlowMaterial();
+        EnableGlowMaterial();
+    }
 }
 
 void AWeapon::SyncItemMunition() {
