@@ -15,8 +15,8 @@
     <None Include="..\..\.editorconfig" />
     <None Include="..\..\.gitattributes" />
     <None Include="..\..\.gitignore" />
-    <None Include="..\..\.vsconfig" />
     <None Include="..\..\LICENSE.txt" />
+    <None Include="..\..\oldvsconfig.txt" />
     <None Include="..\..\README.md" />
     <None Include="..\..\shadertoolsconfig.json" />
     <None Include="..\..\Shooter.unrealvs" />
@@ -132,6 +132,10 @@
     <ClInclude Include="..\..\Source\Shooter\Weapon.h">
       <Filter>Source\Shooter</Filter>
     </ClInclude>
-    <None Include="cpp.hint" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Source\Shooter\WeaponType.h">
+      <Filter>Source\Shooter</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

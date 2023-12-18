@@ -2,14 +2,14 @@
 
 #include "Custom.h"
 #include "ShooterCharacter.h"
+#include "Weapon.h"
+#include "WeaponType.h"
 
 #include <GameFramework\CharacterMovementComponent.h>
 #include <Kismet\KismetMathLibrary.h>
 
 UShooterAnimInstance::UShooterAnimInstance()
- :
-
- ShooterCharacter(nullptr)
+ : ShooterCharacter(nullptr)
  , Speed(0.0f)
  , bIsInAir(false)
  , bIsAccelerating(false)
@@ -30,7 +30,8 @@ UShooterAnimInstance::UShooterAnimInstance()
  , bCrouching(false)
  , bEquipping(false)
  , RecoilWeight(1.f)
- , bTurningInPlace(false) {}
+ , bTurningInPlace(false)
+ , WeaponType(EWeaponType::EWT_SubmachineGun) {}
 
 void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 
@@ -56,16 +57,18 @@ void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 
             bIsAccelerating = true;
 
-        else
-            bIsAccelerating = false;
+        else bIsAccelerating = false;
 
         FRotator AimRotation {ShooterCharacter->GetBaseAimRotation()};
 
-        FRotator MovementRotation {UKismetMathLibrary::MakeRotFromX(ShooterCharacter->GetVelocity())};
+        FRotator MovementRotation {
+          UKismetMathLibrary::MakeRotFromX(ShooterCharacter->GetVelocity())};
 
-        MovementOffsetYaw = UKismetMathLibrary::NormalizedDeltaRotator(MovementRotation, AimRotation).Yaw;
+        MovementOffsetYaw
+          = UKismetMathLibrary::NormalizedDeltaRotator(MovementRotation, AimRotation).Yaw;
 
-        if (ShooterCharacter->GetVelocity().Size() > 0.0f) LastMovementOffsetYaw = MovementOffsetYaw;
+        if (ShooterCharacter->GetVelocity().Size() > 0.0f)
+            LastMovementOffsetYaw = MovementOffsetYaw;
 
         bAiming = ShooterCharacter->GetAiming();
 
@@ -84,6 +87,16 @@ void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime) {
         } else {
 
             OffsetState = EOffsetState::EOS_Hip;
+        }
+
+        // Check if ShooterCharacter has a valid equipped weapon
+        if (ShooterCharacter->GetEquippedWeapon()) {
+
+            WeaponType = ShooterCharacter->GetEquippedWeapon()->GetWeaponType();
+
+        } else {
+
+            WeaponType = EWeaponType::EWT_SubmachineGun;
         }
     }
 
@@ -188,7 +201,7 @@ void UShooterAnimInstance::TurnInPlace() {
 
                 RecoilWeight = 0.1f;
             }
-            
+
         } else {
 
             if (bAiming || bReloading || bEquipping) {

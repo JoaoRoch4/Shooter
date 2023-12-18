@@ -3,9 +3,9 @@
 #include "Animation/AnimInstance.h"
 #include "CoreMinimal.h"
 #include "Custom.h"
-#include "ShooterAnimInstance.generated.h"
+#include "WeaponType.h"
 
-using namespace UnrealBasic;
+#include "ShooterAnimInstance.generated.h"
 
 UENUM(BlueprintType)
 enum class EOffsetState : uint8 {
@@ -19,7 +19,7 @@ enum class EOffsetState : uint8 {
 };
 
 /**
- * 
+ * @brief Handles the Animation Instance for the Shooter Character.
  */
 UCLASS()
 class SHOOTER_API UShooterAnimInstance : public UAnimInstance {
@@ -27,6 +27,7 @@ class SHOOTER_API UShooterAnimInstance : public UAnimInstance {
     GENERATED_BODY()
 
 public:
+
     UShooterAnimInstance();
 
     UFUNCTION(BlueprintCallable)
@@ -44,37 +45,46 @@ public:
     void Lean(float DeltaTime);
 
 protected:
+
     /**
 	 * @brief Handle turn in place variables.
 	 */
     void TurnInPlace();
 
 private:
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement",
+      meta = (AllowPrivateAccess = "true"))
     class AShooterCharacter *ShooterCharacter;
 
     /** The Speed of the Character */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement",
+      meta = (AllowPrivateAccess = "true"))
     float Speed;
 
     /** Whether or not the character is in the air */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement",
+      meta = (AllowPrivateAccess = "true"))
     bool bIsInAir;
 
     /** Whether or not the character is moving */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement",
+      meta = (AllowPrivateAccess = "true"))
     bool bIsAccelerating;
 
     /** Offset yaw use for strafing */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(
+      EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
     float MovementOffsetYaw;
 
     /** OffsetYaw the frame before we stopped moving */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(
+      EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
     float LastMovementOffsetYaw;
 
     /**  true if the Character is aiming. */
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement",
+      meta = (AllowPrivateAccess = "true"))
     bool bAiming;
 
     /** 
@@ -92,8 +102,8 @@ private:
     float TIPCharacterYawLastFrame;
 
     /**  Offset of the Yaw. */
-    UPROPERTY(
-      VisibleAnywhere, BlueprintReadOnly, Category = "Turn In Place", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Turn In Place",
+      meta = (AllowPrivateAccess = "true"))
     float RootYawOffset;
 
     /**  Rotation Curve Value this frame. */
@@ -103,8 +113,8 @@ private:
     float RotationCurveLastFrame;
 
     /**  The pitch of the aim rotation, used for Aim Offset. */
-    UPROPERTY(
-      VisibleAnywhere, BlueprintReadOnly, Category = "Turn In Place", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Turn In Place",
+      meta = (AllowPrivateAccess = "true"))
     float Pitch;
 
     /**
@@ -112,8 +122,8 @@ private:
 	 * Aim Offset
      * while reloading. 
 	 */
-    UPROPERTY(
-      VisibleAnywhere, BlueprintReadOnly, Category = "Turn In Place", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Turn In Place",
+      meta = (AllowPrivateAccess = "true"))
     bool bReloading;
 
     /**
@@ -121,8 +131,8 @@ private:
 	 *
      * Offset to use. 
 	 */
-    UPROPERTY(
-      VisibleAnywhere, BlueprintReadOnly, Category = "Turn In Place", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Turn In Place",
+      meta = (AllowPrivateAccess = "true"))
     EOffsetState OffsetState;
 
     /**  Character Yaw this frame. */
@@ -131,33 +141,33 @@ private:
     /**  Character Yaw last frame. */
     FRotator CharacterRotationLastFrame;
 
-    /**
-	 * @brief Yaw delta used for leaning in the 
-	 * running
-     * BlendSpace. 
-	 */
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Lean", meta = (AllowPrivateAccess = "true"))
+    /** * @brief Yaw delta used for leaning in the running BlendSpace. */
+    UPROPERTY(
+      VisibleAnywhere, BlueprintReadWrite, Category = "Lean", meta = (AllowPrivateAccess = "true"))
     float YawDelta;
 
     /**  True when crouching. */
-    UPROPERTY(
-      VisibleAnywhere, BlueprintReadWrite, Category = "Crouching", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Crouching",
+      meta = (AllowPrivateAccess = "true"))
     bool bCrouching;
 
-     /**  True when Equipping. */
-    UPROPERTY(
-      VisibleAnywhere, BlueprintReadWrite, Category = "Equipping", meta = (AllowPrivateAccess = "true"))
+    /**  True when Equipping. */
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Equipping",
+      meta = (AllowPrivateAccess = "true"))
     bool bEquipping;
 
-    /**
-	   Change the recoil weight based on turning
-	  * in
-     * place and aiming. 
-	  */
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+    /** Change the recoil weight based on turning in place and aiming. */
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat",
+      meta = (AllowPrivateAccess = "true"))
     float RecoilWeight;
 
     /**  True when turning in place. */
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat",
+      meta = (AllowPrivateAccess = "true"))
     bool bTurningInPlace;
+
+    /** Weapon type for the currently equipped weapon */
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat",
+      meta = (AllowPrivateAccess = "true"))
+    EWeaponType WeaponType;
 };

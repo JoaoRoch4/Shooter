@@ -148,8 +148,7 @@ void AWeapon::SetWeaponTableObject(UDataTable *WeaponTableObject) {
 
     } else {
         ExitPrintErr("AWeapon::SetWeaponTableObject(): -> if (GetDynamicMaterialInstance()):"
-                     "GetDynamicMaterialInstance() was nullptr");
-                
+                     "GetDynamicMaterialInstance() was nullptr");                
     }
 
     if (GetItemMesh()) {

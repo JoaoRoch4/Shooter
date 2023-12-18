@@ -1115,10 +1115,11 @@ public:
     void IncrementInterpLocItemCount(int32 Index, int32 Amount);
 
     FORCEINLINE bool ShouldPlayPickupSound() const { return bShouldPlayPickupSound; }
-
     FORCEINLINE bool ShouldPlayEquipSound() const { return bShouldPlayEquipSound; }
 
     void StartPickupSoundTimer();
     void StartEquipSoundTimer();
     void UnHighlightInventorySlot();
+
+    FORCEINLINE AWeapon *GetEquippedWeapon() const { return EquippedWeapon; }
 };
