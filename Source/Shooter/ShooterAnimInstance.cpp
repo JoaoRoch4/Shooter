@@ -31,7 +31,8 @@ UShooterAnimInstance::UShooterAnimInstance()
  , bEquipping(false)
  , RecoilWeight(1.f)
  , bTurningInPlace(false)
- , WeaponType(EWeaponType::EWT_SubmachineGun) {}
+ , WeaponType(EWeaponType::EWT_MAX)
+ , bShouldUseFABRIK(false) {}
 
 void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 
@@ -42,6 +43,10 @@ void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime) {
         bCrouching = ShooterCharacter->GetCrouching();
         bReloading = ShooterCharacter->GetCombatState() == ECombatState::ECS_Reloading;
         bEquipping = ShooterCharacter->GetCombatState() == ECombatState::ECS_Equipping;
+
+        bool Unoccupied {ShooterCharacter->GetCombatState() == ECombatState::ECS_Unoccupied};
+        bool FireTimer  {ShooterCharacter->GetCombatState() == ECombatState::ECS_FireTimerInProgress};
+        bShouldUseFABRIK = Unoccupied || FireTimer;
 
         // Get the lateral speed of the character from velocity
         FVector Velocity {ShooterCharacter->GetVelocity()};
