@@ -89,10 +89,17 @@ typedef FVector2d Fvc2;
 
 #define QuitGamePrintErr(X) ExitPrintErr(X)
 
+#define CheckPtr(InExpression, InFormat, ...)                                                      \
+    ensureMsgf(InExpression, TEXT(InFormat), ##__VA_ARGS__);                                                      \
+    ExitGame()
+
+#define CheckPtrExit(InExpression, InFormat, ...)                                                  \
+    checkf(InExpression, TEXT(InFormat), ##__VA_ARGS__);                                                      
+
 #include <GenericPlatform/GenericPlatformApplicationMisc.h>
 #define ExitEngine() FGenericPlatformMisc::RequestExit(false)
 
-//#define QuitGame() ExitGame()
+// #define QuitGame() ExitGame()
 
 #define ClearLog()                                                                                 \
     if (GEngine) GEngine->Exec(GetWorld(), TEXT("Clear"));
@@ -130,16 +137,17 @@ class SHOOTER_API ACustom : public AActor {
     GENERATED_BODY()
 
 public:
+
     // Sets default values for this actor's properties
     ACustom();
 
 protected:
+
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
 
-    
-
 public:
+
     // Called every frame
     virtual void Tick(float DeltaTime) override;
 

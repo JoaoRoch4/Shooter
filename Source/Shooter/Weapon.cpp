@@ -8,9 +8,7 @@
 #include <Kismet\GameplayStatics.h>
 
 AWeapon::AWeapon()
- :
-
- ThrowWeaponTime(0.7f)
+ : ThrowWeaponTime(0.7f)
  , bFalling(false)
  , bNotRandValues(false)
  , ThrowHeight(10.f)
@@ -39,8 +37,6 @@ void AWeapon::BeginPlay() {
 
     Super::BeginPlay();
 
-    
-
     // SyncItemMunition();
 }
 
@@ -48,11 +44,8 @@ void AWeapon::OnConstruction(const FTransform &Transform) {
 
     Super::OnConstruction(Transform);
 
-    if (GetItemMesh() == nullptr) {
-
-        ExitPrintErr("AWeapon::OnConstruction()->if (GetItemMesh()) : GetItemMesh() was nullptr");
-        
-    }
+    CheckPtr(
+      GetItemMesh() != nullptr, "AWeapon::OnConstruction() - GetItemMesh() returned nullptr");
 
     Construct_WeaponTableObject();
 }
@@ -121,12 +114,8 @@ void AWeapon::SetWeaponTableObject(UDataTable *WeaponTableObject) {
         };
     }
 
-    if (WeaponDataRow == nullptr) {
-
-        ExitPrintErr(
-          "AWeapon::SetWeaponTableObject(): -> if (WeaponDataRow): WeaponDataRow was nullptr")
-    }
-        
+    CheckPtr(WeaponDataRow != nullptr,
+      "AWeapon::SetWeaponTableObject(): -> if (WeaponDataRow): WeaponDataRow was nullptr");
 
     AmmoType         = WeaponDataRow->AmmoType;
     Ammo             = WeaponDataRow->WeaponAmmo;
@@ -143,26 +132,17 @@ void AWeapon::SetWeaponTableObject(UDataTable *WeaponTableObject) {
     SetMaterialIndex(WeaponDataRow->MaterialIndex);
     SetClipBoneName(WeaponDataRow->ClipBoneName);
 
-    if (GetMaterialInstance()) {
+    CheckPtr(GetMaterialInstance() != nullptr,
+      "AWeapon::SetWeaponTableObject() - GetItemMesh() returned nullptr");
 
-        SetDynamicMaterialInstance(UMaterialInstanceDynamic::Create(GetMaterialInstance(), this));
+    SetDynamicMaterialInstance(UMaterialInstanceDynamic::Create(GetMaterialInstance(), this));
 
-    } else {
-        ExitPrintErr("AWeapon::SetWeaponTableObject(): -> if (GetMaterialInstance()):"
-                     "GetMaterialInstance() was nullptr");
-    }
+    CheckPtr(GetDynamicMaterialInstance() != nullptr,
+      "AWeapon::SetWeaponTableObject() - GetDynamicMaterialInstance() returned nullptr");
 
-    if (GetDynamicMaterialInstance()) {
+    GetDynamicMaterialInstance()->SetVectorParameterValue(L"FresnelColor", GetGlowColor());
 
-        GetDynamicMaterialInstance()->SetVectorParameterValue(L"FresnelColor", GetGlowColor());
-
-    } else {
-        ExitPrintErr("AWeapon::SetWeaponTableObject(): -> if (GetDynamicMaterialInstance()):"
-                     "GetDynamicMaterialInstance() was nullptr");                
-    }
-        
     GetItemMesh()->SetMaterial(GetMaterialIndex(), GetDynamicMaterialInstance());
-    
 
     EnableGlowMaterial();
 }
