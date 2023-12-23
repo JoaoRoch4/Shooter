@@ -44,9 +44,6 @@ void AWeapon::OnConstruction(const FTransform &Transform) {
 
     Super::OnConstruction(Transform);
 
-    CheckPtr(
-      GetItemMesh() != nullptr, "AWeapon::OnConstruction() - GetItemMesh() returned nullptr");
-
     Construct_WeaponTableObject();
 }
 
@@ -114,8 +111,12 @@ void AWeapon::SetWeaponTableObject(UDataTable *WeaponTableObject) {
         };
     }
 
-    CheckPtr(WeaponDataRow != nullptr,
-      "AWeapon::SetWeaponTableObject(): -> if (WeaponDataRow): WeaponDataRow was nullptr");
+    CheckPtr(WeaponDataRow, "AWeapon::SetWeaponTableObject(): WeaponDataRow was nullptr");
+    CheckPtr(GetItemMesh(), "AWeapon::SetWeaponTableObject(): GetItemMesh() is nullptr");
+    CheckPtr(
+      GetMaterialInstance(), "AWeapon::SetWeaponTableObject(): GetMaterialInstance() is nullptr");
+    CheckPtr(GetDynamicMaterialInstance(),
+      "AWeapon::SetWeaponTableObject(): GetDynamicMaterialInstance() is nullptr");
 
     AmmoType         = WeaponDataRow->AmmoType;
     Ammo             = WeaponDataRow->WeaponAmmo;
@@ -131,17 +132,8 @@ void AWeapon::SetWeaponTableObject(UDataTable *WeaponTableObject) {
     GetItemMesh()->SetMaterial(PreviousMaterialIndex, nullptr);
     SetMaterialIndex(WeaponDataRow->MaterialIndex);
     SetClipBoneName(WeaponDataRow->ClipBoneName);
-
-    CheckPtr(GetMaterialInstance() != nullptr,
-      "AWeapon::SetWeaponTableObject() - GetItemMesh() returned nullptr");
-
     SetDynamicMaterialInstance(UMaterialInstanceDynamic::Create(GetMaterialInstance(), this));
-
-    CheckPtr(GetDynamicMaterialInstance() != nullptr,
-      "AWeapon::SetWeaponTableObject() - GetDynamicMaterialInstance() returned nullptr");
-
     GetDynamicMaterialInstance()->SetVectorParameterValue(L"FresnelColor", GetGlowColor());
-
     GetItemMesh()->SetMaterial(GetMaterialIndex(), GetDynamicMaterialInstance());
 
     EnableGlowMaterial();

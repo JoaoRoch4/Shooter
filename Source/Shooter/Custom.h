@@ -89,12 +89,20 @@ typedef FVector2d Fvc2;
 
 #define QuitGamePrintErr(X) ExitPrintErr(X)
 
-#define CheckPtr(InExpression, InFormat, ...)                                                      \
-    ensureMsgf(InExpression, TEXT(InFormat), ##__VA_ARGS__);                                                      \
-    ExitGame()
+#define CheckPtr(ptr, InFormat, ...)                                                      \
+    if (!(ensureMsgf((ptr) != nullptr, TEXT(InFormat), ## __VA_ARGS__))) {                                 \
+        PrintLogErr(InFormat);                                                                     \
+        ExitGame()                                                                                 \
+    }
 
-#define CheckPtrExit(InExpression, InFormat, ...)                                                  \
-    checkf(InExpression, TEXT(InFormat), ##__VA_ARGS__);                                                      
+#define CheckExpression(InExpression, InFormat, ...)                                                      \
+    if (!(ensureMsgf(InExpression, TEXT(InFormat), ## __VA_ARGS__))) {                                             \
+        PrintLogErr(InFormat);                                                                     \
+        ExitGame()                                                                                 \
+    }
+
+#define CheckPtrExit(ptr, InFormat, ...) checkf((ptr) != nullptr, TEXT(InFormat), ##__VA_ARGS__)                       
+       
 
 #include <GenericPlatform/GenericPlatformApplicationMisc.h>
 #define ExitEngine() FGenericPlatformMisc::RequestExit(false)
