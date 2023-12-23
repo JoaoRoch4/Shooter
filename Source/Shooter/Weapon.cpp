@@ -39,12 +39,20 @@ void AWeapon::BeginPlay() {
 
     Super::BeginPlay();
 
+    
+
     // SyncItemMunition();
 }
 
 void AWeapon::OnConstruction(const FTransform &Transform) {
 
     Super::OnConstruction(Transform);
+
+    if (GetItemMesh() == nullptr) {
+
+        ExitPrintErr("AWeapon::OnConstruction()->if (GetItemMesh()) : GetItemMesh() was nullptr");
+        
+    }
 
     Construct_WeaponTableObject();
 }
@@ -118,6 +126,7 @@ void AWeapon::SetWeaponTableObject(UDataTable *WeaponTableObject) {
         ExitPrintErr(
           "AWeapon::SetWeaponTableObject(): -> if (WeaponDataRow): WeaponDataRow was nullptr")
     }
+        
 
     AmmoType         = WeaponDataRow->AmmoType;
     Ammo             = WeaponDataRow->WeaponAmmo;
@@ -151,13 +160,9 @@ void AWeapon::SetWeaponTableObject(UDataTable *WeaponTableObject) {
         ExitPrintErr("AWeapon::SetWeaponTableObject(): -> if (GetDynamicMaterialInstance()):"
                      "GetDynamicMaterialInstance() was nullptr");                
     }
-
-    if (GetItemMesh()) {
-        GetItemMesh()->SetMaterial(GetMaterialIndex(), GetDynamicMaterialInstance());
-    } else {
-        ExitPrintErr(
-          "AWeapon::SetWeaponTableObject(): -> if (GetItemMesh()): GetItemMesh() was nullptr");
-    }
+        
+    GetItemMesh()->SetMaterial(GetMaterialIndex(), GetDynamicMaterialInstance());
+    
 
     EnableGlowMaterial();
 }
