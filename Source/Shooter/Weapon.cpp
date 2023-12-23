@@ -132,6 +132,7 @@ void AWeapon::SetWeaponTableObject(UDataTable *WeaponTableObject) {
     PreviousMaterialIndex = GetMaterialIndex();
     GetItemMesh()->SetMaterial(PreviousMaterialIndex, nullptr);
     SetMaterialIndex(WeaponDataRow->MaterialIndex);
+    SetClipBoneName(WeaponDataRow->ClipBoneName);
 
     if (GetMaterialInstance()) {
 
