@@ -28,7 +28,6 @@ AWeapon::AWeapon()
  , ReloadMontageSection(FName(L"Reload SMG"))
  , ClipBoneName(FName(L"smg_clip"))
  , ItemInstance(nullptr)
-
 {
     PrimaryActorTick.bCanEverTick = true;
 }
@@ -38,6 +37,7 @@ void AWeapon::BeginPlay() {
     Super::BeginPlay();
 
     // SyncItemMunition();    
+       
 }
 
 void AWeapon::OnConstruction(const FTransform &Transform) {

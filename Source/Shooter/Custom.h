@@ -89,7 +89,7 @@ typedef FVector2d Fvc2;
 
 #define QuitGamePrintErr(X) ExitPrintErr(X)
 
-#define localEnsureCheckPtr(ptr)                                                                   \
+#define __localEnsureCheckPtr(ptr)                                                                   \
     const FString Msg {FString::Printf(                                                            \
       TEXT("%s is nullptr: File: %s, Line: %d"), TEXT(#ptr), TEXT(__FILE__), __LINE__)};           \
     if (!(ensureMsgf((ptr) != nullptr, TEXT("%s"), *Msg))) {                                       \
@@ -97,14 +97,19 @@ typedef FVector2d Fvc2;
         ExitGame()                                                                                 \
     }
 
+#define __localCheckF_CheckPtr(ptr)                                                                   \
+    const FString Msg {FString::Printf(                                                            \
+      TEXT("%s is nullptr: File: %s, Line: %d"), TEXT(#ptr), TEXT(__FILE__), __LINE__)};           \
+    checkf((ptr) != nullptr, TEXT("%s"), *Msg);                                     
+
 #define CheckPtr(ptr)                                                                              \
     if (ptr == nullptr) {                                                                          \
-        localEnsureCheckPtr(ptr)                                                                   \
+        __localEnsureCheckPtr(ptr)                                                                   \
     }
 
 #define CheckMsgPtr(ptr)                                                                           \
     if (ptr == nullptr) {                                                                          \
-        localEnsureCheckPtr(ptr)                                                                   \
+        __localEnsureCheckPtr(ptr)                                                                   \
     } else {                                                                                       \
        UE_LOG(LogTemp, Log, TEXT("%s is valid"), TEXT(#ptr));                                      \
 }
@@ -121,7 +126,7 @@ typedef FVector2d Fvc2;
         ExitGame()                                                                                 \
     }
 
-#define CheckPtrExit(ptr, InFormat, ...) checkf((ptr) != nullptr, TEXT(InFormat), ##__VA_ARGS__)
+#define CheckPtrExit(ptr) __localCheckF_CheckPtr(ptr)
 
 #include <GenericPlatform/GenericPlatformApplicationMisc.h>
 #define ExitEngine() FGenericPlatformMisc::RequestExit(false)
