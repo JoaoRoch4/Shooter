@@ -111,12 +111,10 @@ void AWeapon::SetWeaponTableObject(UDataTable *WeaponTableObject) {
         };
     }
 
-    CheckMsgPtr(WeaponDataRow);
-    CheckMsgPtr(GetItemMesh());
-    CheckPtrLegacy(
-      GetMaterialInstance(), "AWeapon::SetWeaponTableObject(): GetMaterialInstance() is nullptr");
-    CheckPtrLegacy(GetDynamicMaterialInstance(),
-      "AWeapon::SetWeaponTableObject(): GetDynamicMaterialInstance() is nullptr");
+    CheckPtr(WeaponDataRow);
+    CheckPtr(GetItemMesh());
+    CheckPtr(GetMaterialInstance());
+    CheckPtr(GetDynamicMaterialInstance());
 
     AmmoType         = WeaponDataRow->AmmoType;
     Ammo             = WeaponDataRow->WeaponAmmo;

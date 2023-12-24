@@ -10,6 +10,7 @@
 #define PL_Err(Text)          UE_LOG(LogTemp, Error, TEXT(Text));
 #define PrintLogBreakLine()   UE_LOG(LogTemp, Error, TEXT(" "));
 #define PL_BreakLine()        UE_LOG(LogTemp, Error, TEXT(" "));
+
 #define PrintOnScr(Text)                                                                           \
     if (GEngine) {                                                                                 \
         GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, Text);                              \

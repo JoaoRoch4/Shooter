@@ -1,10 +1,11 @@
-/*****************************************************************//**
- * \file   ShooterCharacter.h
- * \brief  Main Character Class
- * 
- * \author João Rocha
- * \date   December 2023 - January 2024
- *********************************************************************/
+/*****************************************************************/ /**
+                                                                     * \file   ShooterCharacter.h
+                                                                     * \brief  Main Character Class
+                                                                     *
+                                                                     * \author João Rocha
+                                                                     * \date   December 2023 -
+                                                                     *January 2024
+                                                                     *********************************************************************/
 
 #pragma once
 
@@ -50,6 +51,24 @@ enum class EMovingDirection : uint8 {
 
     EMD_BackwardLeft UMETA(DisplayName = "BackwardLeft"),
 
+    EMD_Aim UMETA(DisplayName = "Aim"),
+
+    EMD_ForwardAim UMETA(DisplayName = "ForwardAim"),
+
+    EMD_BackwardAim UMETA(DisplayName = "BackwardAim"),
+
+    EMD_RightAim UMETA(DisplayName = "RightAim"),
+
+    EMD_LeftAim UMETA(DisplayName = "LeftAim"),
+
+    EMD_ForwardRightAim UMETA(DisplayName = "ForwardRightAim"),
+
+    EMD_ForwardLeftAim UMETA(DisplayName = "ForwardLeftAim"),
+
+    EMD_BackwardRightAim UMETA(DisplayName = "BackwardRightAim"),
+
+    EMD_BackwardLeftAim UMETA(DisplayName = "BackwardLeftAim"),
+
     EMD_None UMETA(DisplayName = "None"),
 
     EMD_MAX UMETA(DisplayName = "Default MAX")
@@ -91,6 +110,7 @@ class SHOOTER_API AShooterCharacter : public ACharacter {
     GENERATED_BODY()
 
 public:
+
     // Sets default values for this character's properties
     AShooterCharacter();
 
@@ -107,6 +127,7 @@ public:
       FHighlightIconDelegate, int32, SlotIndex, bool, bStartAnimation);
 
 protected:
+
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
 
@@ -437,6 +458,7 @@ protected:
       const FVector &Offset, const double &CameraLagMaxDistance, float DeltaTime);
 
 private:
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Mesh",
       meta = (AllowPrivateAccess = "true"))
     class USkeletalMeshComponent *PlayerMesh;
@@ -1067,7 +1089,98 @@ private:
       meta     = (AllowPrivateAccess = "true"))
     double CameraLagMaxDistance_BackwardLeft;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Aim",
+      meta     = (AllowPrivateAccess = "true"))
+    FVector OffsetAim;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Aim",
+      meta     = (AllowPrivateAccess = "true"))
+    double CameraLagMaxDistance_Aim;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Aim|ForwardAim",
+      meta     = (AllowPrivateAccess = "true"))
+    FVector OffsetForwardAim;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Aim|ForwardAim",
+      meta     = (AllowPrivateAccess = "true"))
+    double CameraLagMaxDistance_ForwardAim;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Aim|BackwardAim",
+      meta     = (AllowPrivateAccess = "true"))
+    FVector OffsetBackwardAim;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Aim|BackwardAim",
+      meta     = (AllowPrivateAccess = "true"))
+    double CameraLagMaxDistance_BackwardAim;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Aim|RightAim",
+      meta     = (AllowPrivateAccess = "true"))
+    FVector OffsetRightAim;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Aim|BackwardAim",
+      meta     = (AllowPrivateAccess = "true"))
+    double CameraLagMaxDistance_RightAim;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Aim|LeftAim",
+      meta     = (AllowPrivateAccess = "true"))
+    FVector OffsetLeftAim;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Aim|BackwardAim",
+      meta     = (AllowPrivateAccess = "true"))
+    double CameraLagMaxDistance_LeftAim;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Aim|ForwardRightAim",
+      meta     = (AllowPrivateAccess = "true"))
+    FVector OffsetForwardRightAim;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Aim|ForwardRightAim",
+      meta     = (AllowPrivateAccess = "true"))
+    double CameraLagMaxDistance_ForwardRightAim;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Aim|ForwardLeftAim",
+      meta     = (AllowPrivateAccess = "true"))
+    FVector OffsetForwardLeftAim;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Aim|ForwardLeftAim",
+      meta     = (AllowPrivateAccess = "true"))
+    double CameraLagMaxDistance_ForwardLeftAim;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Aim|BackwardRightAim",
+      meta     = (AllowPrivateAccess = "true"))
+    FVector OffsetBackwardRightAim;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Aim|BackwardRightAim",
+      meta     = (AllowPrivateAccess = "true"))
+    double CameraLagMaxDistance_BackwardRightAim;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Aim|BackwardLeftAim",
+      meta     = (AllowPrivateAccess = "true"))
+    FVector OffsetBackwardLeftAim;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Aim|BackwardBackwardLeftAim",
+      meta     = (AllowPrivateAccess = "true"))
+    double CameraLagMaxDistance_BackwardLeftAim;
+
 public:
+
     /**
 	 * @brief Returns CameraBoom subObject.
 	 */
