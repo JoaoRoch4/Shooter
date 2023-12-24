@@ -50,6 +50,9 @@ struct FWeaponDataTable : public FTableRowBase {
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FName ClipBoneName;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FName ReloadMontageSection;
+
     FWeaponDataTable()
      : AmmoType(EAmmoType::EAT_9mm)
      , WeaponAmmo(0)
@@ -62,7 +65,8 @@ struct FWeaponDataTable : public FTableRowBase {
      , AmmoIcon(nullptr)
      , MaterialInstance(nullptr)
      , MaterialIndex(0) 
-     , ClipBoneName(FName(TEXT(""))) {};
+     , ClipBoneName(FName(TEXT("")))
+     , ReloadMontageSection(FName(TEXT(""))) {};
 };
 
 /**
@@ -214,6 +218,7 @@ public:
     FORCEINLINE EAmmoType GetAmmoType() const { return AmmoType; }
 
     FORCEINLINE FName GetReloadMontageSection() const { return ReloadMontageSection; }
+    FORCEINLINE void  SetReloadMontageSection(const FName Section) { ReloadMontageSection = Section; }
 
     FORCEINLINE FName GetClipBoneName() const { return ClipBoneName; }
     FORCEINLINE void  SetClipBoneName(const FName BoneName) { ClipBoneName = BoneName; }

@@ -43,10 +43,10 @@ void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime) {
         bCrouching = ShooterCharacter->GetCrouching();
         bReloading = ShooterCharacter->GetCombatState() == ECombatState::ECS_Reloading;
         bEquipping = ShooterCharacter->GetCombatState() == ECombatState::ECS_Equipping;
-
-        bool Unoccupied {ShooterCharacter->GetCombatState() == ECombatState::ECS_Unoccupied};
-        bool FireTimer  {ShooterCharacter->GetCombatState() == ECombatState::ECS_FireTimerInProgress};
-        bShouldUseFABRIK = Unoccupied || FireTimer;
+                
+        bShouldUseFABRIK
+          = ShooterCharacter->GetCombatState() == ECombatState::ECS_FireTimerInProgress
+         || ShooterCharacter->GetCombatState() == ECombatState::ECS_Unoccupied;
 
         // Get the lateral speed of the character from velocity
         FVector Velocity {ShooterCharacter->GetVelocity()};

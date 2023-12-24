@@ -37,7 +37,7 @@ void AWeapon::BeginPlay() {
 
     Super::BeginPlay();
 
-    // SyncItemMunition();
+    // SyncItemMunition();    
 }
 
 void AWeapon::OnConstruction(const FTransform &Transform) {
@@ -111,11 +111,11 @@ void AWeapon::SetWeaponTableObject(UDataTable *WeaponTableObject) {
         };
     }
 
-    CheckPtr(WeaponDataRow, "AWeapon::SetWeaponTableObject(): WeaponDataRow was nullptr");
-    CheckPtr(GetItemMesh(), "AWeapon::SetWeaponTableObject(): GetItemMesh() is nullptr");
-    CheckPtr(
+    CheckMsgPtr(WeaponDataRow);
+    CheckMsgPtr(GetItemMesh());
+    CheckPtrLegacy(
       GetMaterialInstance(), "AWeapon::SetWeaponTableObject(): GetMaterialInstance() is nullptr");
-    CheckPtr(GetDynamicMaterialInstance(),
+    CheckPtrLegacy(GetDynamicMaterialInstance(),
       "AWeapon::SetWeaponTableObject(): GetDynamicMaterialInstance() is nullptr");
 
     AmmoType         = WeaponDataRow->AmmoType;
@@ -135,6 +135,7 @@ void AWeapon::SetWeaponTableObject(UDataTable *WeaponTableObject) {
     SetDynamicMaterialInstance(UMaterialInstanceDynamic::Create(GetMaterialInstance(), this));
     GetDynamicMaterialInstance()->SetVectorParameterValue(L"FresnelColor", GetGlowColor());
     GetItemMesh()->SetMaterial(GetMaterialIndex(), GetDynamicMaterialInstance());
+    SetReloadMontageSection(WeaponDataRow->ReloadMontageSection);
 
     EnableGlowMaterial();
 }

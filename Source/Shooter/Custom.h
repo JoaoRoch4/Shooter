@@ -89,20 +89,39 @@ typedef FVector2d Fvc2;
 
 #define QuitGamePrintErr(X) ExitPrintErr(X)
 
-#define CheckPtr(ptr, InFormat, ...)                                                      \
-    if (!(ensureMsgf((ptr) != nullptr, TEXT(InFormat), ## __VA_ARGS__))) {                                 \
+#define localEnsureCheckPtr(ptr)                                                                   \
+    const FString Msg {FString::Printf(                                                            \
+      TEXT("%s is nullptr: File: %s, Line: %d"), TEXT(#ptr), TEXT(__FILE__), __LINE__)};           \
+    if (!(ensureMsgf((ptr) != nullptr, TEXT("%s"), *Msg))) {                                       \
+        UE_LOG(LogTemp, Error, TEXT("%s"), *Msg);                                                  \
+        ExitGame()                                                                                 \
+    }
+
+#define CheckPtr(ptr)                                                                              \
+    if (ptr == nullptr) {                                                                          \
+        localEnsureCheckPtr(ptr)                                                                   \
+    }
+
+#define CheckMsgPtr(ptr)                                                                           \
+    if (ptr == nullptr) {                                                                          \
+        localEnsureCheckPtr(ptr)                                                                   \
+    } else {                                                                                       \
+       UE_LOG(LogTemp, Log, TEXT("%s is valid"), TEXT(#ptr));                                      \
+}
+
+#define CheckPtrLegacy(ptr, InFormat, ...)                                                         \
+    if (!(ensureMsgf((ptr) != nullptr, TEXT(InFormat), ##__VA_ARGS__))) {                          \
         PrintLogErr(InFormat);                                                                     \
         ExitGame()                                                                                 \
     }
 
-#define CheckExpression(InExpression, InFormat, ...)                                                      \
-    if (!(ensureMsgf(InExpression, TEXT(InFormat), ## __VA_ARGS__))) {                                             \
+#define CheckExpression(InExpression, InFormat, ...)                                               \
+    if (!(ensureMsgf(InExpression, TEXT(InFormat), ##__VA_ARGS__))) {                              \
         PrintLogErr(InFormat);                                                                     \
         ExitGame()                                                                                 \
     }
 
-#define CheckPtrExit(ptr, InFormat, ...) checkf((ptr) != nullptr, TEXT(InFormat), ##__VA_ARGS__)                       
-       
+#define CheckPtrExit(ptr, InFormat, ...) checkf((ptr) != nullptr, TEXT(InFormat), ##__VA_ARGS__)
 
 #include <GenericPlatform/GenericPlatformApplicationMisc.h>
 #define ExitEngine() FGenericPlatformMisc::RequestExit(false)
