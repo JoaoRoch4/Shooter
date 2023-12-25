@@ -2174,23 +2174,21 @@ void AShooterCharacter::SetMovingDirection() {
     bool bBackwardRightAim {bBackwardAim && bRightAim && bAiming};
     bool bBackwardLeftAim {bBackwardAim && bLeftAim && bAiming};
 
-    bMovingStraight
-      = (bMovingForward || bMovingBackward || bMovingRight || bMovingLeft)
-                   && !(bMovingForwardRight || bMovingForwardLeft || bMovingBackwardRight
-                        || bMovingBackwardLeft && !bAiming);
+    bool bStraightDirections {bMovingForward || bMovingBackward || bMovingRight || bMovingLeft};
+    bool bDiagonalDirections {bMovingForwardRight || bMovingForwardLeft || bMovingBackwardRight
+                                || bMovingBackwardLeft};
 
-    bMovingDiagonal = (!bMovingStraight
-                       && (bMovingForwardRight || bMovingForwardLeft || bMovingBackwardRight
-                           || bMovingBackwardLeft)
-                       && !bAiming);
+    bool bStraightDirectionsAim {bForwardAim || bBackwardAim || bRightAim || bLeftAim};
+    bool bDiagonalDirectionsAim {bForwardRightAim || bForwardLeftAim || bBackwardRightAim
+                                     || bBackwardLeftAim};
 
-    bMovingStraightAim
-      = (bAiming && (bForwardAim || bBackwardAim || bRightAim || bLeftAim)
-         && !(bForwardRightAim || bForwardLeftAim || bBackwardRightAim || bBackwardLeftAim));
+    bMovingStraight = (bStraightDirections && !bDiagonalDirections && !bAiming);
 
-    bMovingDiagonalAim = (bAiming
-                          && !bMovingStraightAim &&(bForwardRightAim || bForwardLeftAim
-                                                 || bBackwardRightAim || bBackwardLeftAim));
+    bMovingDiagonal = (!bMovingStraight && bDiagonalDirections && !bAiming);
+
+    bMovingStraightAim = (bAiming && bStraightDirectionsAim && !bDiagonalDirectionsAim);
+
+    bMovingDiagonalAim = (bAiming && !bMovingStraightAim && bDiagonalDirectionsAim);
 
     bNotMoving = !(bMovingStraight && bMovingDiagonal && bMovingStraightAim && bMovingDiagonalAim);
 
