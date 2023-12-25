@@ -1179,6 +1179,18 @@ private:
       meta     = (AllowPrivateAccess = "true"))
     double CameraLagMaxDistance_BackwardLeftAim;
 
+    bool bMovingStraight;
+
+    bool bMovingDiagonal;
+
+    bool bMovingStraightAim;
+
+    bool bMovingDiagonalAim;
+
+    bool bNotMoving;
+
+    bool bAimingStill;
+
 public:
 
     /**

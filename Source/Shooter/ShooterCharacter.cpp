@@ -186,7 +186,7 @@ AShooterCharacter::AShooterCharacter()
  , CameraLagMaxDistance_BackwardAim(30.0)
  , OffsetRightAim(FVector(0.f, 180.f, 60.f))
  , CameraLagMaxDistance_RightAim(30.0)
- , OffsetLeftAim(FVector(0.f, 40.f, 60.f))
+ , OffsetLeftAim(FVector(0.f, 40.f, 40.f))
  , CameraLagMaxDistance_LeftAim(30.0)
  , OffsetForwardRightAim(FVector(0.f, 180.f, 60.f))
  , CameraLagMaxDistance_ForwardRightAim(30.0)
@@ -195,7 +195,13 @@ AShooterCharacter::AShooterCharacter()
  , OffsetBackwardRightAim(FVector(0.f, 180.f, 60.f))
  , CameraLagMaxDistance_BackwardRightAim(30.0)
  , OffsetBackwardLeftAim(FVector(0.f, 40.f, 60.f))
- , CameraLagMaxDistance_BackwardLeftAim(30.0) {
+ , CameraLagMaxDistance_BackwardLeftAim(30.0)
+ , bMovingStraight(false)
+ , bMovingDiagonal(false)
+ , bMovingStraightAim(false)
+ , bMovingDiagonalAim(false)
+ , bNotMoving(false)
+ , bAimingStill(false) {
 
     PrimaryActorTick.bCanEverTick = true;
 
@@ -339,6 +345,7 @@ void AShooterCharacter::Aim() {
     bAiming = true;
 
     GetCharacterMovement()->MaxWalkSpeed = CrouchMovementSpeed;
+    SetMovingDirection();
 }
 
 void AShooterCharacter::StopAiming() {
@@ -346,6 +353,7 @@ void AShooterCharacter::StopAiming() {
     bAiming = false;
 
     if (!bCrouching) GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
+    SetMovingDirection();
 }
 
 void AShooterCharacter::PickupAmmo(AAmmo *Ammo) {
@@ -2141,39 +2149,54 @@ void AShooterCharacter::KeyMethod0Key() { return; }
 
 void AShooterCharacter::SetMovingDirection() {
 
-    bool bMovingForward {bWKey_Pressed && !bWKey_Released};
-    bool bMovingBackward {bSKey_Pressed && !bSKey_Released};
-    bool bMovingRight {bDKey_Pressed && !bDKey_Released};
-    bool bMovingLeft {bAKey_Pressed && !bAKey_Released};
-    bool bMovingForwardRight {bMovingForward && bMovingRight};
-    bool bMovingForwardLeft {bMovingForward && bMovingLeft};
-    bool bMovingBackwardRight {bMovingBackward && bMovingRight};
-    bool bMovingBackwardLeft {bMovingBackward && bMovingLeft};
+    bMovingStraight    = false;
+    bMovingDiagonal    = false;
+    bMovingStraightAim = false;
+    bMovingDiagonalAim = false;
+    bNotMoving         = false;
+    bAimingStill       = false;
 
-    bool bForwardAim {bMovingForward && bAiming};
-    bool bBackwardAim {bMovingBackward && bAiming};
-    bool bRightAim {bMovingRight && bAiming};
-    bool bLeftAim {bMovingLeft && bAiming};
-    bool bForwardRightAim {bMovingForwardRight && bAiming};
-    bool bForwardLeftAim {bMovingForwardLeft && bAiming};
-    bool bBackwardRightAim {bMovingBackwardRight && bAiming};
-    bool bBackwardLeftAim {bMovingBackwardLeft && bAiming};
+    bool bMovingForward {bWKey_Pressed && !bWKey_Released && !bAiming};
+    bool bMovingBackward {bSKey_Pressed && !bSKey_Released && !bAiming};
+    bool bMovingRight {bDKey_Pressed && !bDKey_Released && !bAiming};
+    bool bMovingLeft {bAKey_Pressed && !bAKey_Released && !bAiming};
+    bool bMovingForwardRight {bMovingForward && bMovingRight && !bAiming};
+    bool bMovingForwardLeft {bMovingForward && bMovingLeft && !bAiming};
+    bool bMovingBackwardRight {bMovingBackward && bMovingRight && !bAiming};
+    bool bMovingBackwardLeft {bMovingBackward && bMovingLeft && !bAiming};
 
-    bool bMovingStraight {bMovingForward || bMovingBackward || bMovingRight || bMovingLeft};
-    bool bMovingDiagonal {
-      bMovingForwardRight || bMovingForwardLeft || bMovingBackwardRight || bMovingBackwardLeft};
-    bool bMovingStraightAim {bForwardAim || bBackwardAim || bRightAim || bLeftAim};
-    bool bMovingDiagonalAim {
-      bForwardRightAim || bForwardLeftAim || bBackwardRightAim || bBackwardLeftAim};
+    bool bForwardAim {bWKey_Pressed && !bWKey_Released && bAiming};
+    bool bBackwardAim {bSKey_Pressed && !bSKey_Released && bAiming};
+    bool bRightAim {bDKey_Pressed && !bDKey_Released && bAiming};
+    bool bLeftAim {bAKey_Pressed && !bAKey_Released && bAiming};
+    bool bForwardRightAim {bForwardAim && bRightAim && bAiming};
+    bool bForwardLeftAim {bForwardAim && bLeftAim && bAiming};
+    bool bBackwardRightAim {bBackwardAim && bRightAim && bAiming};
+    bool bBackwardLeftAim {bBackwardAim && bLeftAim && bAiming};
 
-    bool bNotMoving {
-      !(bMovingStraight && bMovingDiagonal && bMovingStraightAim && bMovingDiagonalAim)};
+    bMovingStraight
+      = (bMovingForward || bMovingBackward || bMovingRight || bMovingLeft)
+                   && !(bMovingForwardRight || bMovingForwardLeft || bMovingBackwardRight
+                        || bMovingBackwardLeft && !bAiming);
 
-    bool bAim {bNotMoving && bAiming};
+    bMovingDiagonal = (!bMovingStraight
+                       && (bMovingForwardRight || bMovingForwardLeft || bMovingBackwardRight
+                           || bMovingBackwardLeft)
+                       && !bAiming);
 
-    if (bNotMoving) MovingDirection = EMovingDirection::EMD_None;
+    bMovingStraightAim
+      = (bAiming && (bForwardAim || bBackwardAim || bRightAim || bLeftAim)
+         && !(bForwardRightAim || bForwardLeftAim || bBackwardRightAim || bBackwardLeftAim));
 
-    if (!bAiming && bMovingStraight) {
+    bMovingDiagonalAim = (bAiming
+                          && !bMovingStraightAim &&(bForwardRightAim || bForwardLeftAim
+                                                 || bBackwardRightAim || bBackwardLeftAim));
+
+    bNotMoving = !(bMovingStraight && bMovingDiagonal && bMovingStraightAim && bMovingDiagonalAim);
+
+    bAimingStill = (bNotMoving && bAiming);
+
+    if (!bAiming && bMovingStraight && !bMovingDiagonal) {
 
         if (bMovingForward && !bAiming) MovingDirection = EMovingDirection::EMD_Forward;
         else if (bMovingBackward && !bAiming) MovingDirection = EMovingDirection::EMD_Backward;
@@ -2182,7 +2205,7 @@ void AShooterCharacter::SetMovingDirection() {
         return;
     }
 
-    if (!bAiming && bMovingDiagonal) {
+    if (!bAiming && bMovingDiagonal && !bMovingStraight) {
 
         if (bMovingForwardRight && !bAiming) MovingDirection = EMovingDirection::EMD_ForwardRight;
         else if (bMovingForwardLeft && !bAiming)
@@ -2193,13 +2216,9 @@ void AShooterCharacter::SetMovingDirection() {
             MovingDirection = EMovingDirection::EMD_BackwardLeft;
         return;
     }
+       
 
-    if (bAim && bNotMoving) {
-        MovingDirection = EMovingDirection::EMD_Aim;
-        return;
-    }
-
-    if (bAim && bMovingStraightAim) {
+    if (bMovingStraightAim && !bMovingDiagonalAim) {
 
         if (bForwardAim) MovingDirection = EMovingDirection::EMD_ForwardAim;
         else if (bBackwardAim) MovingDirection = EMovingDirection::EMD_BackwardAim;
@@ -2208,12 +2227,22 @@ void AShooterCharacter::SetMovingDirection() {
         return;
     }
 
-    if (bAim && bMovingDiagonalAim) {
+    if (!bMovingStraightAim && bMovingDiagonalAim) {
 
         if (bForwardRightAim) MovingDirection = EMovingDirection::EMD_ForwardRightAim;
         else if (bForwardLeftAim) MovingDirection = EMovingDirection::EMD_ForwardLeftAim;
         else if (bBackwardRightAim) MovingDirection = EMovingDirection::EMD_BackwardRightAim;
         else if (bBackwardLeftAim) MovingDirection = EMovingDirection::EMD_BackwardLeftAim;
+        return;
+    }
+
+    if (bAiming && bNotMoving) {
+        MovingDirection = EMovingDirection::EMD_Aim;
+        return;
+    }
+
+    if (bNotMoving) {
+        MovingDirection = EMovingDirection::EMD_None;
         return;
     }
 
@@ -2223,37 +2252,6 @@ void AShooterCharacter::SetMovingDirection() {
 void AShooterCharacter::SetMovingDirectionActions(float &DeltaTime) {
 
     if (!bAiming) {
-
-        switch (MovingDirection) {
-
-            case EMovingDirection::EMD_Forward : break;
-            case EMovingDirection::EMD_Backward : break;
-            case EMovingDirection::EMD_Right : break;
-            case EMovingDirection::EMD_Left : break;
-            case EMovingDirection::EMD_ForwardRight : break;
-            case EMovingDirection::EMD_ForwardLeft : break;
-            case EMovingDirection::EMD_BackwardRight : break;
-            case EMovingDirection::EMD_BackwardLeft : break;
-        }
-    } else {
-
-        switch (MovingDirection) {
-
-            case EMovingDirection::EMD_Aim : break;
-            case EMovingDirection::EMD_ForwardAim : break;
-            case EMovingDirection::EMD_BackwardAim : break;
-            case EMovingDirection::EMD_RightAim : break;
-            case EMovingDirection::EMD_LeftAim : break;
-            case EMovingDirection::EMD_ForwardRightAim : break;
-            case EMovingDirection::EMD_ForwardLeftAim : break;
-            case EMovingDirection::EMD_BackwardRightAim : break;
-            case EMovingDirection::EMD_BackwardLeftAim : break;
-            case EMovingDirection::EMD_None : break;
-            case EMovingDirection::EMD_MAX : break;
-        }
-    }
-
-    if (ShowEMovingDirection) {
 
         switch (MovingDirection) {
 
@@ -2267,11 +2265,11 @@ void AShooterCharacter::SetMovingDirectionActions(float &DeltaTime) {
 
             case EMovingDirection::EMD_Right :
                 return AdjustCameraLag(OffsetRight, CameraLagMaxDistance_Right, DeltaTime,
-                  "EMovingDirection::EMD_Backward");
+                  "EMovingDirection::EMD_Right");
 
             case EMovingDirection::EMD_Left :
                 return AdjustCameraLag(
-                  OffsetLeft, CameraLagMaxDistance_Left, DeltaTime, "EMovingDirection::EMD_Right");
+                  OffsetLeft, CameraLagMaxDistance_Left, DeltaTime, "EMovingDirection::EMD_Left");
 
             case EMovingDirection::EMD_ForwardRight :
                 return AdjustCameraLag(OffsetForwardRight, CameraLagMaxDistance_ForwardRight,
@@ -2289,61 +2287,54 @@ void AShooterCharacter::SetMovingDirectionActions(float &DeltaTime) {
                 return AdjustCameraLag(OffsetBackwardLeft, CameraLagMaxDistance_BackwardLeft,
                   DeltaTime, "EMovingDirection::EMD_BackwardLeft");
 
-            case EMovingDirection::EMD_Aim :
-                return AdjustCameraLag(
-                  OffsetAim, CameraLagMaxDistance_Aim, DeltaTime, "EMovingDirection::EMD_Aim");
-
-            case EMovingDirection::EMD_MAX : [[fallthrough]];
-            case EMovingDirection::EMD_None : return EMovingDirection_None(DeltaTime);
-
-            default : {
-                ExitGameErr(
-                  "AShooterCharacter::SetMovingDirectionActions(): Invalid EMovingDirection");
-            } break;
+            case EMovingDirection::EMD_None :
+                return AdjustCameraLag(OriginalCameraSocketOffset, OriginalCameraLagMaxDistance,
+                  DeltaTime, "EMovingDirection::EMD_None");
         }
-
     } else {
 
         switch (MovingDirection) {
 
-            case EMovingDirection::EMD_Forward :
-                return AdjustCameraLag(OffsetFroward, CameraLagMaxDistance_Froward, DeltaTime);
-
-            case EMovingDirection::EMD_Backward :
-                return AdjustCameraLag(OffsetBackwards, CameraLagMaxDistance_Backwards, DeltaTime);
-
-            case EMovingDirection::EMD_Right :
-                return AdjustCameraLag(OffsetRight, CameraLagMaxDistance_Right, DeltaTime);
-
-            case EMovingDirection::EMD_Left :
-                return AdjustCameraLag(OffsetLeft, CameraLagMaxDistance_Left, DeltaTime);
-
-            case EMovingDirection::EMD_ForwardRight :
-                return AdjustCameraLag(
-                  OffsetForwardRight, CameraLagMaxDistance_ForwardRight, DeltaTime);
-
-            case EMovingDirection::EMD_ForwardLeft :
-                return AdjustCameraLag(
-                  OffsetForwardLeft, CameraLagMaxDistance_ForwardLeft, DeltaTime);
-
-            case EMovingDirection::EMD_BackwardRight :
-                return AdjustCameraLag(
-                  OffsetBackwardRight, CameraLagMaxDistance_BackwardRight, DeltaTime);
-
-            case EMovingDirection::EMD_BackwardLeft :
-                return AdjustCameraLag(
-                  OffsetBackwardLeft, CameraLagMaxDistance_BackwardLeft, DeltaTime);
-
             case EMovingDirection::EMD_Aim :
-                return AdjustCameraLag(OffsetAim, CameraLagMaxDistance_Aim, DeltaTime);
+                return AdjustCameraLag(
+                  OffsetAim, CameraLagMaxDistance_Aim, DeltaTime, "EMovingDirection::EMD_Aim");
 
-            case EMovingDirection::EMD_MAX : [[fallthrough]];
-            case EMovingDirection::EMD_None : return EMovingDirection_None(DeltaTime);
+            case EMovingDirection::EMD_ForwardAim :
+                return AdjustCameraLag(OffsetForwardAim, CameraLagMaxDistance_ForwardAim, DeltaTime,
+                  "EMovingDirection::EMD_ForwardAim");
 
-            default : {
-                ExitGameErr(
-                  "AShooterCharacter::SetMovingDirectionActions(): Invalid EMovingDirection");
-            } break;
+            case EMovingDirection::EMD_BackwardAim :
+                return AdjustCameraLag(OffsetBackwardAim, CameraLagMaxDistance_BackwardAim,
+                  DeltaTime, "EMovingDirection::EMD_BackwardAim");
+
+            case EMovingDirection::EMD_RightAim :
+                return AdjustCameraLag(OffsetRightAim, CameraLagMaxDistance_RightAim, DeltaTime,
+                  "EMovingDirection::EMD_RightAim");
+
+            case EMovingDirection::EMD_LeftAim :
+                return AdjustCameraLag(OffsetLeftAim, CameraLagMaxDistance_LeftAim, DeltaTime,
+                  "EMovingDirection::EMD_LeftAim");
+
+            case EMovingDirection::EMD_ForwardRightAim :
+                return AdjustCameraLag(OffsetForwardRightAim, CameraLagMaxDistance_ForwardRightAim,
+                  DeltaTime, "EMovingDirection::EMD_ForwardRightAim");
+
+            case EMovingDirection::EMD_ForwardLeftAim :
+                return AdjustCameraLag(OffsetForwardLeftAim, CameraLagMaxDistance_ForwardLeftAim,
+                  DeltaTime, "EMovingDirection::EMD_ForwardLeftAim");
+
+            case EMovingDirection::EMD_BackwardRightAim :
+                return AdjustCameraLag(OffsetBackwardRightAim,
+                  CameraLagMaxDistance_BackwardRightAim, DeltaTime,
+                  "EMovingDirection::EMD_BackwardRightAim");
+
+            case EMovingDirection::EMD_BackwardLeftAim :
+                return AdjustCameraLag(OffsetBackwardLeftAim, CameraLagMaxDistance_BackwardLeftAim,
+                  DeltaTime, "EMovingDirection::EMD_BackwardLeftAim");
+
+            case EMovingDirection::EMD_None :
+                return AdjustCameraLag(OriginalCameraSocketOffset, OriginalCameraLagMaxDistance,
+                  DeltaTime, "EMovingDirection::EMD_None");
         }
     }
 }
