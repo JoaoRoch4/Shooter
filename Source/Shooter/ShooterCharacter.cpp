@@ -169,19 +169,33 @@ AShooterCharacter::AShooterCharacter()
  , OffsetRight(FVector(0.f, 180.f, 40.f))
  , CameraLagMaxDistance_Right(100.0)
  , OffsetLeft(FVector(-40.f, 40.f, 40.f))
- , CameraLagMaxDistance_Left(100.f)
+ , CameraLagMaxDistance_Left(100.0)
  , OffsetForwardRight(FVector(-40.f, 180.f, 60.f))
  , CameraLagMaxDistance_ForwardRight(100.f)
  , OffsetForwardLeft(FVector(-40.f, 60.f, 60.f))
- , CameraLagMaxDistance_ForwardLeft(100.f)
+ , CameraLagMaxDistance_ForwardLeft(100.0)
  , OffsetBackwardRight(FVector(-140.f, 180.f, 60.f))
  , CameraLagMaxDistance_BackwardRight(NULL)
  , OffsetBackwardLeft(FVector(-140.f, 40.f, 60.f))
  , CameraLagMaxDistance_BackwardLeft(NULL)
  , OffsetAim(FVector(0.f, 0.f, 60.f))
- , CameraLagMaxDistance_Aim(30.f)
-
-{
+ , CameraLagMaxDistance_Aim(30.0)
+ , OffsetForwardAim(FVector(0.f, 0.f, 60.f))
+ , CameraLagMaxDistance_ForwardAim(30.0)
+ , OffsetBackwardAim(FVector(0.f, 0.f, 60.f))
+ , CameraLagMaxDistance_BackwardAim(30.0)
+ , OffsetRightAim(FVector(0.f, 180.f, 60.f))
+ , CameraLagMaxDistance_RightAim(30.0)
+ , OffsetLeftAim(FVector(0.f, 40.f, 60.f))
+ , CameraLagMaxDistance_LeftAim(30.0)
+ , OffsetForwardRightAim(FVector(0.f, 180.f, 60.f))
+ , CameraLagMaxDistance_ForwardRightAim(30.0)
+ , OffsetForwardLeftAim(FVector(0.f, 60.f, 60.f))
+ , CameraLagMaxDistance_ForwardLeftAim(30.0)
+ , OffsetBackwardRightAim(FVector(0.f, 180.f, 60.f))
+ , CameraLagMaxDistance_BackwardRightAim(30.0)
+ , OffsetBackwardLeftAim(FVector(0.f, 40.f, 60.f))
+ , CameraLagMaxDistance_BackwardLeftAim(30.0) {
 
     PrimaryActorTick.bCanEverTick = true;
 
@@ -325,7 +339,6 @@ void AShooterCharacter::Aim() {
     bAiming = true;
 
     GetCharacterMovement()->MaxWalkSpeed = CrouchMovementSpeed;
-
 }
 
 void AShooterCharacter::StopAiming() {
@@ -778,7 +791,7 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
         const static TCHAR *FireSoundCuePath {
           L"/Game/_Game/Assets/Sounds/GunShots/AR15_Shots/AR_Shot.AR_Shot"};
 
-        auto const static M_FireSoundCue {
+        const auto static M_FireSoundCue {
           ConstructorHelpers::FObjectFinder<USoundCue>(FireSoundCuePath)};
 
         if (M_FireSoundCue.Succeeded()) FireSound = M_FireSoundCue.Object;
@@ -796,7 +809,7 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
           L"/Script/Engine.ParticleSystem'/Game/_Game/Assets/FX/"
           L"P_BelicaMuzzle_SigleBrust.P_BelicaMuzzle_SigleBrust'"};
 
-        auto const static M_MuzzleFlashParticle {
+        const auto static M_MuzzleFlashParticle {
           ConstructorHelpers::FObjectFinder<UParticleSystem>(MuzzleFlashPath)};
 
         if (M_MuzzleFlashParticle.Succeeded()) MuzzleFlash = M_MuzzleFlashParticle.Object;
@@ -814,7 +827,7 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
           L"/Script/Engine.AnimMontage'/Game/_Game/Character/Animations/"
           L"HipFireMontage.HipFireMontage'"};
 
-        auto const static M_Animation_HipFireMontage {
+        const auto static M_Animation_HipFireMontage {
           ConstructorHelpers::FObjectFinder<UAnimMontage>(HipFireMontagePath)};
 
         if (M_Animation_HipFireMontage.Succeeded())
@@ -832,7 +845,7 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
         const static TCHAR *EquipMontagePath {L"/Script/Engine.AnimMontage'/Game/_Game/Character/"
                                               L"Animations/Montage/EquipMontage.EquipMontage'"};
 
-        auto const static M_Animation_EquipMontage {
+        const auto static M_Animation_EquipMontage {
           ConstructorHelpers::FObjectFinder<UAnimMontage>(EquipMontagePath)};
 
         if (M_Animation_EquipMontage.Succeeded()) EquipMontage = M_Animation_EquipMontage.Object;
@@ -850,7 +863,7 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
           L"/Script/Engine.ParticleSystem'/Game/ParagonLtBelica/FX/Particles/"
           L"Belica/Abilities/Primary/FX/P_BelicaHitWorld.P_BelicaHitWorld'"};
 
-        auto const static M_ImpactParticle {
+        const auto static M_ImpactParticle {
           ConstructorHelpers::FObjectFinder<UParticleSystem>(ImpactParticlesPath)};
 
         if (M_ImpactParticle.Succeeded()) ImpactParticles = M_ImpactParticle.Object;
@@ -868,7 +881,7 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
           L"/Script/Engine.ParticleSystem'/Game/_Game/Assets/FX/SmokeBean/"
           L"P_SmokeTrail_Faded.P_SmokeTrail_Faded'"};
 
-        auto const static M_BeamParticle {
+        const auto static M_BeamParticle {
           ConstructorHelpers::FObjectFinder<UParticleSystem>(BeamParticlesPath)};
 
         if (M_BeamParticle.Succeeded()) BeamParticles = M_BeamParticle.Object;
@@ -886,7 +899,7 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
           L"/Script/Engine.ParticleSystem'/Game/_Game/Assets/FX/"
           L"P_BelicaMuzzle_SigleBrust.P_BelicaMuzzle_SigleBrust'"};
 
-        auto const static M_MuzzleFlashParticle {
+        const auto static M_MuzzleFlashParticle {
           ConstructorHelpers::FObjectFinder<UParticleSystem>(MuzzleFlashPath)};
 
         if (M_MuzzleFlashParticle.Succeeded()) MuzzleFlash = M_MuzzleFlashParticle.Object;
@@ -904,7 +917,7 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
           L"/Script/Engine.AnimMontage'/Game/_Game/Character/Animations/"
           L"ReloadMontage.ReloadMontage'"};
 
-        auto const M_ReloadMontage {
+        const auto M_ReloadMontage {
           ConstructorHelpers::FObjectFinder<UAnimMontage>(ReloadMontagePath)};
 
         if (M_ReloadMontage.Succeeded()) ReloadMontage = M_ReloadMontage.Object;
@@ -2135,7 +2148,7 @@ void AShooterCharacter::SetMovingDirection() {
     bool bMovingForwardRight {bMovingForward && bMovingRight};
     bool bMovingForwardLeft {bMovingForward && bMovingLeft};
     bool bMovingBackwardRight {bMovingBackward && bMovingRight};
-    bool bMovingBackwardLeft {bMovingBackward && bMovingLeft};  
+    bool bMovingBackwardLeft {bMovingBackward && bMovingLeft};
 
     bool bForwardAim {bMovingForward && bAiming};
     bool bBackwardAim {bMovingBackward && bAiming};
@@ -2155,7 +2168,7 @@ void AShooterCharacter::SetMovingDirection() {
 
     bool bNotMoving {
       !(bMovingStraight && bMovingDiagonal && bMovingStraightAim && bMovingDiagonalAim)};
-        
+
     bool bAim {bNotMoving && bAiming};
 
     if (bNotMoving) MovingDirection = EMovingDirection::EMD_None;
@@ -2169,7 +2182,7 @@ void AShooterCharacter::SetMovingDirection() {
         return;
     }
 
-     if (!bAiming && bMovingDiagonal) {
+    if (!bAiming && bMovingDiagonal) {
 
         if (bMovingForwardRight && !bAiming) MovingDirection = EMovingDirection::EMD_ForwardRight;
         else if (bMovingForwardLeft && !bAiming)
@@ -2182,7 +2195,8 @@ void AShooterCharacter::SetMovingDirection() {
     }
 
     if (bAim && bNotMoving) {
-        MovingDirection = EMovingDirection::EMD_Aim; return;
+        MovingDirection = EMovingDirection::EMD_Aim;
+        return;
     }
 
     if (bAim && bMovingStraightAim) {
@@ -2207,6 +2221,37 @@ void AShooterCharacter::SetMovingDirection() {
 }
 
 void AShooterCharacter::SetMovingDirectionActions(float &DeltaTime) {
+
+    if (!bAiming) {
+
+        switch (MovingDirection) {
+
+            case EMovingDirection::EMD_Forward : break;
+            case EMovingDirection::EMD_Backward : break;
+            case EMovingDirection::EMD_Right : break;
+            case EMovingDirection::EMD_Left : break;
+            case EMovingDirection::EMD_ForwardRight : break;
+            case EMovingDirection::EMD_ForwardLeft : break;
+            case EMovingDirection::EMD_BackwardRight : break;
+            case EMovingDirection::EMD_BackwardLeft : break;
+        }
+    } else {
+
+        switch (MovingDirection) {
+
+            case EMovingDirection::EMD_Aim : break;
+            case EMovingDirection::EMD_ForwardAim : break;
+            case EMovingDirection::EMD_BackwardAim : break;
+            case EMovingDirection::EMD_RightAim : break;
+            case EMovingDirection::EMD_LeftAim : break;
+            case EMovingDirection::EMD_ForwardRightAim : break;
+            case EMovingDirection::EMD_ForwardLeftAim : break;
+            case EMovingDirection::EMD_BackwardRightAim : break;
+            case EMovingDirection::EMD_BackwardLeftAim : break;
+            case EMovingDirection::EMD_None : break;
+            case EMovingDirection::EMD_MAX : break;
+        }
+    }
 
     if (ShowEMovingDirection) {
 
@@ -2245,7 +2290,8 @@ void AShooterCharacter::SetMovingDirectionActions(float &DeltaTime) {
                   DeltaTime, "EMovingDirection::EMD_BackwardLeft");
 
             case EMovingDirection::EMD_Aim :
-                return AdjustCameraLag(OffsetAim, CameraLagMaxDistance_Aim, DeltaTime, "EMovingDirection::EMD_Aim");
+                return AdjustCameraLag(
+                  OffsetAim, CameraLagMaxDistance_Aim, DeltaTime, "EMovingDirection::EMD_Aim");
 
             case EMovingDirection::EMD_MAX : [[fallthrough]];
             case EMovingDirection::EMD_None : return EMovingDirection_None(DeltaTime);
