@@ -2183,15 +2183,10 @@ void AShooterCharacter::SetMovingDirection() {
                                      || bBackwardLeftAim};
 
     bMovingStraight = (bStraightDirections && !bDiagonalDirections && !bAiming);
-
     bMovingDiagonal = (!bMovingStraight && bDiagonalDirections && !bAiming);
-
     bMovingStraightAim = (bAiming && bStraightDirectionsAim && !bDiagonalDirectionsAim);
-
     bMovingDiagonalAim = (bAiming && !bMovingStraightAim && bDiagonalDirectionsAim);
-
     bNotMoving = !(bMovingStraight && bMovingDiagonal && bMovingStraightAim && bMovingDiagonalAim);
-
     bAimingStill = (bNotMoving && bAiming);
 
     if (!bAiming && bMovingStraight && !bMovingDiagonal) {
@@ -2213,8 +2208,7 @@ void AShooterCharacter::SetMovingDirection() {
         else if (bMovingBackwardLeft && !bAiming)
             MovingDirection = EMovingDirection::EMD_BackwardLeft;
         return;
-    }
-       
+    }     
 
     if (bMovingStraightAim && !bMovingDiagonalAim) {
 
@@ -2243,8 +2237,6 @@ void AShooterCharacter::SetMovingDirection() {
         MovingDirection = EMovingDirection::EMD_None;
         return;
     }
-
-    // else if (!bMovingRight) EMovingDirection_None(GlobalDeltaTime);
 }
 
 void AShooterCharacter::SetMovingDirectionActions(float &DeltaTime) {
@@ -2289,6 +2281,7 @@ void AShooterCharacter::SetMovingDirectionActions(float &DeltaTime) {
                 return AdjustCameraLag(OriginalCameraSocketOffset, OriginalCameraLagMaxDistance,
                   DeltaTime, "EMovingDirection::EMD_None");
         }
+
     } else {
 
         switch (MovingDirection) {

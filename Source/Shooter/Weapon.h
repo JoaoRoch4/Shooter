@@ -174,17 +174,17 @@ private:
     EAmmoType AmmoType;
 
     /**  FName for the reload montage section. */
-    UPROPERTY(BlueprintReadWrite, Category = "My Custom Properties|Item",
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Item",
       meta = (AllowPrivateAccess = "true"))
     FName ReloadMontageSection;
 
     /**  True when moving the clip while reloading. */
-    UPROPERTY(BlueprintReadOnly, Category = "My Custom Properties|Item",
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Item",
       meta = (AllowPrivateAccess = "true"))
     bool bMovingClip;
 
     /**  Name for the clip bone. */
-    UPROPERTY(BlueprintReadWrite, Category = "My Custom Properties|Item",
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Item",
       meta = (AllowPrivateAccess = "true"))
     FName ClipBoneName;
 
