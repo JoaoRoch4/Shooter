@@ -1,5 +1,6 @@
 #include "DebugSounds.h"
 
+#include "Templates/UniquePtr.h"
 #include <Kismet/GameplayStatics.h>
 #include <Sound/SoundCue.h>
 
@@ -11,11 +12,29 @@ ADebugSounds::ADebugSounds()
  , CustomSound_2(nullptr)
  , CustomSound_3(nullptr)
  , CustomSound_4(nullptr)
- , CustomSound_5(nullptr) {
-
+ , CustomSound_5(nullptr) 
+ , M_BeginOverlapSoundPath(nullptr)
+ , M_EndOverlapSoundPath(nullptr) 
+ , M_NullptrSoundPath(nullptr)
+ , M_BlankCue(nullptr)
+{
     PrimaryActorTick.bCanEverTick = true;
 
-    const static FString BeginOverlapSoundPath {
+    BeginOverlapSound = CreateDefaultSubobject<USoundCue>(L"BeginOverlapSound");
+    EndOverlapSound   = CreateDefaultSubobject<USoundCue>(L"EndOverlapSound");
+    NullptrSound      = CreateDefaultSubobject<USoundCue>(L"NullptrSound");
+    CustomSound_1     = CreateDefaultSubobject<USoundCue>(L"CustomSound_1");
+    CustomSound_2     = CreateDefaultSubobject<USoundCue>(L"CustomSound_2");
+    CustomSound_3     = CreateDefaultSubobject<USoundCue>(L"CustomSound_3");
+    CustomSound_4     = CreateDefaultSubobject<USoundCue>(L"CustomSound_4");
+    CustomSound_5     = CreateDefaultSubobject<USoundCue>(L"CustomSound_5");
+
+    SetSounds();
+}
+
+void ADebugSounds::SetSounds() {
+
+     const static FString BeginOverlapSoundPath {
       L"/Script/Engine.SoundCue'"
       L"/Game/_Game/Assets/Sounds/Interfaces/button-124476_Cue.button-124476_Cue'"};
 
@@ -31,45 +50,45 @@ ADebugSounds::ADebugSounds()
       L"/Script/Engine.SoundCue'"
       L"/Game/_Game/Assets/Sounds/_Blank/blank-sound_Cue.blank-sound_Cue'"};
 
-    auto const static M_BeginOverlapSoundPath {
-      ConstructorHelpers::FObjectFinder<USoundCue>(*BeginOverlapSoundPath)};
+    M_BeginOverlapSoundPath
+      = MakeUnique<ConstructorHelpers::FObjectFinder<USoundCue>>(*BeginOverlapSoundPath);
 
-    if (M_BeginOverlapSoundPath.Succeeded()) {
-        BeginOverlapSound = M_BeginOverlapSoundPath.Object;
+    if (M_BeginOverlapSoundPath->Succeeded()) {
+        BeginOverlapSound = M_BeginOverlapSoundPath->Object;
     } else {
-        PrintLogErr("M_BeginOverlapSoundPath failed");
+        ExitGameErr("M_BeginOverlapSoundPath failed");
     }
 
-    auto const static M_EndOverlapSoundPath {
-      ConstructorHelpers::FObjectFinder<USoundCue>(*EndOverlapSoundPath)};
+    M_EndOverlapSoundPath
+      = MakeUnique<ConstructorHelpers::FObjectFinder<USoundCue>>(*EndOverlapSoundPath);
 
-    if (M_EndOverlapSoundPath.Succeeded()) {
-        EndOverlapSound = M_EndOverlapSoundPath.Object;
+    if (M_EndOverlapSoundPath->Succeeded()) {
+        EndOverlapSound = M_EndOverlapSoundPath->Object;
     } else {
-        PrintLogErr("M_EndOverlapSoundPath failed");
+        ExitGameErr("M_EndOverlapSoundPath failed");
     }
 
-    auto const static M_NullptrSoundPath {
-      ConstructorHelpers::FObjectFinder<USoundCue>(*NullptrSoundPath)};
+    M_NullptrSoundPath
+      = MakeUnique<ConstructorHelpers::FObjectFinder<USoundCue>>(*NullptrSoundPath);
 
-    if (M_NullptrSoundPath.Succeeded()) {
-        NullptrSound = M_NullptrSoundPath.Object;
+    if (M_NullptrSoundPath->Succeeded()) {
+        NullptrSound = M_NullptrSoundPath->Object;
     } else {
-        PrintLogErr("M_NullptrSoundPath failed");
+        ExitGameErr("M_NullptrSoundPath failed");
     }
 
-    auto const static M_BlankCue {ConstructorHelpers::FObjectFinder<USoundCue>(*BlankCue)};
+    M_BlankCue = MakeUnique<ConstructorHelpers::FObjectFinder<USoundCue>>(*BlankCue);
 
-    if (M_BlankCue.Succeeded()) {
+    if (M_BlankCue->Succeeded()) {
 
-        CustomSound_1 = M_BlankCue.Object;
-        CustomSound_2 = M_BlankCue.Object;
-        CustomSound_3 = M_BlankCue.Object;
-        CustomSound_4 = M_BlankCue.Object;
-        CustomSound_5 = M_BlankCue.Object;
+        CustomSound_1 = M_BlankCue->Object;
+        CustomSound_2 = M_BlankCue->Object;
+        CustomSound_3 = M_BlankCue->Object;
+        CustomSound_4 = M_BlankCue->Object;
+        CustomSound_5 = M_BlankCue->Object;
 
     } else {
-        PrintLogErr("M_BlankCue failed");
+        ExitGameErr("M_BlankCue failed");
     }
 }
 

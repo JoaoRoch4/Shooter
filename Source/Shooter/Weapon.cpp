@@ -35,6 +35,7 @@ AWeapon::AWeapon()
 void AWeapon::BeginPlay() {
 
     Super::BeginPlay();
+    Construct_WeaponTableObject();
 
     // SyncItemMunition();    
        
@@ -135,6 +136,14 @@ void AWeapon::SetWeaponTableObject(UDataTable *WeaponTableObject) {
     GetItemMesh()->SetMaterial(GetMaterialIndex(), GetDynamicMaterialInstance());
     SetReloadMontageSection(WeaponDataRow->ReloadMontageSection);
     GetItemMesh()->SetAnimInstanceClass(WeaponDataRow->AnimBP);
+    CrosshairsMiddle = WeaponDataRow->CrosshairsMiddle;
+    CrosshairsLeft   = WeaponDataRow->CrosshairsLeft;
+    CrosshairsRight  = WeaponDataRow->CrosshairsRight;
+    CrosshairsBotton = WeaponDataRow->CrosshairsBotton;
+    CrosshairsTop    = WeaponDataRow->CrosshairsTop;
+    AutoFireRate = WeaponDataRow->AutoFireRate;
+    MuzzleFlash = WeaponDataRow->MuzzleFlash;
+    FireSound = WeaponDataRow->FireSound;
 
     EnableGlowMaterial();
 }

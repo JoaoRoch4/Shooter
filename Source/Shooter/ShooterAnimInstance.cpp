@@ -38,71 +38,67 @@ void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 
     if (ShooterCharacter == nullptr) ShooterCharacter = Cast<AShooterCharacter>(TryGetPawnOwner());
 
-    if (ShooterCharacter) {
+    CheckPtr(ShooterCharacter);
 
-        bCrouching = ShooterCharacter->GetCrouching();
-        bReloading = ShooterCharacter->GetCombatState() == ECombatState::ECS_Reloading;
-        bEquipping = ShooterCharacter->GetCombatState() == ECombatState::ECS_Equipping;
-                
-        bShouldUseFABRIK
-          = ShooterCharacter->GetCombatState() == ECombatState::ECS_FireTimerInProgress
-         || ShooterCharacter->GetCombatState() == ECombatState::ECS_Unoccupied;
+    bCrouching = ShooterCharacter->GetCrouching();
+    bReloading = ShooterCharacter->GetCombatState() == ECombatState::ECS_Reloading;
+    bEquipping = ShooterCharacter->GetCombatState() == ECombatState::ECS_Equipping;
 
-        // Get the lateral speed of the character from velocity
-        FVector Velocity {ShooterCharacter->GetVelocity()};
+    bShouldUseFABRIK = ShooterCharacter->GetCombatState() == ECombatState::ECS_FireTimerInProgress
+                    || ShooterCharacter->GetCombatState() == ECombatState::ECS_Unoccupied;
 
-        Velocity.Z = 0;
+    // Get the lateral speed of the character from velocity
+    FVector Velocity {ShooterCharacter->GetVelocity()};
 
-        Speed = Velocity.Size();
+    Velocity.Z = 0;
 
-        // Is the character in the air?
-        bIsInAir = ShooterCharacter->GetCharacterMovement()->IsFalling();
+    Speed = Velocity.Size();
 
-        if (ShooterCharacter->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.0f)
+    // Is the character in the air?
+    bIsInAir = ShooterCharacter->GetCharacterMovement()->IsFalling();
 
-            bIsAccelerating = true;
+    if (ShooterCharacter->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.0f)
 
-        else bIsAccelerating = false;
+        bIsAccelerating = true;
 
-        FRotator AimRotation {ShooterCharacter->GetBaseAimRotation()};
+    else bIsAccelerating = false;
 
-        FRotator MovementRotation {
-          UKismetMathLibrary::MakeRotFromX(ShooterCharacter->GetVelocity())};
+    FRotator AimRotation {ShooterCharacter->GetBaseAimRotation()};
 
-        MovementOffsetYaw
-          = UKismetMathLibrary::NormalizedDeltaRotator(MovementRotation, AimRotation).Yaw;
+    FRotator MovementRotation {UKismetMathLibrary::MakeRotFromX(ShooterCharacter->GetVelocity())};
 
-        if (ShooterCharacter->GetVelocity().Size() > 0.0f)
-            LastMovementOffsetYaw = MovementOffsetYaw;
+    MovementOffsetYaw
+      = UKismetMathLibrary::NormalizedDeltaRotator(MovementRotation, AimRotation).Yaw;
 
-        bAiming = ShooterCharacter->GetAiming();
+    if (ShooterCharacter->GetVelocity().Size() > 0.0f) LastMovementOffsetYaw = MovementOffsetYaw;
 
-        if (bReloading) {
+    bAiming = ShooterCharacter->GetAiming();
 
-            OffsetState = EOffsetState::EOS_Reloading;
+    if (bReloading) {
 
-        } else if (bIsInAir) {
+        OffsetState = EOffsetState::EOS_Reloading;
 
-            OffsetState = EOffsetState::EOS_InAir;
+    } else if (bIsInAir) {
 
-        } else if (ShooterCharacter->GetAiming()) {
+        OffsetState = EOffsetState::EOS_InAir;
 
-            OffsetState = EOffsetState::EOS_Aiming;
+    } else if (ShooterCharacter->GetAiming()) {
 
-        } else {
+        OffsetState = EOffsetState::EOS_Aiming;
 
-            OffsetState = EOffsetState::EOS_Hip;
-        }
+    } else {
 
-        // Check if ShooterCharacter has a valid equipped weapon
-        if (ShooterCharacter->GetEquippedWeapon()) {
+        OffsetState = EOffsetState::EOS_Hip;
+    }
 
-            WeaponType = ShooterCharacter->GetEquippedWeapon()->GetWeaponType();
+    // Check if ShooterCharacter has a valid equipped weapon
+    if (ShooterCharacter->GetEquippedWeapon()) {
 
-        } else {
+        WeaponType = ShooterCharacter->GetEquippedWeapon()->GetWeaponType();
 
-            WeaponType = EWeaponType::EWT_SubmachineGun;
-        }
+    } else {
+
+        WeaponType = EWeaponType::EWT_SubmachineGun;
     }
 
     TurnInPlace();
@@ -116,7 +112,7 @@ void UShooterAnimInstance::NativeInitializeAnimation() {
 
 void UShooterAnimInstance::Lean(float DeltaTime) {
 
-    if (ShooterCharacter == nullptr) ShooterCharacter = Cast<AShooterCharacter>(TryGetPawnOwner());
+    CheckPtr(ShooterCharacter);
 
     CharacterRotationLastFrame = CharacterRotation;
     CharacterRotation          = ShooterCharacter->GetActorRotation();
@@ -133,7 +129,7 @@ void UShooterAnimInstance::Lean(float DeltaTime) {
 
 void UShooterAnimInstance::TurnInPlace() {
 
-    if (ShooterCharacter == nullptr) ShooterCharacter = Cast<AShooterCharacter>(TryGetPawnOwner());
+    CheckPtr(ShooterCharacter);
 
     Pitch = ShooterCharacter->GetBaseAimRotation().Pitch;
 

@@ -56,6 +56,30 @@ struct FWeaponDataTable : public FTableRowBase {
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TSubclassOf<UAnimInstance> AnimBP;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UTexture2D *CrosshairsMiddle;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UTexture2D *CrosshairsLeft;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UTexture2D *CrosshairsRight;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UTexture2D *CrosshairsBotton;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UTexture2D *CrosshairsTop;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float AutoFireRate;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    class UParticleSystem *MuzzleFlash;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    USoundCue *FireSound;
+
     FWeaponDataTable()
      : AmmoType(EAmmoType::EAT_9mm)
      , WeaponAmmo(0)
@@ -67,10 +91,18 @@ struct FWeaponDataTable : public FTableRowBase {
      , InventoryIcon(nullptr)
      , AmmoIcon(nullptr)
      , MaterialInstance(nullptr)
-     , MaterialIndex(0) 
+     , MaterialIndex(0)
      , ClipBoneName(FName(TEXT("")))
      , ReloadMontageSection(FName(TEXT("")))
      , AnimBP(nullptr)
+     , CrosshairsMiddle(nullptr)
+     , CrosshairsLeft(nullptr)
+     , CrosshairsRight(nullptr)
+     , CrosshairsBotton(nullptr)
+     , CrosshairsTop(nullptr)
+     , AutoFireRate(0.f)
+     , MuzzleFlash(nullptr)
+     , FireSound(nullptr)
     {};
 };
 
@@ -82,11 +114,13 @@ class SHOOTER_API AWeapon : public AItem {
     GENERATED_BODY()
 
 public:
+
     AWeapon();
 
     virtual void Tick(float DeltaTime) override;
 
 protected:
+
     virtual void BeginPlay() override;
 
     virtual void OnConstruction(const FTransform &Transform) override;
@@ -100,6 +134,7 @@ protected:
     void StopFalling();
 
 private:
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Item|Throw Weapon",
       meta = (AllowPrivateAccess = "true"))
     float ThrowWeaponTime;
@@ -207,7 +242,44 @@ private:
 
     int32 PreviousMaterialIndex;
 
+    /** Textures for the weapon Crosshairs */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
+      Category = "My Custom Properties|DataTable|Crosshairs", meta = (AllowPrivateAccess = "true"))
+    UTexture2D *CrosshairsMiddle;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
+      Category = "My Custom Properties|DataTable|Crosshairs", meta = (AllowPrivateAccess = "true"))
+    UTexture2D *CrosshairsLeft;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
+      Category = "My Custom Properties|DataTable|Crosshairs", meta = (AllowPrivateAccess = "true"))
+    UTexture2D *CrosshairsRight;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
+      Category = "My Custom Properties|DataTable|Crosshairs", meta = (AllowPrivateAccess = "true"))
+    UTexture2D *CrosshairsBotton;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
+      Category = "My Custom Properties|DataTable|Crosshairs", meta = (AllowPrivateAccess = "true"))
+    UTexture2D *CrosshairsTop;
+
+    /** The speed at which automatic fire happens */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
+      Category = "My Custom Properties|DataTable|Crosshairs", meta = (AllowPrivateAccess = "true"))
+    float AutoFireRate;
+
+    /** Particle system spawned at the BarrelSocket */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
+      Category = "My Custom Properties|DataTable|Crosshairs", meta = (AllowPrivateAccess = "true"))
+     UParticleSystem *MuzzleFlash;
+
+    /** Sound played when the weapon is fired */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
+      Category = "My Custom Properties|DataTable|Crosshairs", meta = (AllowPrivateAccess = "true"))
+    USoundCue *FireSound;
+
 public:
+
     /** Adds an im*pulse to the weapon */
     UFUNCTION(BlueprintCallable)
     void ThrowWeapon();
@@ -223,7 +295,9 @@ public:
     FORCEINLINE EAmmoType GetAmmoType() const { return AmmoType; }
 
     FORCEINLINE FName GetReloadMontageSection() const { return ReloadMontageSection; }
-    FORCEINLINE void  SetReloadMontageSection(const FName Section) { ReloadMontageSection = Section; }
+    FORCEINLINE void  SetReloadMontageSection(const FName Section) {
+        ReloadMontageSection = Section;
+    }
 
     FORCEINLINE FName GetClipBoneName() const { return ClipBoneName; }
     FORCEINLINE void  SetClipBoneName(const FName BoneName) { ClipBoneName = BoneName; }

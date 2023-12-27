@@ -8,8 +8,6 @@
 
 #include "DebugSounds.generated.h"
 
-using namespace UnrealBasic;
-
 UCLASS()
 class SHOOTER_API ADebugSounds : public AActor {
     GENERATED_BODY()
@@ -21,6 +19,8 @@ public:
 protected:
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
+
+    void SetSounds();
 
 private:
 
@@ -58,6 +58,15 @@ private:
     UPROPERTY(
       EditAnywhere, BlueprintReadWrite, Category = "Sounds", meta = (AllowPrivateAccess = "true"))
     USoundCue *CustomSound_5;
+
+    class TUniquePtr<struct ConstructorHelpers::FObjectFinder<class USoundCue>> M_BeginOverlapSoundPath;
+
+    TUniquePtr<ConstructorHelpers::FObjectFinder<USoundCue>> M_EndOverlapSoundPath;
+
+    TUniquePtr<ConstructorHelpers::FObjectFinder<USoundCue>> M_NullptrSoundPath;
+
+    TUniquePtr<ConstructorHelpers::FObjectFinder<USoundCue>> M_BlankCue;
+        
 
 public:
     // Called every frame

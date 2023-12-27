@@ -34,6 +34,9 @@ AMyTriggerBox::AMyTriggerBox()
 void AMyTriggerBox::BeginPlay() {
 
     Super::BeginPlay();
+
+    DebugSounds = Cast<ADebugSounds>(UGameplayStatics::GetActorOfClass(
+      GetWorld(), ADebugSounds::StaticClass()));
    
     DrawDebugBox(GetWorld(), GetActorLocation(), GetComponentsBoundingBox().GetExtent(),
       FColor::Purple, true, -1, 0, 10.f);
