@@ -53,6 +53,9 @@ struct FWeaponDataTable : public FTableRowBase {
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FName ReloadMontageSection;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TSubclassOf<UAnimInstance> AnimBP;
+
     FWeaponDataTable()
      : AmmoType(EAmmoType::EAT_9mm)
      , WeaponAmmo(0)
@@ -66,7 +69,9 @@ struct FWeaponDataTable : public FTableRowBase {
      , MaterialInstance(nullptr)
      , MaterialIndex(0) 
      , ClipBoneName(FName(TEXT("")))
-     , ReloadMontageSection(FName(TEXT(""))) {};
+     , ReloadMontageSection(FName(TEXT("")))
+     , AnimBP(nullptr)
+    {};
 };
 
 /**

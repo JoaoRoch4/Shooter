@@ -134,6 +134,7 @@ void AWeapon::SetWeaponTableObject(UDataTable *WeaponTableObject) {
     GetDynamicMaterialInstance()->SetVectorParameterValue(L"FresnelColor", GetGlowColor());
     GetItemMesh()->SetMaterial(GetMaterialIndex(), GetDynamicMaterialInstance());
     SetReloadMontageSection(WeaponDataRow->ReloadMontageSection);
+    GetItemMesh()->SetAnimInstanceClass(WeaponDataRow->AnimBP);
 
     EnableGlowMaterial();
 }

@@ -116,7 +116,7 @@ void UShooterAnimInstance::NativeInitializeAnimation() {
 
 void UShooterAnimInstance::Lean(float DeltaTime) {
 
-    if (ShooterCharacter == nullptr) return;
+    if (ShooterCharacter == nullptr) ShooterCharacter = Cast<AShooterCharacter>(TryGetPawnOwner());
 
     CharacterRotationLastFrame = CharacterRotation;
     CharacterRotation          = ShooterCharacter->GetActorRotation();
@@ -124,7 +124,7 @@ void UShooterAnimInstance::Lean(float DeltaTime) {
     const FRotator Delta {
       UKismetMathLibrary::NormalizedDeltaRotator(CharacterRotation, CharacterRotationLastFrame)};
 
-    const float DeltaYawFloat {StaticCast<float>(Delta.Yaw)};
+    const float DeltaYawFloat {static_cast<const float>(Delta.Yaw)};
     const float Target {DeltaYawFloat / DeltaTime};
     const float Interp {FMath::FInterpTo(YawDelta, Target, DeltaTime, 6.f)};
 
@@ -133,7 +133,7 @@ void UShooterAnimInstance::Lean(float DeltaTime) {
 
 void UShooterAnimInstance::TurnInPlace() {
 
-    if (ShooterCharacter == nullptr) return;
+    if (ShooterCharacter == nullptr) ShooterCharacter = Cast<AShooterCharacter>(TryGetPawnOwner());
 
     Pitch = ShooterCharacter->GetBaseAimRotation().Pitch;
 
