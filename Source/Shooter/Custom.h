@@ -95,7 +95,7 @@ typedef FVector2d Fvc2;
       TEXT("%s is nullptr: File: %s, Line: %d"), TEXT(#ptr), TEXT(__FILE__), __LINE__)};           \
     if (!(ensureMsgf((ptr) != nullptr, TEXT("%s"), *Msg))) {                                       \
         UE_LOG(LogTemp, Error, TEXT("%s"), *Msg);                                                  \
-        ExitGame()                                                                                 \
+        return ExitGame();                                                                                \
     }
 
 #define __localCheckF_CheckPtr(ptr)                                                                   \
@@ -105,7 +105,7 @@ typedef FVector2d Fvc2;
 
 #define CheckPtr(ptr)                                                                              \
     if (ptr == nullptr) {                                                                          \
-        __localEnsureCheckPtr(ptr)                                                                   \
+        __localEnsureCheckPtr(ptr);                                                                   \
     }
 
 #define CheckMsgPtr(ptr)                                                                           \

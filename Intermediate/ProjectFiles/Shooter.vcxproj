@@ -30,6 +30,10 @@
     <ProjectGuid>{DA1587E2-D52B-3344-9A87-6E5499B72C21}</ProjectGuid>
     <RootNamespace>Shooter</RootNamespace>
   </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='DebugGame_Editor|x64'">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <CLRSupport>true</CLRSupport>
+  </PropertyGroup>
   <Import Project="UECommon.props" />
   <ImportGroup Label="ExtensionSettings" />
   <PropertyGroup Label="UserMacros" />
@@ -106,6 +110,8 @@
     <ClCompile_AdditionalOptions>$(AdditionalOptions) /Yu"$(SolutionDir)Intermediate\Build\Win64\x64\ShooterEditor\Development\Engine\SharedPCH.Engine.Cpp20.h"</ClCompile_AdditionalOptions>
   </PropertyGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\Shooter\MovingDirection.h" />
+    <ClInclude Include="..\..\Source\Shooter\WeaponDataTable.h" />
     <ClInclude Include="..\..\Source\Shooter\WeaponType.h" />
     <None Include="..\..\Shooter.uproject" />
     <None Include="..\..\Source\Shooter.Target.cs" />

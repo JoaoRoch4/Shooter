@@ -137,5 +137,11 @@
     <ClInclude Include="..\..\Source\Shooter\WeaponType.h">
       <Filter>Source\Shooter</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Shooter\WeaponDataTable.h">
+      <Filter>Source\Shooter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Shooter\MovingDirection.h">
+      <Filter>Source\Shooter</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

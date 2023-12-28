@@ -28,17 +28,33 @@ AWeapon::AWeapon()
  , ReloadMontageSection(FName(L"Reload SMG"))
  , ClipBoneName(FName(L"smg_clip"))
  , ItemInstance(nullptr)
-{
+ , WeaponDataTable(nullptr)
+ , PreviousMaterialIndex(NULL)
+ , CrosshairsMiddle(nullptr)
+ , CrosshairsLeft(nullptr)
+ , CrosshairsRight(nullptr)
+ , CrosshairsBotton(nullptr)
+ , CrosshairsTop(nullptr)
+ , AutoFireRate(NULL)
+ , MuzzleFlash(nullptr)
+ , FireSound(nullptr)
+ , BoneToHide(FName(TEXT(""))) {
+
     PrimaryActorTick.bCanEverTick = true;
 }
 
 void AWeapon::BeginPlay() {
 
     Super::BeginPlay();
+
+    if (BoneToHide != FName(TEXT(""))) {
+
+        GetItemMesh()->HideBoneByName(BoneToHide, EPhysBodyOp::PBO_None);
+    }
+
     Construct_WeaponTableObject();
 
-    // SyncItemMunition();    
-       
+    // SyncItemMunition();
 }
 
 void AWeapon::OnConstruction(const FTransform &Transform) {
@@ -81,6 +97,7 @@ void AWeapon::Construct_WeaponTableObject() {
 
 void AWeapon::SetWeaponTableObject(UDataTable *WeaponTableObject) {
 
+    CheckPtr(WeaponTableObject);
     FWeaponDataTable *WeaponDataRow {};
 
     switch (WeaponType) {
@@ -96,6 +113,13 @@ void AWeapon::SetWeaponTableObject(UDataTable *WeaponTableObject) {
 
             WeaponDataRow = WeaponTableObject->FindRow<FWeaponDataTable>(
               FName(L"AssaultRifle"), TEXT(""), true);
+
+        } break;
+
+        case EWeaponType::EWT_Pistol: {
+
+            WeaponDataRow = WeaponTableObject->FindRow<FWeaponDataTable>(
+              FName(L"Pistol"), TEXT(""), true);
 
         } break;
 
@@ -141,9 +165,11 @@ void AWeapon::SetWeaponTableObject(UDataTable *WeaponTableObject) {
     CrosshairsRight  = WeaponDataRow->CrosshairsRight;
     CrosshairsBotton = WeaponDataRow->CrosshairsBotton;
     CrosshairsTop    = WeaponDataRow->CrosshairsTop;
-    AutoFireRate = WeaponDataRow->AutoFireRate;
-    MuzzleFlash = WeaponDataRow->MuzzleFlash;
-    FireSound = WeaponDataRow->FireSound;
+    AutoFireRate     = WeaponDataRow->AutoFireRate;
+    MuzzleFlash      = WeaponDataRow->MuzzleFlash;
+    FireSound        = WeaponDataRow->FireSound;
+    BoneToHide       = WeaponDataRow->BoneToHide;
+    GetItemMesh()->HideBoneByName(BoneToHide, EPhysBodyOp::PBO_None);
 
     EnableGlowMaterial();
 }

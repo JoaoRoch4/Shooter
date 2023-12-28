@@ -76,8 +76,6 @@ AShooterCharacter::AShooterCharacter()
  , MouseAimingLookUpRate(0.8f)
  , bIsFiringWeapon(false)
  , bDidFire(false)
- , FireSound(nullptr)
- , MuzzleFlash(nullptr)
  , ImpactParticles(nullptr)
  , BeamParticles(nullptr)
  , HipFireMontage(nullptr)
@@ -99,7 +97,6 @@ AShooterCharacter::AShooterCharacter()
  , CrosshairShootTimer(FTimerHandle())
  , bFireButtonPressed(false)
  , bShouldFire(true)
- , AutomaticFireRate(0.1f)
  , AutoFireTimer(FTimerHandle())
  , bShouldTraceForItems(false)
  , OverlappedItemCount(NULL)
@@ -792,41 +789,6 @@ void AShooterCharacter::DefaultConstructor_SetupMesh() {
 
 void AShooterCharacter::DefaultConstructor_SetCombatCues() {
 
-    if (FireSound == nullptr) {
-
-        FireSound = CDSubObj<USoundCue>(L"FireSound");
-
-        const static TCHAR *FireSoundCuePath {
-          L"/Game/_Game/Assets/Sounds/GunShots/AR15_Shots/AR_Shot.AR_Shot"};
-
-        const auto static M_FireSoundCue {
-          ConstructorHelpers::FObjectFinder<USoundCue>(FireSoundCuePath)};
-
-        if (M_FireSoundCue.Succeeded()) FireSound = M_FireSoundCue.Object;
-        else {
-            ExitGameErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
-                        "M_FireSoundCue failed");
-        }
-    }
-
-    if (MuzzleFlash == nullptr) {
-
-        MuzzleFlash = CDSubObj<UParticleSystem>(L"MuzzleFlash");
-
-        const static TCHAR *MuzzleFlashPath {
-          L"/Script/Engine.ParticleSystem'/Game/_Game/Assets/FX/"
-          L"P_BelicaMuzzle_SigleBrust.P_BelicaMuzzle_SigleBrust'"};
-
-        const auto static M_MuzzleFlashParticle {
-          ConstructorHelpers::FObjectFinder<UParticleSystem>(MuzzleFlashPath)};
-
-        if (M_MuzzleFlashParticle.Succeeded()) MuzzleFlash = M_MuzzleFlashParticle.Object;
-        else {
-            ExitGameErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
-                        "M_MuzzleFlashParticle failed");
-        }
-    }
-
     if (HipFireMontage == nullptr) {
 
         HipFireMontage = CDSubObj<UAnimMontage>(L"HipFireMontage");
@@ -896,24 +858,6 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
         else {
             ExitGameErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
                         "M_BeamParticle failed");
-        }
-    }
-
-    if (MuzzleFlash == nullptr) {
-
-        MuzzleFlash = CDSubObj<UParticleSystem>(L"MuzzleFlash");
-
-        const static TCHAR *MuzzleFlashPath {
-          L"/Script/Engine.ParticleSystem'/Game/_Game/Assets/FX/"
-          L"P_BelicaMuzzle_SigleBrust.P_BelicaMuzzle_SigleBrust'"};
-
-        const auto static M_MuzzleFlashParticle {
-          ConstructorHelpers::FObjectFinder<UParticleSystem>(MuzzleFlashPath)};
-
-        if (M_MuzzleFlashParticle.Succeeded()) MuzzleFlash = M_MuzzleFlashParticle.Object;
-        else {
-            ExitGameErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
-                        "M_MuzzleFlashParticle failed");
         }
     }
 
@@ -1225,12 +1169,14 @@ void AShooterCharacter::FireButtonReleased() { bFireButtonPressed = false; }
 
 void AShooterCharacter::StartFireTimer() {
 
+    if (EquippedWeapon == nullptr) return;
+
     CombatState = ECombatState::ECS_FireTimerInProgress;
 
     if (bShouldFire) {
 
-        GetWorldTimerManager().SetTimer(
-          AutoFireTimer, this, &AShooterCharacter::AutoFireReset, AutomaticFireRate);
+        GetWorldTimerManager().SetTimer(AutoFireTimer, this, &AShooterCharacter::AutoFireReset,
+          EquippedWeapon->GetAutoFireRate());
     }
 }
 
@@ -1450,7 +1396,8 @@ bool AShooterCharacter::WeaponHasAmmo() {
 
 void AShooterCharacter::PlayFireSound() {
 
-    if (FireSound) UGameplayStatics::PlaySound2D(this, FireSound);
+    CheckPtr(EquippedWeapon->GetFireSound());
+    UGameplayStatics::PlaySound2D(this, EquippedWeapon->GetFireSound());
 }
 
 void AShooterCharacter::SendBullet() {
@@ -1458,31 +1405,30 @@ void AShooterCharacter::SendBullet() {
     const USkeletalMeshSocket *BarrelSocket {
       EquippedWeapon->GetItemMesh()->GetSocketByName("BarrelSocket")};
 
-    if (BarrelSocket) {
+    CheckPtr(BarrelSocket);
 
-        const FTransform SocketTransform {
-          BarrelSocket->GetSocketTransform(EquippedWeapon->GetItemMesh())};
+    const FTransform SocketTransform {
+      BarrelSocket->GetSocketTransform(EquippedWeapon->GetItemMesh())};
 
-        if (MuzzleFlash)
-            UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleFlash, SocketTransform);
+    CheckPtr(EquippedWeapon->GetMuzzleFlash());
+        
+    UGameplayStatics::SpawnEmitterAtLocation(
+      GetWorld(), EquippedWeapon->GetMuzzleFlash(), SocketTransform);
 
-        FVector BeamEnd;
+    FVector BeamEnd {};
 
-        // Get Beam End Location
-        bool bBeanEnd {GetBeanEndLocation(SocketTransform.GetLocation(), BeamEnd)};
+    // Get Beam End Location
+    bool bBeanEnd {GetBeanEndLocation(SocketTransform.GetLocation(), BeamEnd)};
 
-        if (bBeanEnd) {
+    if (bBeanEnd) {
 
-            if (ImpactParticles)
-                UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, BeamEnd);
+        if (ImpactParticles)
+            UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, BeamEnd);
 
-            UParticleSystemComponent *Beam {
-              UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BeamParticles, SocketTransform)};
+        UParticleSystemComponent *Beam {
+          UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BeamParticles, SocketTransform)};
 
-            if (Beam) Beam->SetVectorParameter(FName("Target"), BeamEnd);
-        }
-    } else {
-        ExitPrintErr("AShooterCharacter::SendBullet(): BarrelSocket is nullptr");
+        if (Beam) Beam->SetVectorParameter(FName("Target"), BeamEnd);
     }
 }
 
@@ -2175,15 +2121,15 @@ void AShooterCharacter::SetMovingDirection() {
     bool bBackwardLeftAim {bBackwardAim && bLeftAim && bAiming};
 
     bool bStraightDirections {bMovingForward || bMovingBackward || bMovingRight || bMovingLeft};
-    bool bDiagonalDirections {bMovingForwardRight || bMovingForwardLeft || bMovingBackwardRight
-                                || bMovingBackwardLeft};
+    bool bDiagonalDirections {
+      bMovingForwardRight || bMovingForwardLeft || bMovingBackwardRight || bMovingBackwardLeft};
 
     bool bStraightDirectionsAim {bForwardAim || bBackwardAim || bRightAim || bLeftAim};
-    bool bDiagonalDirectionsAim {bForwardRightAim || bForwardLeftAim || bBackwardRightAim
-                                     || bBackwardLeftAim};
+    bool bDiagonalDirectionsAim {
+      bForwardRightAim || bForwardLeftAim || bBackwardRightAim || bBackwardLeftAim};
 
-    bMovingStraight = (bStraightDirections && !bDiagonalDirections && !bAiming);
-    bMovingDiagonal = (!bMovingStraight && bDiagonalDirections && !bAiming);
+    bMovingStraight    = (bStraightDirections && !bDiagonalDirections && !bAiming);
+    bMovingDiagonal    = (!bMovingStraight && bDiagonalDirections && !bAiming);
     bMovingStraightAim = (bAiming && bStraightDirectionsAim && !bDiagonalDirectionsAim);
     bMovingDiagonalAim = (bAiming && !bMovingStraightAim && bDiagonalDirectionsAim);
     bNotMoving = !(bMovingStraight && bMovingDiagonal && bMovingStraightAim && bMovingDiagonalAim);
@@ -2208,7 +2154,7 @@ void AShooterCharacter::SetMovingDirection() {
         else if (bMovingBackwardLeft && !bAiming)
             MovingDirection = EMovingDirection::EMD_BackwardLeft;
         return;
-    }     
+    }
 
     if (bMovingStraightAim && !bMovingDiagonalAim) {
 
