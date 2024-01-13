@@ -33,6 +33,7 @@ protected:
     void OverlapEndHappened(AActor *OverlappedActor = nullptr, AActor *OtherActor = nullptr);
 
 private:
+
     UPROPERTY()
     class ADebugSounds *DebugSounds;
 
@@ -52,7 +53,7 @@ private:
       meta = (AllowPrivateAccess = "true"))
     bool bExitGame;
 
-    ACustom *Custom;
+    class ACustom *Custom;
 
     class ADefaultRandom *DefaultRandom;
 };

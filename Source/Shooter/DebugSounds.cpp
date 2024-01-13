@@ -1,8 +1,8 @@
 #include "DebugSounds.h"
 
-#include "Templates/UniquePtr.h"
 #include <Kismet/GameplayStatics.h>
 #include <Sound/SoundCue.h>
+#include <Templates/UniquePtr.h>
 
 ADebugSounds::ADebugSounds()
  : BeginOverlapSound(nullptr)
@@ -12,12 +12,15 @@ ADebugSounds::ADebugSounds()
  , CustomSound_2(nullptr)
  , CustomSound_3(nullptr)
  , CustomSound_4(nullptr)
- , CustomSound_5(nullptr) 
+ , CustomSound_5(nullptr)
+ , BeginOverlapSoundPath(FString())
+ , EndOverlapSoundPath(FString())
+ , NullptrSoundPath(FString())
+ , BlankCue(FString())
  , M_BeginOverlapSoundPath(nullptr)
- , M_EndOverlapSoundPath(nullptr) 
+ , M_EndOverlapSoundPath(nullptr)
  , M_NullptrSoundPath(nullptr)
- , M_BlankCue(nullptr)
-{
+ , M_BlankCue(nullptr) {
     PrimaryActorTick.bCanEverTick = true;
 
     BeginOverlapSound = CreateDefaultSubobject<USoundCue>(L"BeginOverlapSound");
@@ -29,67 +32,48 @@ ADebugSounds::ADebugSounds()
     CustomSound_4     = CreateDefaultSubobject<USoundCue>(L"CustomSound_4");
     CustomSound_5     = CreateDefaultSubobject<USoundCue>(L"CustomSound_5");
 
-    SetSounds();
+    //SetSounds();
 }
 
 void ADebugSounds::SetSounds() {
 
-     const static FString BeginOverlapSoundPath {
-      L"/Script/Engine.SoundCue'"
-      L"/Game/_Game/Assets/Sounds/Interfaces/button-124476_Cue.button-124476_Cue'"};
+    BeginOverlapSoundPath
+      = FString(L"/Script/Engine.SoundCue'"
+                L"/Game/_Game/Assets/Sounds/Interfaces/button-124476_Cue.button-124476_Cue'");
 
-    const static FString EndOverlapSoundPath {
-      L"/Script/Engine.SoundCue'"
-      L"/Game/_Game/Assets/Sounds/Interfaces/interface-124464_Cue.interface-124464_Cue'"};
+    EndOverlapSoundPath
+      = FString(L"/Script/Engine.SoundCue'"
+                L"/Game/_Game/Assets/Sounds/Interfaces/interface-124464_Cue.interface-124464_Cue'");
 
-    const static FString NullptrSoundPath {
+    NullptrSoundPath = FString(
       L"/Script/Engine.SoundCue'"
-      L"/Game/_Game/Assets/Sounds/Interfaces/wrong-answer-126515_Cue.wrong-answer-126515_Cue'"};
+      L"/Game/_Game/Assets/Sounds/Interfaces/wrong-answer-126515_Cue.wrong-answer-126515_Cue'");
 
-    const static FString BlankCue {
-      L"/Script/Engine.SoundCue'"
-      L"/Game/_Game/Assets/Sounds/_Blank/blank-sound_Cue.blank-sound_Cue'"};
+    BlankCue = FString(L"/Script/Engine.SoundCue'"
+                       L"/Game/_Game/Assets/Sounds/_Blank/blank-sound_Cue.blank-sound_Cue'");
 
     M_BeginOverlapSoundPath
       = MakeUnique<ConstructorHelpers::FObjectFinder<USoundCue>>(*BeginOverlapSoundPath);
 
-    if (M_BeginOverlapSoundPath->Succeeded()) {
-        BeginOverlapSound = M_BeginOverlapSoundPath->Object;
-    } else {
-        ExitGameErr("M_BeginOverlapSoundPath failed");
-    }
+    BeginOverlapSound = M_BeginOverlapSoundPath->Object;
 
     M_EndOverlapSoundPath
       = MakeUnique<ConstructorHelpers::FObjectFinder<USoundCue>>(*EndOverlapSoundPath);
 
-    if (M_EndOverlapSoundPath->Succeeded()) {
-        EndOverlapSound = M_EndOverlapSoundPath->Object;
-    } else {
-        ExitGameErr("M_EndOverlapSoundPath failed");
-    }
+    EndOverlapSound = M_EndOverlapSoundPath->Object;
 
     M_NullptrSoundPath
       = MakeUnique<ConstructorHelpers::FObjectFinder<USoundCue>>(*NullptrSoundPath);
 
-    if (M_NullptrSoundPath->Succeeded()) {
-        NullptrSound = M_NullptrSoundPath->Object;
-    } else {
-        ExitGameErr("M_NullptrSoundPath failed");
-    }
+    NullptrSound = M_NullptrSoundPath->Object;
 
     M_BlankCue = MakeUnique<ConstructorHelpers::FObjectFinder<USoundCue>>(*BlankCue);
 
-    if (M_BlankCue->Succeeded()) {
-
-        CustomSound_1 = M_BlankCue->Object;
-        CustomSound_2 = M_BlankCue->Object;
-        CustomSound_3 = M_BlankCue->Object;
-        CustomSound_4 = M_BlankCue->Object;
-        CustomSound_5 = M_BlankCue->Object;
-
-    } else {
-        ExitGameErr("M_BlankCue failed");
-    }
+    CustomSound_1 = M_BlankCue->Object;
+    CustomSound_2 = M_BlankCue->Object;
+    CustomSound_3 = M_BlankCue->Object;
+    CustomSound_4 = M_BlankCue->Object;
+    CustomSound_5 = M_BlankCue->Object;
 }
 
 void ADebugSounds::BeginPlay() { Super::BeginPlay(); }
@@ -98,22 +82,12 @@ void ADebugSounds::Tick(float DeltaTime) { Super::Tick(DeltaTime); }
 
 void ADebugSounds::PlayBeginOverlapSound() {
 
-    if (BeginOverlapSound) {
-        UGameplayStatics::PlaySound2D(GetWorld(), BeginOverlapSound);
-    } else {
-        ExitPrintErr("BeginOverlapSound is nullptr");
-        PlayNullptrSound();
-    }
+    //UGameplayStatics::PlaySound2D(GetWorld(), BeginOverlapSound);
 }
 
 void ADebugSounds::PlayEndOverlapSound() {
 
-    if (EndOverlapSound) {
-        UGameplayStatics::PlaySound2D(GetWorld(), EndOverlapSound);
-    } else {
-        ExitPrintErr("EndOverlapSound is nullptr");
-        PlayNullptrSound();
-    }
+    //UGameplayStatics::PlaySound2D(GetWorld(), EndOverlapSound);
 }
 
 void ADebugSounds::PlayNullptrSound() {

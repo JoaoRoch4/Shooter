@@ -176,7 +176,7 @@ void AWeapon::SetWeaponTableObject(UDataTable *WeaponTableObject) {
 
 void AWeapon::SyncItemMunition() {
 
-    int32 ItemCapacity {0};
+    int32 ItemCapacity {};
 
     // ItemInstance = Cast<AItem>(UGameplayStatics::GetActorOfClass(
     // GetWorld(), AWeapon::StaticClass()));

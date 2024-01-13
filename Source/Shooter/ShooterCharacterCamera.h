@@ -37,9 +37,9 @@ private:
 
 public:
 
-    FORCEINLINE void SetFOV(float FOV);
+    void SetFOV(float FOV);
 
-    FORCEINLINE float GetFOV() const;
+    float GetFOV() const;
 
-    FORCEINLINE USpringArmComponent *GetCustomCameraBoom() const;
+    USpringArmComponent *GetCustomCameraBoom() const;
 };

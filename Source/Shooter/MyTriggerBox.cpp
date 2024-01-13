@@ -13,33 +13,34 @@
 #include <GameFramework/Actor.h>
 #include <Kismet/GameplayStatics.h>
 #include <Kismet/KismetSystemLibrary.h>
+#include <Sound/SoundCue.h>
 
 AMyTriggerBox::AMyTriggerBox()
  : DebugSounds(nullptr)
  , TimerHandle(FTimerHandle())
  , CoolDown(0.7f)
  , bCanOverlap(true)
- , bExitGame(false) {
+ , bExitGame(false)
+ , Custom(nullptr)
+ , DefaultRandom(nullptr) {
 
     PrimaryActorTick.bCanEverTick = true;
 
-    DebugSounds   = CDSubObj<ADebugSounds>  (L"DebugSounds");
-    Custom        = CDSubObj<ACustom>       (L"Custom");
-    DefaultRandom = CDSubObj<ADefaultRandom>(L"DefaultRandom");
+    Custom            = CDSubObj<ACustom>(L"Custom");
+    DefaultRandom     = CDSubObj<ADefaultRandom>(L"DefaultRandom");
+    
 
-    OnActorBeginOverlap.AddDynamic(this, &AMyTriggerBox::OnOverlapBegin);
-    OnActorEndOverlap.AddDynamic  (this, &AMyTriggerBox::OnOverlapEnd);
+   OnActorBeginOverlap.AddDynamic(this, &AMyTriggerBox::OnOverlapBegin);
+   OnActorEndOverlap.AddDynamic(this, &AMyTriggerBox::OnOverlapEnd);
 }
 
 void AMyTriggerBox::BeginPlay() {
 
     Super::BeginPlay();
 
-    DebugSounds = Cast<ADebugSounds>(UGameplayStatics::GetActorOfClass(
-      GetWorld(), ADebugSounds::StaticClass()));
-   
     DrawDebugBox(GetWorld(), GetActorLocation(), GetComponentsBoundingBox().GetExtent(),
       FColor::Purple, true, -1, 0, 10.f);
+
 }
 
 void AMyTriggerBox::Tick(float DeltaTime) { Super::Tick(DeltaTime); }
@@ -70,7 +71,7 @@ void AMyTriggerBox::OnOverlapEnd(AActor *OverlappedActor, AActor *OtherActor) {
         if (bCanOverlap) {
 
             bCanOverlap = false;
-            OverlapEndHappened(OverlappedActor, OtherActor);
+            //OverlapEndHappened(OverlappedActor, OtherActor);
 
             GetWorldTimerManager().SetTimer(
               TimerHandle, this, &AMyTriggerBox::CoolDownOver, CoolDown);
@@ -82,29 +83,23 @@ void AMyTriggerBox::OnOverlapEnd(AActor *OverlappedActor, AActor *OtherActor) {
 
 void AMyTriggerBox::OverlapBeginHappened(AActor *OverlappedActor, AActor *OtherActor) {
 
+    PrintClearScreen();
     PrintOnScr("OverlapBeginHappened");
     PrintOnScrFS("By: %s", *OtherActor->GetName());
-
-    if (DebugSounds) {
-        DebugSounds->PlayBeginOverlapSound();
-    }
-
+    
     DrawDebugBox(GetWorld(), GetActorLocation(), GetComponentsBoundingBox().GetExtent(),
       FColor::Red, true, -1, 0, 10.f);
 
-    int32 RandomInt {DefaultRandom->GenerateRandomInt32()};
-
-    PrintOnScrFS("RandomInt: %s", *FString::FromInt(RandomInt));
-
-    PrintOnScr("After Compilation");
+    int32 RandomInt {DefaultRandom->GenerateRandomInt32()};   
+        PrintOnScrFS("RandomInt: %s", *FString::FromInt(RandomInt));
 }
 
 void AMyTriggerBox::OverlapEndHappened(AActor *OverlappedActor, AActor *OtherActor) {
 
+    PrintClearScreen();
+
     PrintOnScr("OverlapEndHappened");
     PrintOnScrFS("By: %s", *OtherActor->GetName());
-
-    if (DebugSounds) DebugSounds->PlayEndOverlapSound();
 
     DrawDebugBox(GetWorld(), GetActorLocation(), GetComponentsBoundingBox().GetExtent(),
       FColor::Purple, true, -1, 0, 10.f);
@@ -113,6 +108,7 @@ void AMyTriggerBox::OverlapEndHappened(AActor *OverlappedActor, AActor *OtherAct
 
     PrintOnScrFS("RandomInt: %s", *FString::FromInt(RandomInt64));
 
+   
     // ExitEngine();
 }
 

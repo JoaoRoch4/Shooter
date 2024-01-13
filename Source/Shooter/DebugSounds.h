@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -13,10 +11,12 @@ class SHOOTER_API ADebugSounds : public AActor {
     GENERATED_BODY()
 
 public:
+
     // Sets default values for this actor's properties
     ADebugSounds();
 
 protected:
+
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
 
@@ -24,23 +24,20 @@ protected:
 
 private:
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sounds", 
-        meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(
+      EditAnywhere, BlueprintReadWrite, Category = "Sounds", meta = (AllowPrivateAccess = "true"))
     class USoundCue *BeginOverlapSound;
 
     UPROPERTY(
-      EditAnywhere, BlueprintReadWrite, Category = "Sounds",
-      meta = (AllowPrivateAccess = "true"))
+      EditAnywhere, BlueprintReadWrite, Category = "Sounds", meta = (AllowPrivateAccess = "true"))
     USoundCue *EndOverlapSound;
 
     UPROPERTY(
-      EditAnywhere, BlueprintReadWrite, Category = "Sounds",
-      meta = (AllowPrivateAccess = "true"))
+      EditAnywhere, BlueprintReadWrite, Category = "Sounds", meta = (AllowPrivateAccess = "true"))
     USoundCue *NullptrSound;
 
     UPROPERTY(
-      EditAnywhere, BlueprintReadWrite, Category = "Sounds",
-      meta = (AllowPrivateAccess = "true"))
+      EditAnywhere, BlueprintReadWrite, Category = "Sounds", meta = (AllowPrivateAccess = "true"))
     USoundCue *CustomSound_1;
 
     UPROPERTY(
@@ -59,16 +56,33 @@ private:
       EditAnywhere, BlueprintReadWrite, Category = "Sounds", meta = (AllowPrivateAccess = "true"))
     USoundCue *CustomSound_5;
 
-    class TUniquePtr<struct ConstructorHelpers::FObjectFinder<class USoundCue>> M_BeginOverlapSoundPath;
+    UPROPERTY(
+      EditAnywhere, BlueprintReadWrite, Category = "Sounds", meta = (AllowPrivateAccess = "true"))
+    FString BeginOverlapSoundPath;
+
+    UPROPERTY(
+      EditAnywhere, BlueprintReadWrite, Category = "Sounds", meta = (AllowPrivateAccess = "true"))
+    FString EndOverlapSoundPath;
+
+    UPROPERTY(
+      EditAnywhere, BlueprintReadWrite, Category = "Sounds", meta = (AllowPrivateAccess = "true"))
+    FString NullptrSoundPath;
+
+    UPROPERTY(
+      EditAnywhere, BlueprintReadWrite, Category = "Sounds", meta = (AllowPrivateAccess = "true")) 
+    FString BlankCue;
+
+    class TUniquePtr<struct ConstructorHelpers::FObjectFinder<class USoundCue>>
+      M_BeginOverlapSoundPath;
 
     TUniquePtr<ConstructorHelpers::FObjectFinder<USoundCue>> M_EndOverlapSoundPath;
 
     TUniquePtr<ConstructorHelpers::FObjectFinder<USoundCue>> M_NullptrSoundPath;
 
     TUniquePtr<ConstructorHelpers::FObjectFinder<USoundCue>> M_BlankCue;
-        
 
 public:
+
     // Called every frame
     virtual void Tick(float DeltaTime) override;
 
