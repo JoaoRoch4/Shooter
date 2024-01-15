@@ -2382,13 +2382,12 @@ void AShooterCharacter::SetMovingDirectionActions(float &DeltaTime) {
                   Froward_InterpTime, DeltaTime, "EMovingDirection::EMD_Forward");
 
             case EMovingDirection::EMD_Backward :
-                return AdjustCameraLag(OffsetBackwards, CameraLagMaxDistance_Backwards, Backwards_interpTime, DeltaTime,
-                  "EMovingDirection::EMD_Backward");
+                return AdjustCameraLag(OffsetBackwards, CameraLagMaxDistance_Backwards,
+                  Backwards_interpTime, DeltaTime, "EMovingDirection::EMD_Backward");
 
             case EMovingDirection::EMD_Right :
                 return AdjustCameraLag(OffsetRight, CameraLagMaxDistance_Right, Right_interpTime,
-                  DeltaTime,
-                  "EMovingDirection::EMD_Right");
+                  DeltaTime, "EMovingDirection::EMD_Right");
 
             case EMovingDirection::EMD_Left :
                 return AdjustCameraLag(OffsetLeft, CameraLagMaxDistance_Left, DeltaTime,
@@ -2396,28 +2395,27 @@ void AShooterCharacter::SetMovingDirectionActions(float &DeltaTime) {
 
             case EMovingDirection::EMD_ForwardRight :
                 return AdjustCameraLag(OffsetForwardRight, CameraLagMaxDistance_ForwardRight,
-                  ForwardRight_interpTime,
-                  DeltaTime, "EMovingDirection::EMD_ForwardRight");
+                  ForwardRight_interpTime, DeltaTime, "EMovingDirection::EMD_ForwardRight");
 
             case EMovingDirection::EMD_ForwardLeft :
                 return AdjustCameraLag(OffsetForwardLeft, CameraLagMaxDistance_ForwardLeft,
-                  ForwardLeft_interpTime,
-                  DeltaTime, "EMovingDirection::EMD_ForwardLeft");
+                  ForwardLeft_interpTime, DeltaTime, "EMovingDirection::EMD_ForwardLeft");
 
             case EMovingDirection::EMD_BackwardRight :
                 return AdjustCameraLag(OffsetBackwardRight, CameraLagMaxDistance_BackwardRight,
-                  BackwardRight_interpTime,
-                  DeltaTime, "EMovingDirection::EMD_BackwardRight");
+                  BackwardRight_interpTime, DeltaTime, "EMovingDirection::EMD_BackwardRight");
 
             case EMovingDirection::EMD_BackwardLeft :
                 return AdjustCameraLag(OffsetBackwardLeft, CameraLagMaxDistance_BackwardLeft,
-                  BackwardLeft_interpTime,
-                  DeltaTime, "EMovingDirection::EMD_BackwardLeft");
+                  BackwardLeft_interpTime, DeltaTime, "EMovingDirection::EMD_BackwardLeft");
+
+            case EMovingDirection::EMD_Jump :
+                return AdjustCameraLag(OffsetJump, CameraLagMaxDistance_Jump, DeltaTime,
+                  Jump_interpTime, "EMovingDirection::Jump");
 
             case EMovingDirection::EMD_None :
                 return AdjustCameraLag(OriginalCameraSocketOffset, OriginalCameraLagMaxDistance,
-                  5.f,
-                  DeltaTime, "EMovingDirection::EMD_None");
+                  5.f, DeltaTime, "EMovingDirection::EMD_None");
         }
 
     } else if (bAiming && !bCrouching) {
@@ -2426,38 +2424,31 @@ void AShooterCharacter::SetMovingDirectionActions(float &DeltaTime) {
 
             case EMovingDirection::EMD_Aim :
                 return AdjustCameraLag(OffsetAim, CameraLagMaxDistance_Aim, Aim_interpTime,
-                  DeltaTime,
-                  "EMovingDirection::EMD_Aim");
+                  DeltaTime, "EMovingDirection::EMD_Aim");
 
             case EMovingDirection::EMD_ForwardAim :
                 return AdjustCameraLag(OffsetForwardAim, CameraLagMaxDistance_ForwardAim,
-                  ForwardAim_interpTime, DeltaTime,
-                  "EMovingDirection::EMD_ForwardAim");
+                  ForwardAim_interpTime, DeltaTime, "EMovingDirection::EMD_ForwardAim");
 
             case EMovingDirection::EMD_BackwardAim :
                 return AdjustCameraLag(OffsetBackwardAim, CameraLagMaxDistance_BackwardAim,
-                  BackwardAim_interpTime,
-                  DeltaTime, "EMovingDirection::EMD_BackwardAim");
+                  BackwardAim_interpTime, DeltaTime, "EMovingDirection::EMD_BackwardAim");
 
             case EMovingDirection::EMD_RightAim :
                 return AdjustCameraLag(OffsetRightAim, CameraLagMaxDistance_RightAim,
-                  RightAim_interpTime, DeltaTime,
-                  "EMovingDirection::EMD_RightAim");
+                  RightAim_interpTime, DeltaTime, "EMovingDirection::EMD_RightAim");
 
             case EMovingDirection::EMD_LeftAim :
                 return AdjustCameraLag(OffsetLeftAim, CameraLagMaxDistance_LeftAim,
-                  LeftAim_interpTime, DeltaTime,
-                  "EMovingDirection::EMD_LeftAim");
+                  LeftAim_interpTime, DeltaTime, "EMovingDirection::EMD_LeftAim");
 
             case EMovingDirection::EMD_ForwardRightAim :
                 return AdjustCameraLag(OffsetForwardRightAim, CameraLagMaxDistance_ForwardRightAim,
-                  ForwardRightAim_interpTime,
-                  DeltaTime, "EMovingDirection::EMD_ForwardRightAim");
+                  ForwardRightAim_interpTime, DeltaTime, "EMovingDirection::EMD_ForwardRightAim");
 
             case EMovingDirection::EMD_ForwardLeftAim :
                 return AdjustCameraLag(OffsetForwardLeftAim, CameraLagMaxDistance_ForwardLeftAim,
-                  ForwardLeftAim_interpTime,
-                  DeltaTime, "EMovingDirection::EMD_ForwardLeftAim");
+                  ForwardLeftAim_interpTime, DeltaTime, "EMovingDirection::EMD_ForwardLeftAim");
 
             case EMovingDirection::EMD_BackwardRightAim :
                 return AdjustCameraLag(OffsetBackwardRightAim,
@@ -2466,17 +2457,15 @@ void AShooterCharacter::SetMovingDirectionActions(float &DeltaTime) {
 
             case EMovingDirection::EMD_BackwardLeftAim :
                 return AdjustCameraLag(OffsetBackwardLeftAim, CameraLagMaxDistance_BackwardLeftAim,
-                  BackwardLeftAim_interpTime,
-                  DeltaTime, "EMovingDirection::EMD_BackwardLeftAim");
+                  BackwardLeftAim_interpTime, DeltaTime, "EMovingDirection::EMD_BackwardLeftAim");
 
             case EMovingDirection::EMD_Jump :
                 return AdjustCameraLag(OffsetJump, CameraLagMaxDistance_Jump, Jump_interpTime,
-                  DeltaTime,
-                  "EMovingDirection::Jump");
+                  DeltaTime, "EMovingDirection::Jump");
 
             case EMovingDirection::EMD_None :
-                return AdjustCameraLag(OriginalCameraSocketOffset, OriginalCameraLagMaxDistance, 5.f,
-                  DeltaTime, "EMovingDirection::EMD_None");
+                return AdjustCameraLag(OriginalCameraSocketOffset, OriginalCameraLagMaxDistance,
+                  5.f, DeltaTime, "EMovingDirection::EMD_None");
         }
 
     } else if (!bAiming && bCrouching) {
@@ -2484,32 +2473,29 @@ void AShooterCharacter::SetMovingDirectionActions(float &DeltaTime) {
         switch (MovingDirection) {
 
             case EMovingDirection::EMD_Crouch :
-                return AdjustCameraLag(OffsetAim, CameraLagMaxDistance_Aim, Aim_interpTime, DeltaTime,     
-                  "EMovingDirection::EMD_Crouch");
+                return AdjustCameraLag(OffsetAim, CameraLagMaxDistance_Aim, Aim_interpTime,
+                  DeltaTime, "EMovingDirection::EMD_Crouch");
 
             case EMovingDirection::EMD_ForwardCrouch :
-                return AdjustCameraLag(OffsetAim, CameraLagMaxDistance_Aim, ForwardCrouch_interpTime, DeltaTime,
-                  "EMovingDirection::EMD_ForwardCrouch");
+                return AdjustCameraLag(OffsetAim, CameraLagMaxDistance_Aim,
+                  ForwardCrouch_interpTime, DeltaTime, "EMovingDirection::EMD_ForwardCrouch");
 
             case EMovingDirection::EMD_BackwardCrouch :
                 return AdjustCameraLag(OffsetBackwardCrouch, CameraLagMaxDistance_BackwardCrouch,
-                  BackwardCrouch_interpTime,
-                  DeltaTime, "EMovingDirection::EMD_BackwardCrouch");
+                  BackwardCrouch_interpTime, DeltaTime, "EMovingDirection::EMD_BackwardCrouch");
 
             case EMovingDirection::EMD_RightCrouch :
                 return AdjustCameraLag(OffsetRightCrouch, CameraLagMaxDistance_RightCrouch,
-                  RightCrouch_interpTime,
-                  DeltaTime, "EMovingDirection::EMD_RightCrouch");
+                  RightCrouch_interpTime, DeltaTime, "EMovingDirection::EMD_RightCrouch");
 
             case EMovingDirection::EMD_LeftCrouch :
                 return AdjustCameraLag(OffsetLeftCrouch, CameraLagMaxDistance_LeftCrouch,
-                  LeftCrouch_interpTime, DeltaTime,
-                  "EMovingDirection::EMD_LeftCrouch");
+                  LeftCrouch_interpTime, DeltaTime, "EMovingDirection::EMD_LeftCrouch");
 
             case EMovingDirection::EMD_ForwardRightCrouch :
                 AdjustCameraLag(OffsetForwardRightCrouch, CameraLagMaxDistance_ForwardRightCrouch,
-                  ForwardRightCrouch_interpTime,
-                  DeltaTime, "EMovingDirection::EMD_ForwardRightCrouch");
+                  ForwardRightCrouch_interpTime, DeltaTime,
+                  "EMovingDirection::EMD_ForwardRightCrouch");
 
             case EMovingDirection::EMD_ForwardLeftCrouch :
                 return AdjustCameraLag(OffsetLeftCrouch, CameraLagMaxDistance_LeftCrouch,
@@ -2518,13 +2504,13 @@ void AShooterCharacter::SetMovingDirectionActions(float &DeltaTime) {
 
             case EMovingDirection::EMD_BackwardRightCrouch :
                 return AdjustCameraLag(OffsetForwardCrouch, CameraLagMaxDistance_ForwardCrouch,
-                  BackwardRightCrouch_interpTime,
-                  DeltaTime, "EMovingDirection::EMD_BackwardCrouch");
+                  BackwardRightCrouch_interpTime, DeltaTime,
+                  "EMovingDirection::EMD_BackwardCrouch");
 
             case EMovingDirection::EMD_BackwardLeftCrouch :
                 AdjustCameraLag(OffsetBackwardRightCrouch, CameraLagMaxDistance_BackwardRightCrouch,
-                  BackwardLeftCrouch_interpTime,
-                  DeltaTime, "EMovingDirection::EMD_BackwardLeftCrouch");
+                  BackwardLeftCrouch_interpTime, DeltaTime,
+                  "EMovingDirection::EMD_BackwardLeftCrouch");
         }
 
     } else if (bAiming && bCrouching) {
@@ -2533,8 +2519,7 @@ void AShooterCharacter::SetMovingDirectionActions(float &DeltaTime) {
 
             case EMovingDirection::EMD_CrouchAim :
                 return AdjustCameraLag(OffsetAim, CameraLagMaxDistance_Aim, CrouchAim_interpTime,
-                  DeltaTime,
-                  "EMovingDirection::EMD_CrouchAim");
+                  DeltaTime, "EMovingDirection::EMD_CrouchAim");
 
             case EMovingDirection::EMD_ForwardCrouchAim :
                 return AdjustCameraLag(OffsetForwardCrouchAim,
@@ -2548,52 +2533,50 @@ void AShooterCharacter::SetMovingDirectionActions(float &DeltaTime) {
 
             case EMovingDirection::EMD_RightCrouchAim :
                 return AdjustCameraLag(OffsetRightCrouchAim, CameraLagMaxDistance_RightCrouchAim,
-                  RightCrouchAim_interpTime,
-                  DeltaTime, "EMovingDirection::EMD_RightCrouchAim");
+                  RightCrouchAim_interpTime, DeltaTime, "EMovingDirection::EMD_RightCrouchAim");
 
             case EMovingDirection::EMD_LeftCrouchAim :
                 return AdjustCameraLag(OffsetLeftCrouchAim, CameraLagMaxDistance_LeftCrouchAim,
-                  LeftCrouchAim_interpTime,
-                  DeltaTime, "EMovingDirection::EMD_LeftCrouchAim");
+                  LeftCrouchAim_interpTime, DeltaTime, "EMovingDirection::EMD_LeftCrouchAim");
 
             case EMovingDirection::EMD_ForwardRightCrouchAim :
                 return AdjustCameraLag(OffsetForwardRightCrouchAim,
                   CameraLagMaxDistance_ForwardRightCrouchAim, ForwardRightCrouchAim_interpTime,
-                  DeltaTime,
-                  "EMovingDirection::EMD_ForwardRightCrouchAim");
+                  DeltaTime, "EMovingDirection::EMD_ForwardRightCrouchAim");
 
             case EMovingDirection::EMD_ForwardLeftCrouchAim :
                 return AdjustCameraLag(OffsetForwardLeftCrouchAim,
                   CameraLagMaxDistance_ForwardLeftCrouchAim, ForwardLeftCrouchAim_interpTime,
-                  DeltaTime,
-                  "EMovingDirection::EMD_ForwardLeftCrouchAim");
+                  DeltaTime, "EMovingDirection::EMD_ForwardLeftCrouchAim");
 
             case EMovingDirection::EMD_BackwardRightCrouchAim :
                 return AdjustCameraLag(OffsetForwardCrouchAim,
                   CameraLagMaxDistance_ForwardCrouchAim, BackwardRightCrouchAim_interpTime,
-                  DeltaTime,
-                  "EMovingDirection::EMD_BackwardCrouch");
+                  DeltaTime, "EMovingDirection::EMD_BackwardCrouch");
 
             case EMovingDirection::EMD_BackwardLeftCrouchAim :
                 return AdjustCameraLag(OffsetBackwardRightCrouchAim,
                   CameraLagMaxDistance_BackwardRightCrouchAim, BackwardLeftCrouchAim_interpTime,
-                  DeltaTime,
-                  "EMovingDirection::EMD_BackwardLeftCrouchAim");
+                  DeltaTime, "EMovingDirection::EMD_BackwardLeftCrouchAim");
+
+            case EMovingDirection::EMD_Jump :
+                return AdjustCameraLag(OffsetJump, CameraLagMaxDistance_Jump, DeltaTime,
+                  Jump_interpTime, "EMovingDirection::Jump");
 
             case EMovingDirection::EMD_None :
-                return AdjustCameraLag(OriginalCameraSocketOffset, OriginalCameraLagMaxDistance, 5.f,
-                  DeltaTime, "EMovingDirection::EMD_None");
+                return AdjustCameraLag(OriginalCameraSocketOffset, OriginalCameraLagMaxDistance,
+                  5.f, DeltaTime, "EMovingDirection::EMD_None");
         }
 
     } else if (bIsJumping) {
 
-        return AdjustCameraLag(
-          OffsetJump, CameraLagMaxDistance_Jump, DeltaTime, Jump_interpTime, "EMovingDirection::Jump");
+        return AdjustCameraLag(OffsetJump, CameraLagMaxDistance_Jump, DeltaTime, Jump_interpTime,
+          "EMovingDirection::Jump");
 
     } else if (bNotMoving) {
 
-        return AdjustCameraLag(OriginalCameraSocketOffset, OriginalCameraLagMaxDistance, 5.f, DeltaTime,
-          "EMovingDirection::EMD_None");
+        return AdjustCameraLag(OriginalCameraSocketOffset, OriginalCameraLagMaxDistance, 5.f,
+          DeltaTime, "EMovingDirection::EMD_None");
     }
 }
 
