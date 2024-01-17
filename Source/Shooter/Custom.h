@@ -90,30 +90,30 @@ typedef FVector2d Fvc2;
 
 #define QuitGamePrintErr(X) ExitPrintErr(X)
 
-#define __localEnsureCheckPtr(ptr)                                                                   \
+#define __localEnsureCheckPtr(ptr)                                                                 \
     const FString Msg {FString::Printf(                                                            \
       TEXT("%s is nullptr: File: %s, Line: %d"), TEXT(#ptr), TEXT(__FILE__), __LINE__)};           \
     if (!(ensureMsgf((ptr) != nullptr, TEXT("%s"), *Msg))) {                                       \
         UE_LOG(LogTemp, Error, TEXT("%s"), *Msg);                                                  \
-        return ExitGame();                                                                                \
+        return ExitGame();                                                                         \
     }
 
-#define __localCheckF_CheckPtr(ptr)                                                                   \
+#define __localCheckF_CheckPtr(ptr)                                                                \
     const FString Msg {FString::Printf(                                                            \
       TEXT("%s is nullptr: File: %s, Line: %d"), TEXT(#ptr), TEXT(__FILE__), __LINE__)};           \
-    checkf((ptr) != nullptr, TEXT("%s"), *Msg);                                     
+    checkf((ptr) != nullptr, TEXT("%s"), *Msg);
 
 #define CheckPtr(ptr)                                                                              \
     if (ptr == nullptr) {                                                                          \
-        __localEnsureCheckPtr(ptr);                                                                   \
+        __localEnsureCheckPtr(ptr);                                                                \
     }
 
 #define CheckMsgPtr(ptr)                                                                           \
     if (ptr == nullptr) {                                                                          \
-        __localEnsureCheckPtr(ptr)                                                                   \
+        __localEnsureCheckPtr(ptr)                                                                 \
     } else {                                                                                       \
-       UE_LOG(LogTemp, Log, TEXT("%s is valid"), TEXT(#ptr));                                      \
-}
+        UE_LOG(LogTemp, Log, TEXT("%s is valid"), TEXT(#ptr));                                     \
+    }
 
 #define CheckPtrLegacy(ptr, InFormat, ...)                                                         \
     if (!(ensureMsgf((ptr) != nullptr, TEXT(InFormat), ##__VA_ARGS__))) {                          \
@@ -163,7 +163,7 @@ namespace UnrealBasic {
 }
 
 /**
- * 
+ *
  */
 UCLASS()
 class SHOOTER_API ACustom : public AActor {
@@ -185,20 +185,20 @@ public:
     virtual void Tick(float DeltaTime) override;
 
     /**
-    * @brief Get a int and convert it to FString
-    * @param Int To be
+     * @brief Get a int and convert it to FString
+     * @param Int To be
      * converted
-    * @return FString of the value of the Int
-    */
+     * @return FString of the value of the Int
+     */
     UFUNCTION(BlueprintCallable, Category = "Conversion")
     FString IntToString(const int32 Int);
 
     /**
-    * @brief Get a real number and convert it to FString
-    * @param
+     * @brief Get a real number and convert it to FString
+     * @param
      * Float To be converted
-    * @return FString of the value of the float
- */
+     * @return FString of the value of the float
+     */
     UFUNCTION(BlueprintCallable, Category = "Conversion")
     FString RealToString(const float Float);
 
