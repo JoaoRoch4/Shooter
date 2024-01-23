@@ -38,7 +38,9 @@ AWeapon::AWeapon()
  , AutoFireRate(NULL)
  , MuzzleFlash(nullptr)
  , FireSound(nullptr)
- , BoneToHide(FName(TEXT(""))) {
+ , BoneToHide(FName(TEXT("")))
+ , SlideDisplacement(NULL)
+ , SlideDisplacementCurve(nullptr) {
 
     PrimaryActorTick.bCanEverTick = true;
 }

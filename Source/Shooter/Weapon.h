@@ -175,7 +175,7 @@ private:
     /** Particle system spawned at the BarrelSocket */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
       Category = "My Custom Properties|DataTable|Crosshairs", meta = (AllowPrivateAccess = "true"))
-     UParticleSystem *MuzzleFlash;
+    UParticleSystem *MuzzleFlash;
 
     /** Sound played when the weapon is fired */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
@@ -186,6 +186,16 @@ private:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
       Category = "My Custom Properties|DataTable|Crosshairs", meta = (AllowPrivateAccess = "true"))
     FName BoneToHide;
+
+    /** Amount that the slide is pushed back during pistol fire */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Pistol",
+      meta = (AllowPrivateAccess = "true"))
+    float SlideDisplacement;
+
+    /** Curve for the slide displacement */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Pistol",
+      meta = (AllowPrivateAccess = "true"))
+    class UCurveFloat *SlideDisplacementCurve;
 
 public:
 
