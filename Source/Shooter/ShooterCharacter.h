@@ -2,8 +2,8 @@
                                                                      * \file   ShooterCharacter.h
                                                                      * \brief  Main Character Class
                                                                      *
-                                                                     * \author João Rocha
-                                                                     * \date   December 2023 -
+                                                               * \author João Rocha
+                                                                           * \date   December 2023 -
                                                                      *January 2024
                                                                      *********************************************************************/
 
