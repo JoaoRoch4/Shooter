@@ -37,6 +37,8 @@ protected:
 
     void StopFalling();
 
+    void FinishMovingSlide();
+
 private:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Item|Throw Weapon",
@@ -197,6 +199,22 @@ private:
       meta = (AllowPrivateAccess = "true"))
     class UCurveFloat *SlideDisplacementCurve;
 
+    /** Timer Handle for updating SlideDisplacement */
+    FTimerHandle SlideTimer;
+
+    /** Time for displacing the slide during pistol fire */
+    float SlideDisplacementTime;
+
+    /** True when the slide is moving */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Pistol",
+      meta = (AllowPrivateAccess = "true"))
+    bool bMovingSlide;
+
+    /** Max distance for the slide on the pistol */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Pistol",
+      meta = (AllowPrivateAccess = "true"))
+    float MaxSlideDisplacement;
+
 public:
 
     /** Adds an im*pulse to the weapon */
@@ -234,4 +252,6 @@ public:
     FORCEINLINE UParticleSystem *GetMuzzleFlash() const { return MuzzleFlash; }
 
     FORCEINLINE USoundCue *GetFireSound() const { return FireSound; }
+
+    void StartSlideTimer();
 };

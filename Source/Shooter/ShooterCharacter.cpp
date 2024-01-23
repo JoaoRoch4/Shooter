@@ -547,19 +547,22 @@ void AShooterCharacter::FireWeapon() {
         || (!WeaponHasAmmo()))
         return;
 
-    if (WeaponHasAmmo()) {
+    PlayFireSound();
+    SendBullet();
+    PlayGunFireMontage();
 
-        PlayFireSound();
-        SendBullet();
-        PlayGunFireMontage();
+    // Start Bullet Fire for Crosshairs
+    StartCrosshairBulletFire();
 
-        // Start Bullet Fire for Crosshairs
-        StartCrosshairBulletFire();
+    // Decrement Ammo by 1
+    EquippedWeapon->DecrementAmmo();
 
-        // Decrement Ammo by 1
-        EquippedWeapon->DecrementAmmo();
+    StartFireTimer();
 
-        StartFireTimer();
+    if (EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Pistol) {
+
+        // Start Moving slide timer
+        EquippedWeapon->StartSlideTimer();
     }
 }
 

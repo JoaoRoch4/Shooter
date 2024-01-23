@@ -40,7 +40,11 @@ AWeapon::AWeapon()
  , FireSound(nullptr)
  , BoneToHide(FName(TEXT("")))
  , SlideDisplacement(NULL)
- , SlideDisplacementCurve(nullptr) {
+ , SlideDisplacementCurve(nullptr)
+ , SlideTimer(FTimerHandle())
+ , SlideDisplacementTime(0.1f)
+ , bMovingSlide(false)
+ , MaxSlideDisplacement(4.f) {
 
     PrimaryActorTick.bCanEverTick = true;
 }
@@ -295,10 +299,13 @@ void AWeapon::StopFalling() {
     StartPulseTimer();
 }
 
+void AWeapon::FinishMovingSlide() {
+
+    bMovingSlide = false; }
+
 void AWeapon::DecrementAmmo() {
 
     if (Ammo - 1 <= 0) Ammo = 0;
-
     else --Ammo;
 }
 
@@ -310,3 +317,9 @@ void AWeapon::ReloadAmmo(int32 Amount) {
 }
 
 bool AWeapon::ClipIsFull() const { return Ammo >= MagazineCapacity; }
+
+void AWeapon::StartSlideTimer() {
+
+    GetWorldTimerManager().SetTimer(
+      SlideTimer, this, &AWeapon::FinishMovingSlide, SlideDisplacementTime);
+}
