@@ -15,11 +15,8 @@
     <None Include="..\..\.editorconfig" />
     <None Include="..\..\.gitattributes" />
     <None Include="..\..\.gitignore" />
-    <None Include="..\..\LICENSE.txt" />
-    <None Include="..\..\oldvsconfig.txt" />
+    <None Include="..\..\.vsconfig" />
     <None Include="..\..\README.md" />
-    <None Include="..\..\shadertoolsconfig.json" />
-    <None Include="..\..\Shooter.unrealvs" />
     <None Include="..\..\tatus" />
     <Filter Include="Config">
       <UniqueIdentifier>{FA535FFB-25E1-3D20-B416-52F9BE21E06E}</UniqueIdentifier>
@@ -73,6 +70,9 @@
       <Filter>Source\Shooter</Filter>
     </ClCompile>
     <ClInclude Include="..\..\Source\Shooter\Item.h">
+      <Filter>Source\Shooter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Shooter\MovingDirection.h">
       <Filter>Source\Shooter</Filter>
     </ClInclude>
     <ClCompile Include="..\..\Source\Shooter\MyItem.cpp">
@@ -132,15 +132,10 @@
     <ClInclude Include="..\..\Source\Shooter\Weapon.h">
       <Filter>Source\Shooter</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\Source\Shooter\WeaponType.h">
-      <Filter>Source\Shooter</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Source\Shooter\WeaponDataTable.h">
       <Filter>Source\Shooter</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Shooter\MovingDirection.h">
+    <ClInclude Include="..\..\Source\Shooter\WeaponType.h">
       <Filter>Source\Shooter</Filter>
     </ClInclude>
   </ItemGroup>
