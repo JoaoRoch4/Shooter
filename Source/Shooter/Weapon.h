@@ -39,6 +39,9 @@ protected:
 
     void FinishMovingSlide();
 
+    // updates the slide displacement on pistol
+    void UpdateSlideDisplacement();
+
 private:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Item|Throw Weapon",

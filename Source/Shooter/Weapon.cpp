@@ -216,6 +216,9 @@ void AWeapon::Tick(float DeltaTime) {
         GetItemMesh()->SetWorldRotation(
           MeshRotation, false, nullptr, ETeleportType::TeleportPhysics);
     }
+
+    if (bMovingSlide)
+    UpdateSlideDisplacement();
 }
 
 void AWeapon::ThrowWeapon() {
@@ -302,6 +305,16 @@ void AWeapon::StopFalling() {
 void AWeapon::FinishMovingSlide() {
 
     bMovingSlide = false; }
+
+void AWeapon::UpdateSlideDisplacement() {
+        
+    CheckPtr(SlideDisplacementCurve);
+
+    const float ElapsedTime {GetWorldTimerManager().GetTimerElapsed(SlideTimer)};
+    const float CurveValue  {SlideDisplacementCurve->GetFloatValue(ElapsedTime)};
+
+    SlideDisplacement = CurveValue * MaxSlideDisplacement;
+}
 
 void AWeapon::DecrementAmmo() {
 
