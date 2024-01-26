@@ -42,9 +42,11 @@ AWeapon::AWeapon()
  , SlideDisplacement(NULL)
  , SlideDisplacementCurve(nullptr)
  , SlideTimer(FTimerHandle())
- , SlideDisplacementTime(0.1f)
+ , SlideDisplacementTime(0.2f)
  , bMovingSlide(false)
- , MaxSlideDisplacement(4.f) {
+ , MaxSlideDisplacement(4.f)
+ , MaxRecoilRotation(20.f)
+ , RecoilRotation(NULL) {
 
     PrimaryActorTick.bCanEverTick = true;
 }
@@ -314,6 +316,8 @@ void AWeapon::UpdateSlideDisplacement() {
     const float CurveValue  {SlideDisplacementCurve->GetFloatValue(ElapsedTime)};
 
     SlideDisplacement = CurveValue * MaxSlideDisplacement;
+
+    RecoilRotation = CurveValue * MaxRecoilRotation;
 }
 
 void AWeapon::DecrementAmmo() {
@@ -332,6 +336,7 @@ void AWeapon::ReloadAmmo(int32 Amount) {
 bool AWeapon::ClipIsFull() const { return Ammo >= MagazineCapacity; }
 
 void AWeapon::StartSlideTimer() {
+    bMovingSlide = true;
 
     GetWorldTimerManager().SetTimer(
       SlideTimer, this, &AWeapon::FinishMovingSlide, SlideDisplacementTime);

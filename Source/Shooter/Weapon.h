@@ -206,6 +206,8 @@ private:
     FTimerHandle SlideTimer;
 
     /** Time for displacing the slide during pistol fire */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Pistol",
+      meta = (AllowPrivateAccess = "true"))
     float SlideDisplacementTime;
 
     /** True when the slide is moving */
@@ -217,6 +219,16 @@ private:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Pistol",
       meta = (AllowPrivateAccess = "true"))
     float MaxSlideDisplacement;
+
+    /** Max rotation for the recoil on the pistol */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Pistol",
+      meta = (AllowPrivateAccess = "true"))
+    float MaxRecoilRotation;
+
+    /** Amount that the pistol rotate during pistol fire */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Pistol",
+      meta = (AllowPrivateAccess = "true"))
+    float RecoilRotation;
 
 public:
 
