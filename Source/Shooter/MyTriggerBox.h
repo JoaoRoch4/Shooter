@@ -5,8 +5,6 @@
 #include "Engine/TriggerBox.h"
 #include "MyTriggerBox.generated.h"
 
-using namespace UnrealBasic;
-
 /**
  *
  */

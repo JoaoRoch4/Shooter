@@ -87,6 +87,18 @@
     <ClInclude Include="..\..\Source\Shooter\MyTriggerBox.h">
       <Filter>Source\Shooter</Filter>
     </ClInclude>
+    <ClCompile Include="..\..\Source\Shooter\NewTriggerBox.cpp">
+      <Filter>Source\Shooter</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\Shooter\NewTriggerBox.h">
+      <Filter>Source\Shooter</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\Source\Shooter\PlaySoundTriggerBox.cpp">
+      <Filter>Source\Shooter</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\Shooter\PlaySoundTriggerBox.h">
+      <Filter>Source\Shooter</Filter>
+    </ClInclude>
     <None Include="..\..\Source\Shooter\Shooter.Build.cs">
       <Filter>Source\Shooter</Filter>
     </None>
