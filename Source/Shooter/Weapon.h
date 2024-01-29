@@ -230,6 +230,11 @@ private:
       meta = (AllowPrivateAccess = "true"))
     float RecoilRotation;
 
+    /** True for auto gunfire */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Pistol",
+      meta = (AllowPrivateAccess = "true"))
+    bool bAutomatic;
+
 public:
 
     /** Adds an im*pulse to the weapon */
@@ -269,4 +274,6 @@ public:
     FORCEINLINE USoundCue *GetFireSound() const { return FireSound; }
 
     void StartSlideTimer();
+
+    FORCEINLINE bool GetAutomatic() const { return bAutomatic; }
 };

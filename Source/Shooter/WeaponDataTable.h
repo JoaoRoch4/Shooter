@@ -78,6 +78,9 @@ struct FWeaponDataTable : public FTableRowBase {
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FName BoneToHide;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    bool bAutomatic;
+
     FWeaponDataTable()
      : AmmoType(EAmmoType::EAT_9mm)
      , WeaponAmmo(0)
@@ -101,5 +104,6 @@ struct FWeaponDataTable : public FTableRowBase {
      , AutoFireRate(0.f)
      , MuzzleFlash(nullptr)
      , FireSound(nullptr)
-     , BoneToHide(FName(TEXT(""))) {};
+     , BoneToHide(FName(TEXT("")))
+     , bAutomatic(true)    {};
 };

@@ -46,9 +46,9 @@ AWeapon::AWeapon()
  , bMovingSlide(false)
  , MaxSlideDisplacement(4.f)
  , MaxRecoilRotation(20.f)
- , RecoilRotation(NULL) {
+ , RecoilRotation(NULL)
+ , bAutomatic(true) {
 
-    PrimaryActorTick.bCanEverTick = true;
 }
 
 void AWeapon::BeginPlay() {
@@ -178,6 +178,7 @@ void AWeapon::SetWeaponTableObject(UDataTable *WeaponTableObject) {
     FireSound        = WeaponDataRow->FireSound;
     BoneToHide       = WeaponDataRow->BoneToHide;
     GetItemMesh()->HideBoneByName(BoneToHide, EPhysBodyOp::PBO_None);
+    bAutomatic = WeaponDataRow->bAutomatic;
 
     EnableGlowMaterial();
 }
