@@ -1029,7 +1029,7 @@ void AShooterCharacter::AimingButtonPressed() {
 
     bAimingButtonPressed = true;
 
-    if (CombatState != ECombatState::ECS_Reloading) Aim();
+    if (CombatState != ECombatState::ECS_Reloading && CombatState != ECombatState::ECS_Equipping) Aim();
 
     SetMovingDirection();
 }
@@ -1580,6 +1580,7 @@ void AShooterCharacter::FinishEquipping() {
 
     // Update the combat state
     CombatState = ECombatState::ECS_Unoccupied;
+    if (bAimingButtonPressed) Aim();
 }
 
 bool AShooterCharacter::CarryingAmmo() {
@@ -1783,12 +1784,14 @@ inline void AShooterCharacter::ResetEquipSoundTimer() { bShouldPlayEquipSound = 
 
 void AShooterCharacter::ExchangeInventoryItens(int32 CurrentItemindex, int32 NewItemIndex) {
 
-    const bool CanExchange {((CurrentItemindex != NewItemIndex) && (NewItemIndex < Inventory.Num())
-                             && ((CombatState == ECombatState::ECS_Unoccupied
-                                  || CombatState == ECombatState::ECS_Equipping))
-                             && (bExchangeInventoryItensEnabled))};
+    const bool CanExchange {
+        ((CurrentItemindex != NewItemIndex) && (NewItemIndex < Inventory.Num())
+         && ((CombatState == ECombatState::ECS_Unoccupied) || (CombatState == ECombatState::ECS_Equipping))
+         && (bExchangeInventoryItensEnabled))};
 
     if (!CanExchange) return;
+
+    if (bAiming) StopAiming();
 
     LastSlotIndex     = CurrentItemindex;
     LastLastSlotIndex = NewItemIndex;
@@ -1808,19 +1811,11 @@ void AShooterCharacter::ExchangeInventoryItens(int32 CurrentItemindex, int32 New
     UAnimInstance *AnimInstance {nullptr};
     AnimInstance = GetMesh()->GetAnimInstance();
 
-    if (AnimInstance) {
-        if (EquipMontage) {
-            if (AnimInstance && EquipMontage) {
+    CheckPtr(AnimInstance);
+    CheckPtr(EquipMontage);
 
-                AnimInstance->Montage_Play(EquipMontage, 1.0f);
-                AnimInstance->Montage_JumpToSection(FName(L"Equip"));
-            }
-        } else {
-            ExitPrintErr("AShooterCharacter::ExchangeInventoryItens(): EquipMontage is nullptr");
-        }
-    } else {
-        ExitPrintErr("AShooterCharacter::ExchangeInventoryItens(): AnimInstance is nullptr");
-    }
+    AnimInstance->Montage_Play(EquipMontage, 1.0f);
+    AnimInstance->Montage_JumpToSection(FName(L"Equip"));
 
     GetWorld()->GetTimerManager().SetTimer(ExchangeInventoryItensTimer, this,
       &AShooterCharacter::EnableExchangeInventoryItens, ExchangeInventoryItensTime, false);
@@ -2582,6 +2577,7 @@ void AShooterCharacter::SetMovingDirectionActions(float &DeltaTime) {
         return AdjustCameraLag(OriginalCameraSocketOffset, OriginalCameraLagMaxDistance, 5.f,
           DeltaTime, "EMovingDirection::EMD_None");
     }
+
 }
 
 void AShooterCharacter::EMovingDirection_None(float DeltaTime) {
