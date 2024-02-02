@@ -2,6 +2,8 @@
 
 #define elif else if
 
+
+
 #define PrintLog(Text)        UE_LOG(LogTemp, Log, TEXT(Text))
 #define PL_Log(Text)          PrintLog(Text)
 #define PrintLogWarning(Text) UE_LOG(LogTemp, Warning, TEXT(Text))
@@ -129,6 +131,7 @@ typedef FVector2d Fvc2;
 
 #define CheckPtrExit(ptr) __localCheckF_CheckPtr(ptr)
 
+
 #include <GenericPlatform/GenericPlatformApplicationMisc.h>
 #define ExitEngine() FGenericPlatformMisc::RequestExit(false)
 
@@ -138,6 +141,7 @@ typedef FVector2d Fvc2;
     if (GEngine) GEngine->Exec(GetWorld(), TEXT("Clear"));
 
 #define self this
+
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
