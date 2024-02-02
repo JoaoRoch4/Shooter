@@ -2512,7 +2512,6 @@ void AShooterCharacter::SetMovingDirectionActions(float &DeltaTime) {
                   "EMovingDirection::EMD_BackwardLeftCrouch");
         }
 
-
     } else if (bAiming && bCrouching) {
 
         switch (MovingDirection) {
