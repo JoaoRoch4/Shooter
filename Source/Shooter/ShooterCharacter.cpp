@@ -873,23 +873,6 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
         }
     }
 
-    if (EquipMontage == nullptr) {
-
-        EquipMontage = CDSubObj<UAnimMontage>(L"EquipMontage");
-
-        const static TCHAR *EquipMontagePath {L"/Script/Engine.AnimMontage'/Game/_Game/Character/"
-                                              L"Animations/Montage/EquipMontage.EquipMontage'"};
-
-        const auto static M_Animation_EquipMontage {
-          ConstructorHelpers::FObjectFinder<UAnimMontage>(EquipMontagePath)};
-
-        if (M_Animation_EquipMontage.Succeeded()) EquipMontage = M_Animation_EquipMontage.Object;
-        else {
-            ExitGameErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
-                        "M_Animation_EquipMontage failed");
-        }
-    }
-
     if (ImpactParticles == nullptr) {
 
         ImpactParticles = CDSubObj<UParticleSystem>(L"ImpactParticles");
@@ -923,24 +906,6 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
         else {
             ExitGameErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
                         "M_BeamParticle failed");
-        }
-    }
-
-    if (ReloadMontage == nullptr) {
-
-        ReloadMontage = CDSubObj<UAnimMontage>(L"ReloadMontage");
-
-        const static TCHAR *ReloadMontagePath {
-          L"/Script/Engine.AnimMontage'/Game/_Game/Character/Animations/"
-          L"ReloadMontage.ReloadMontage'"};
-
-        const auto M_ReloadMontage {
-          ConstructorHelpers::FObjectFinder<UAnimMontage>(ReloadMontagePath)};
-
-        if (M_ReloadMontage.Succeeded()) ReloadMontage = M_ReloadMontage.Object;
-        else {
-            ExitGameErr("AShooterCharacter::DefaultConstructor_SetCombatCues(): "
-                        "M_ReloadMontage failed");
         }
     }
 }

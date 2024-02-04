@@ -38,7 +38,7 @@ void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 
     if (ShooterCharacter == nullptr) ShooterCharacter = Cast<AShooterCharacter>(TryGetPawnOwner());
 
-    CheckPtr(ShooterCharacter);
+    if (ShooterCharacter == nullptr) return;
 
     bCrouching = ShooterCharacter->GetCrouching();
     bReloading = ShooterCharacter->GetCombatState() == ECombatState::ECS_Reloading;
