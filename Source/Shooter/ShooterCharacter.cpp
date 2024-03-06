@@ -13,6 +13,7 @@
 #include "Ammo.h"
 #include "Custom.h"
 #include "Item.h"
+#include "Shooter.h"
 #include "ShooterCharacterCamera.h"
 #include "Weapon.h"
 
@@ -36,6 +37,7 @@
 #include <Kismet\KismetMathLibrary.h>
 #include <Particles\ParticleSystem.h>
 #include <Particles\ParticleSystemComponent.h>
+#include <PhysicalMaterials/PhysicalMaterial.h>
 #include <Sound\SoundCue.h>
 #include <UObject\ConstructorHelpers.h>
 
@@ -2583,4 +2585,28 @@ void AShooterCharacter::AdjustCameraLag(const FVector &Offset, const double &Cam
 
     CameraBoom->CameraLagMaxDistance = GetInterpMaxDistance;
     CameraBoom->SocketOffset         = GetInterpSocket;
+}
+
+void AShooterCharacter::GetSurfaceType() {
+
+    FHitResult HitResult {};
+
+    const FVector Start {GetActorLocation()};
+    const FVector Bellow {FVector(0.f, 0.f, -400.f)};
+    const FVector End {Start + Bellow};
+
+    FCollisionQueryParams QueryParams {};
+
+    QueryParams.bReturnPhysicalMaterial = true;
+    QueryParams.AddIgnoredActor(this);
+
+    GetWorld()->LineTraceSingleByChannel(
+      HitResult, Start, End, ECollisionChannel::ECC_Visibility, QueryParams);
+
+    auto HitSurface {HitResult.PhysMaterial->SurfaceType};
+
+    if (HitSurface == EPS_Grass) {
+
+        UE_LOG(LogTemp, Warning, TEXT("Hit Grass Surface Type"));
+    }
 }

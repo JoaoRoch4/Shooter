@@ -413,6 +413,9 @@ protected:
 
     void AdjustCameraLag(const FVector &Offset, const double &CameraLagMaxDistance, const float &InterpTime,float &DeltaTime, const char *DebugMessage);
 
+    UFUNCTION(BlueprintCallable)
+    void GetSurfaceType();
+
 private:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Mesh",
