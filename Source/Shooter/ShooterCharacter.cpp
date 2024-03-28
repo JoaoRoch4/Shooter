@@ -2587,7 +2587,7 @@ void AShooterCharacter::AdjustCameraLag(const FVector &Offset, const double &Cam
     CameraBoom->SocketOffset         = GetInterpSocket;
 }
 
-void AShooterCharacter::GetSurfaceType() {
+EPhysicalSurface AShooterCharacter::GetSurfaceType() {
 
     FHitResult HitResult {};
 
@@ -2603,10 +2603,5 @@ void AShooterCharacter::GetSurfaceType() {
     GetWorld()->LineTraceSingleByChannel(
       HitResult, Start, End, ECollisionChannel::ECC_Visibility, QueryParams);
 
-    auto HitSurface {HitResult.PhysMaterial->SurfaceType};
-
-    if (HitSurface == EPS_Grass) {
-
-        UE_LOG(LogTemp, Warning, TEXT("Hit Grass Surface Type"));
-    }
+    return UPhysicalMaterial::DetermineSurfaceType(HitResult.PhysMaterial.Get());
 }

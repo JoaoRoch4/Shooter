@@ -414,7 +414,7 @@ protected:
     void AdjustCameraLag(const FVector &Offset, const double &CameraLagMaxDistance, const float &InterpTime,float &DeltaTime, const char *DebugMessage);
 
     UFUNCTION(BlueprintCallable)
-    void GetSurfaceType();
+    EPhysicalSurface GetSurfaceType();
 
 private:
 
