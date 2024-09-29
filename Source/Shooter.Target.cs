@@ -8,7 +8,7 @@ public class ShooterTarget : TargetRules
 	public ShooterTarget( TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Game;
-		DefaultBuildSettings = BuildSettingsVersion.V4;
+		DefaultBuildSettings = BuildSettingsVersion.Latest;
 		ExtraModuleNames.AddRange( new string[] { "Shooter" } );
 
 		bUseUnityBuild = true;

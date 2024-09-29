@@ -1,11 +1,25 @@
 #include "Weapon.h"
 
+#include "AmmoType.h"
 #include "Custom.h"
 #include "Item.h"
+#include "WeaponDataTable.h"
+#include "WeaponType.h"
 
-#include <Engine\Engine.h>
-#include <Engine\World.h>
-#include <Kismet\GameplayStatics.h>
+#include "Components/SceneComponent.h"
+#include "Components/SkinnedMeshComponent.h"
+#include "Engine/DataTable.h"
+#include "Engine/EngineTypes.h"
+#include "Engine/TimerHandle.h"
+#include "GameFramework/Actor.h"
+#include "HAL/Platform.h"
+#include "Materials/MaterialInstanceDynamic.h"
+#include "Math/MathFwd.h"
+#include "Misc/AssertionMacros.h"
+#include "Templates/Casts.h"
+#include "UObject/NameTypes.h"
+#include "UObject/Object.h"
+#include "UObject/UObjectGlobals.h"
 
 AWeapon::AWeapon()
  : ThrowWeaponTime(0.7f)
@@ -47,19 +61,15 @@ AWeapon::AWeapon()
  , MaxSlideDisplacement(4.f)
  , MaxRecoilRotation(20.f)
  , RecoilRotation(NULL)
- , bAutomatic(true) {
-
-}
+ , bAutomatic(true) {}
 
 void AWeapon::BeginPlay() {
 
     Super::BeginPlay();
 
-    if (BoneToHide != FName(TEXT(""))) {
-
+    if (BoneToHide != FName(TEXT("")))
         GetItemMesh()->HideBoneByName(BoneToHide, EPhysBodyOp::PBO_None);
-    }
-
+    
     Construct_WeaponTableObject();
 
     // SyncItemMunition();
@@ -74,33 +84,19 @@ void AWeapon::OnConstruction(const FTransform &Transform) {
 
 void AWeapon::Construct_WeaponTableObject() {
 
-    const FString WeaponTablePath {L"/Script/Engine.DataTable'"
-                                   L"/Game/_Game/DataTable/WeaponDataTable.WeaponDataTable'"};
+    constexpr const TCHAR *WeaponTablePath = L"/Script/Engine.DataTable'"
+                                   L"/Game/_Game/DataTable/WeaponDataTable.WeaponDataTable'";
 
     UObject *GetWeaponTableObject {
-      StaticLoadObject(UDataTable::StaticClass(), nullptr, *WeaponTablePath)};
+      StaticLoadObject(UDataTable::StaticClass(), nullptr, WeaponTablePath)};
 
-    UDataTable *WeaponTableObject {};
+    CheckPtr(GetWeaponTableObject);
 
-    if (GetWeaponTableObject) {
+    UDataTable *WeaponTableObject {Cast<UDataTable>(GetWeaponTableObject)};
+    
+    CheckPtr(WeaponTableObject);
 
-        WeaponTableObject = Cast<UDataTable>(GetWeaponTableObject);
-
-    } else {
-
-        ExitPrintErr(
-          "AWeapon::OnConstruction()-> if (WeaponTableObject): GetWeaponTableObject was nullptr")
-    }
-
-    if (WeaponTableObject) {
-
-        SetWeaponTableObject(WeaponTableObject);
-
-    } else {
-
-        ExitPrintErr(
-          "AWeapon::OnConstruction()-> if (WeaponTableObject): WeaponTableObject was nullptr")
-    }
+    SetWeaponTableObject(WeaponTableObject);    
 }
 
 void AWeapon::SetWeaponTableObject(UDataTable *WeaponTableObject) {
@@ -190,21 +186,15 @@ void AWeapon::SyncItemMunition() {
     // ItemInstance = Cast<AItem>(UGameplayStatics::GetActorOfClass(
     // GetWorld(), AWeapon::StaticClass()));
 
-    if (ItemInstance) {
+    CheckPtr(ItemInstance)
 
-        ItemCapacity = ItemInstance->GetItemCount();
+    ItemCapacity = ItemInstance->GetItemCount();
 
-        if (Ammo != ItemCapacity) {
+    if (Ammo != ItemCapacity) {
 
-            Ammo = ItemCapacity;
-
-            ItemInstance->SetItemCount(ItemCapacity);
-        }
-
-    } else {
-
-        PrintLogErr("ItemInstance was nullptr");
-    }
+        Ammo = ItemCapacity;
+        ItemInstance->SetItemCount(ItemCapacity);
+    }    
 }
 
 void AWeapon::Tick(float DeltaTime) {
@@ -220,8 +210,7 @@ void AWeapon::Tick(float DeltaTime) {
           MeshRotation, false, nullptr, ETeleportType::TeleportPhysics);
     }
 
-    if (bMovingSlide)
-    UpdateSlideDisplacement();
+    if (bMovingSlide) UpdateSlideDisplacement();
 }
 
 void AWeapon::ThrowWeapon() {
@@ -250,15 +239,15 @@ void AWeapon::ThrowWeapon() {
     } else {
 
         // RR = FMath::RandRange
-        double RandThrowDirectionX {RR(ThrowDirection_X_RandRange.X, ThrowDirection_X_RandRange.Y)};
+        const double RandThrowDirectionX {RR(ThrowDirection_X_RandRange.X, ThrowDirection_X_RandRange.Y)};
 
         ThrowDirectionX = RandThrowDirectionX;
 
-        double RandThrowDirectionY {RR(ThrowDirection_Y_RandRange.X, ThrowDirection_Y_RandRange.Y)};
+        const double RandThrowDirectionY {RR(ThrowDirection_Y_RandRange.X, ThrowDirection_Y_RandRange.Y)};
 
         ThrowDirectionY = RandThrowDirectionY;
 
-        double RandThrowDirectionZ {RR(ThrowDirection_Z_RandRange.X, ThrowDirection_Z_RandRange.Y)};
+        const double RandThrowDirectionZ {RR(ThrowDirection_Z_RandRange.X, ThrowDirection_Z_RandRange.Y)};
 
         ThrowDirectionZ = RandThrowDirectionZ;
 
@@ -282,7 +271,7 @@ void AWeapon::ThrowWeapon() {
     } else {
 
         MultiplyImpulseRandRange *= 10000.f;
-        double RandMultiplyImpulse {RR(MultiplyImpulseRandRange.X, MultiplyImpulseRandRange.Y)};
+        const double RandMultiplyImpulse {RR(MultiplyImpulseRandRange.X, MultiplyImpulseRandRange.Y)};
 
         ImpulseDirection *= RandMultiplyImpulse;
     }

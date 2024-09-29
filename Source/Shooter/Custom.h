@@ -1,8 +1,24 @@
 #pragma once
 
+#include <Components/PrimitiveComponent.h>
+#include <CoreGlobals.h>
+#include <CoreMinimal.h>
+#include <Engine/Engine.h>
+#include <GameFramework/Actor.h>
+#include <GameFramework/PlayerController.h>
+#include <GenericPlatform/GenericPlatformApplicationMisc.h>
+#include <GenericPlatform/GenericPlatformMisc.h>
+#include <HAL/Platform.h>
+#include <Kismet/KismetSystemLibrary.h>
+#include <Logging/LogMacros.h>
+#include <Math/Color.h>
+#include <Math/MathFwd.h>
+#include <Math/UnrealMathUtility.h>
+#include <Misc/AssertionMacros.h>
+
+#include "Custom.generated.h"
+
 #define elif else if
-
-
 
 #define PrintLog(Text)        UE_LOG(LogTemp, Log, TEXT(Text))
 #define PL_Log(Text)          PrintLog(Text)
@@ -15,11 +31,11 @@
 
 #define PrintOnScr(Text)                                                                           \
     if (GEngine) {                                                                                 \
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, Text);                              \
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT(Text));                        \
     }
 #define PrintOnScrColor(Color, Text)                                                               \
     if (GEngine) {                                                                                 \
-        GEngine->AddOnScreenDebugMessage(-1, 5.f, Color, Text);                                    \
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, Color, TEXT(Text));                              \
     }
 #define PrintOnScrColorTime(Time, Color, Text)                                                     \
     if (GEngine) {                                                                                 \
@@ -28,7 +44,7 @@
 
 #define PrintOnScrTime(Time, Text)                                                                 \
     if (GEngine) {                                                                                 \
-        GEngine->AddOnScreenDebugMessage(-1, Time, FColor::Red, Text);                             \
+        GEngine->AddOnScreenDebugMessage(-1, Time, FColor::Red, TEXT(Text));                       \
     }
 
 #define PrintOnScrColorTimeW_Else(Time, Color, Text)                                               \
@@ -78,10 +94,10 @@ typedef FVector2d Fvc2;
     if (APlayerController *PlayerController = GetWorld()->GetFirstPlayerController())              \
     PlayerController->ConsoleCommand(TEXT(X))
 
-#include <Kismet/KismetSystemLibrary.h>
 #define ExitGame()                                                                                 \
     UKismetSystemLibrary::QuitGame(                                                                \
-      GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);
+      GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);           \
+    return 0;
 
 #define ExitGameErr(X)                                                                             \
     if (APlayerController *PlayerController = GetWorld()->GetFirstPlayerController()) {            \
@@ -92,11 +108,13 @@ typedef FVector2d Fvc2;
 
 #define QuitGamePrintErr(X) ExitPrintErr(X)
 
+#define __nullptrMsg(ptr)                                                                          \
+    TEXT("%s"), TEXT("%s is nullptr: File: %s, Line: %d"),      \
+          TEXT(#ptr), TEXT(__FILE__), (__LINE__)
+
 #define __localEnsureCheckPtr(ptr)                                                                 \
-    const FString Msg {FString::Printf(                                                            \
-      TEXT("%s is nullptr: File: %s, Line: %d"), TEXT(#ptr), TEXT(__FILE__), __LINE__)};           \
-    if (!(ensureMsgf((ptr) != nullptr, TEXT("%s"), *Msg))) {                                       \
-        UE_LOG(LogTemp, Error, TEXT("%s"), *Msg);                                                  \
+    if (!(ensureMsgf((ptr) != nullptr, __nullptrMsg(ptr)))) {                                           \
+        UE_LOG(LogTemp, Error, __nullptrMsg(ptr));                                                      \
         return ExitGame();                                                                         \
     }
 
@@ -105,10 +123,8 @@ typedef FVector2d Fvc2;
       TEXT("%s is nullptr: File: %s, Line: %d"), TEXT(#ptr), TEXT(__FILE__), __LINE__)};           \
     checkf((ptr) != nullptr, TEXT("%s"), *Msg);
 
-#define CheckPtr(ptr)                                                                              \
-    if (ptr == nullptr) {                                                                          \
-        __localEnsureCheckPtr(ptr);                                                                \
-    }
+#define CheckPtr(ptr) if (ptr == nullptr) {__localEnsureCheckPtr(ptr)};                                                               
+    
 
 #define CheckMsgPtr(ptr)                                                                           \
     if (ptr == nullptr) {                                                                          \
@@ -131,8 +147,6 @@ typedef FVector2d Fvc2;
 
 #define CheckPtrExit(ptr) __localCheckF_CheckPtr(ptr)
 
-
-#include <GenericPlatform/GenericPlatformApplicationMisc.h>
 #define ExitEngine() FGenericPlatformMisc::RequestExit(false)
 
 // #define QuitGame() ExitGame()
@@ -141,12 +155,6 @@ typedef FVector2d Fvc2;
     if (GEngine) GEngine->Exec(GetWorld(), TEXT("Clear"));
 
 #define self this
-
-
-#include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
-#include <Kismet/KismetSystemLibrary.h>
-#include "Custom.generated.h"
 
 /** Includes all the namespaces unreal have. */
 namespace UnrealAll {

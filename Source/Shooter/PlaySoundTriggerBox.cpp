@@ -4,14 +4,17 @@
 
 #include <Components/AudioComponent.h>
 #include <DrawDebugHelpers.h>
-#include "Sound/SoundCue.h"
+#include <GameFramework/Actor.h>
+#include <Math/Color.h>
+#include <Sound/SoundCue.h>
+#include "NewTriggerBox.h"
 
 APlaySoundTriggerBox::APlaySoundTriggerBox()
  : AudioComponent(nullptr)
  , BeginOverlapSound(nullptr)
  , EndOverlapSound(nullptr) {
 
-    AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
+    AudioComponent = CreateDefaultSubobject<UAudioComponent>(L"AudioComponent");
     AudioComponent->SetupAttachment(RootComponent);
     AudioComponent->bAutoActivate = false;
 }

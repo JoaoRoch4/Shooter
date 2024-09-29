@@ -4,8 +4,19 @@
 
 #include <Components/BoxComponent.h>
 #include <Components/SphereComponent.h>
+#include <Components/SphereComponent.h>
 #include <Components/WidgetComponent.h>
-
+#include "AmmoType.h"
+#include "Components/PrimitiveComponent.h"
+#include "Components/SceneComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Delegates/Delegate.h"
+#include "Engine/EngineTypes.h"
+#include "Engine/HitResult.h"
+#include "GameFramework/Actor.h"
+#include "HAL/Platform.h"
+#include "Item.h"
+#include "Templates/Casts.h"
 
 AAmmo::AAmmo() :
  AmmoMesh(nullptr), AmmoType(EAmmoType::EAT_9mm), AmmoIconTexture(nullptr), AmmoCollisionSphere(nullptr) {
@@ -26,7 +37,6 @@ AAmmo::AAmmo() :
 void AAmmo::BeginPlay() {
 
     Super::BeginPlay();
-
     AmmoCollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AAmmo::AmmoSphereOverlap);
 }
 
@@ -88,27 +98,15 @@ void AAmmo::SetItemProperties(EItemState State) {
 void AAmmo::AmmoSphereOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor,
   UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult) {
 
-    if (OtherActor) {
+    CheckPtr(OtherActor);
 
-        AShooterCharacter *OverlappedCharacter {nullptr};
-        OverlappedCharacter = Cast<AShooterCharacter>(OtherActor);
+    AShooterCharacter *OverlappedCharacter {Cast<AShooterCharacter>(OtherActor)};
 
-        if (OverlappedCharacter) {
+    CheckPtr(OverlappedCharacter);
 
-            StartItemCurve(OverlappedCharacter);
+    StartItemCurve(OverlappedCharacter);
+    AmmoCollisionSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);    
 
-            AmmoCollisionSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-        } else {
-
-            OverlappedCharacter = nullptr;
-
-            PrintLogErr("AAmmo::AmmoSphereOverlap: OverlappedCharacter is nullptr");
-        }
-    } else {
-
-        PrintLogErr("AAmmo::AmmoSphereOverlap: OtherActor is nullptr");
-    }
 }
 
 void AAmmo::EnableCustomDepth() { AmmoMesh->SetRenderCustomDepth(true); }

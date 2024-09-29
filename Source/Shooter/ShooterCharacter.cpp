@@ -1,48 +1,73 @@
-/*****************************************************************/ /**
-                                                                     * \file   ShooterCharacter.cpp
-                                                                     * \brief  Main Character Class
-                                                                     *Code
-                                                                     *
-                                                                     * \author João Rocha
-                                                                     * \date   December 2023 -
-                                                                     *January 2024
-                                                                     *********************************************************************/
+/*****************************************************************
+ * \file   ShooterCharacter.cpp
+ * \brief  Main Character Class
+ * Code
+ * \author João Rocha
+ * \date   December 2023 -
+ * January 2024             
+*********************************************************************/
 
 #include "ShooterCharacter.h"
 
 #include "Ammo.h"
+#include "AmmoType.h"
 #include "Custom.h"
 #include "Item.h"
+#include "MovingDirection.h"
 #include "Shooter.h"
 #include "ShooterCharacterCamera.h"
 #include "Weapon.h"
+#include "WeaponType.h"
 
+#include <Animation/AnimMontage.h>
 #include <Animation\AnimInstance.h>
 #include <Camera\CameraComponent.h>
 #include <Camera\PlayerCameraManager.h>
+#include <Chaos/ChaosEngineInterface.h>
+#include <CollisionQueryParams.h>
+#include <Components/InputComponent.h>
+#include <Components/SceneComponent.h>
 #include <Components\BoxComponent.h>
 #include <Components\CapsuleComponent.h>
 #include <Components\DecalComponent.h>
 #include <Components\SkeletalMeshComponent.h>
 #include <Components\SphereComponent.h>
 #include <Components\WidgetComponent.h>
+#include <Containers/Array.h>
+#include <Containers/Map.h>
 #include <DrawDebugHelpers.h>
+#include <Engine/Engine.h>
+#include <Engine/EngineBaseTypes.h>
+#include <Engine/EngineTypes.h>
+#include <Engine/HitResult.h>
+#include <Engine/TimerHandle.h>
 #include <Engine\SkeletalMesh.h>
 #include <Engine\SkeletalMeshSocket.h>
 #include <Engine\World.h>
+#include <GameFramework/Character.h>
 #include <GameFramework\CharacterMovementComponent.h>
 #include <GameFramework\Pawn.h>
 #include <GameFramework\SpringArmComponent.h>
+#include <GenericPlatform/GenericPlatformMath.h>
+#include <HAL/Platform.h>
 #include <Kismet\GameplayStatics.h>
 #include <Kismet\KismetMathLibrary.h>
+#include <Math/Axis.h>
+#include <Math/Color.h>
+#include <Math/MathFwd.h>
+#include <Math/RotationMatrix.h>
+#include <Math/UnrealMathUtility.h>
+#include <Misc/AssertionMacros.h>
 #include <Particles\ParticleSystem.h>
 #include <Particles\ParticleSystemComponent.h>
 #include <PhysicalMaterials/PhysicalMaterial.h>
 #include <Sound\SoundCue.h>
+#include <Templates/Casts.h>
+#include <Templates/UniquePtr.h>
+#include <UObject/NameTypes.h>
 #include <UObject\ConstructorHelpers.h>
 
 AShooterCharacter::AShooterCharacter()
-
  : PlayerMesh(nullptr)
  , SkeletalMeshContainer(nullptr)
  , CameraBoom(nullptr)
@@ -153,6 +178,8 @@ AShooterCharacter::AShooterCharacter()
  , bDisableCameraLagWhenMoving(false)
  , MovingDirection(EMovingDirection::EMD_None)
  , ShowEMovingDirection(true)
+ , OffsetIdle(FVector(120.f, 60.f, 0.f))
+ , CameraLagMaxDistance_Idle(100.0)
  , OriginalCameraSocketOffset(FVector::ZeroVector)
  , OriginalCameraLagSpeed(NULL)
  , OriginalCameraLagMaxDistance(NULL)
@@ -288,16 +315,11 @@ void AShooterCharacter::BeginPlay() {
     Super::BeginPlay();
 
     SetupFollowCamera();
-
     EquipWeapon();
-
     InitializeAmmoMap();
     InitializeInterpLocations();
-
     UpdateSlotsItens();
-
     GetOriginalCameraLagOffset();
-
     AdjustVectors();
 }
 
@@ -312,9 +334,7 @@ void AShooterCharacter::Tick(float DeltaTime) {
     // Relative_ControllerRotationYaw(DeltaTime);
 
     AimingCameraZoom(DeltaTime);
-
     SetsLookRates();
-
     CalculateCrosshairSpread(DeltaTime);
 
     if (bShouldTraceForItems || TraceHitItemLastFrame) TraceForItems();
@@ -331,12 +351,11 @@ void AShooterCharacter::Tick(float DeltaTime) {
 
 void AShooterCharacter::InterpCapsuleHalfHeight(float DeltaTime) {
 
-    float TargetCapsuleHalfHeight {
-
+    const float TargetCapsuleHalfHeight {
       bCrouching ? CrouchingCapsuleHalfHeight : StandingCapsuleHalfHeight};
 
-    float GetScaledCapsule {GetCapsuleComponent()->GetScaledCapsuleHalfHeight()};
-    float InterpSpeed {20.f};
+    const float GetScaledCapsule {GetCapsuleComponent()->GetScaledCapsuleHalfHeight()};
+    constexpr float InterpSpeed {20.f};
 
     const float InterpHalfHeight {
       FMath::FInterpTo(GetScaledCapsule, TargetCapsuleHalfHeight, DeltaTime, InterpSpeed)};
@@ -356,38 +375,33 @@ void AShooterCharacter::StartCameraLerp(float &DeltaTime) {
     CurrentTime += DeltaTime;
 
     // get CurrentTime / TransitionDuration
-    float CurrTmDivTransDur {CurrentTime / TransitionDuration};
+    const float CurrTmDivTransDur {CurrentTime / TransitionDuration};
 
     // Clamps CurrentTime / TransitionDuration
-    float Alpha {FMath::Clamp(CurrTmDivTransDur, 0.0f, 1.0f)};
+    const float Alpha {FMath::Clamp(CurrTmDivTransDur, 0.0f, 1.0f)};
 
     // Bezier Curve
-    float BezierCurve {FMath::InterpEaseInOut(0.0f, 1.0f, Alpha, 2.0f)};
+    const float BezierCurve {FMath::InterpEaseInOut(0.0f, 1.0f, Alpha, 2.0f)};
 
-    if (bUseBezierCurve) {
+    LerpedArmLength = ((bUseBezierCurve)
+        ?
+        ((bCinematicCameraSwitch) ?
+                         FMath::Lerp(CameraArmLengthStart, CameraArmLengthEnd, BezierCurve) :
+                         FMath::Lerp(CameraArmLengthEnd, CameraArmLengthStart, BezierCurve)) 
+        :
+        ((bCinematicCameraSwitch) ?
+                         FMath::Lerp(CameraArmLengthStart, CameraArmLengthEnd, CurrTmDivTransDur) :
+                         FMath::Lerp(CameraArmLengthEnd, CameraArmLengthStart, CurrTmDivTransDur))
+    );    
 
-        if (bCinematicCameraSwitch)
-            LerpedArmLength = FMath::Lerp(CameraArmLengthStart, CameraArmLengthEnd, BezierCurve);
-        else LerpedArmLength = FMath::Lerp(CameraArmLengthEnd, CameraArmLengthStart, BezierCurve);
-
-    } else {
-
-        if (bCinematicCameraSwitch)
-            LerpedArmLength
-              = FMath::Lerp(CameraArmLengthStart, CameraArmLengthEnd, CurrTmDivTransDur);
-        else
-            LerpedArmLength
-              = FMath::Lerp(CameraArmLengthEnd, CameraArmLengthStart, CurrTmDivTransDur);
-    }
-
-    // Configure o comprimento do braço da câmera
+    // Configures the length of the camera arm
     CameraBoom->TargetArmLength = LerpedArmLength;
 
-    // Verifica se a transição está concluída
+    // Verifies if the transition is finished
     if (CurrentTime >= TransitionDuration) {
 
-        if (bCinematicCameraSwitch) CinematicCameraOn();
-        else CinematicCameraOff();
+        (bCinematicCameraSwitch) ? CinematicCameraOn()
+        : CinematicCameraOff();
 
         bIsTransitioning = false;
     }
@@ -396,9 +410,11 @@ void AShooterCharacter::StartCameraLerp(float &DeltaTime) {
 void AShooterCharacter::ToggleCinematicCamera() {
 
     return;
+    /*
     bIsTransitioning       = !bIsTransitioning;
     bCinematicCameraSwitch = !bCinematicCameraSwitch;
     CurrentTime            = 0.0f; // Reinicia o tempo atua
+    */
 }
 
 void AShooterCharacter::Aim() {
@@ -458,7 +474,6 @@ void AShooterCharacter::AimingCameraZoom(float DeltaTime) {
 
         CinematicCameraOn();
     }
-
     GetFollowCamera()->SetFieldOfView(CameraCurrentAimFOV);
 }
 
@@ -466,22 +481,19 @@ float AShooterCharacter::BezierCurve_Interp(const float &CurrentFov, const float
   float DeltaTime, float InterpSpeed, bool bReturnToOriginal) {
 
     auto BezierInterpolation
-      = [](float Alpha) -> float { return (3 * Alpha * Alpha - 2 * Alpha * Alpha * Alpha); };
+      = [&](const float &Alpha) -> const float { return (3 * Alpha * Alpha - 2 * Alpha * Alpha * Alpha); };
 
-    float CurrentFOVCopy = CurrentFov;
-    float TargetFOVCopy  = TargetFov;
+    const float CurrentFOVCopy {CurrentFov};
+    const float TargetFOVCopy {TargetFov};
 
     // Calcula o valor da curva de Bezier para controlar a interpolação
-    float TargetValue = bReturnToOriginal ? CurrentFOVCopy : TargetFOVCopy;
-    float BezierAlpha = BezierInterpolation(FMath::Clamp(CurrentFOVCopy / TargetValue, 0.0f, 1.0f));
+    const float TargetValue {bReturnToOriginal ? CurrentFOVCopy : TargetFOVCopy};
+    const float BezierAlpha {
+      BezierInterpolation(FMath::Clamp(CurrentFOVCopy / TargetValue, 0.0f, 1.0f))};
 
     // Interpola usando o resultado da curva de Bezier nos valores copiados
-    float InterpolatedFOV
-      = FMath::FInterpTo(CurrentFOVCopy, TargetValue, DeltaTime, InterpSpeed) * BezierAlpha;
-
-    // O valor de CameraCurrentFOV não é modificado
-
-    return InterpolatedFOV;
+    const float InterpolatedFOV {
+      FMath::FInterpTo(CurrentFOVCopy, TargetValue, DeltaTime, InterpSpeed) * BezierAlpha};
 
     // Atualiza o valor de CameraCurrentFOV
     CameraCurrentAimFOV = InterpolatedFOV;
@@ -489,17 +501,17 @@ float AShooterCharacter::BezierCurve_Interp(const float &CurrentFov, const float
     return InterpolatedFOV;
 }
 
-void AShooterCharacter::CalculateCrosshairSpread(float DeltaTime) {
+void AShooterCharacter::CalculateCrosshairSpread(const float &DeltaTime) {
 
-    Fvc2 WalkSpeedRange {0.f, 600.f};
-    Fvc2 VelocityMultiplierRange {0.f, 1.f};
-    Fvc  Velocity {GetVelocity()};
+    const Fvc2 WalkSpeedRange {0.f, 600.f};
+    const Fvc2 VelocityMultiplierRange {0.f, 1.f};
+    Fvc        Velocity {GetVelocity()};
 
     Velocity.Z = 0.f;
 
     // Calculate crosshair velocity factor
-    CrosshairVelocityFactor
-      = FMath::GetMappedRangeValueClamped(WalkSpeedRange, VelocityMultiplierRange, Velocity.Size());
+    CrosshairVelocityFactor = FMath::GetMappedRangeValueClamped(WalkSpeedRange,
+          VelocityMultiplierRange, Velocity.Size());
 
     // Calculate crosshair in air factor
     if (GetCharacterMovement()->IsFalling()) { // is in air?
@@ -573,7 +585,7 @@ bool AShooterCharacter::GetBeanEndLocation(
 
     // Check for Crosshair Trace Hit
     FHitResult CrosshairHitResult;
-    bool       bCrosshairHit {TraceUnderCrosshairs(CrosshairHitResult, OutBeanLocation)};
+    const bool       bCrosshairHit {TraceUnderCrosshairs(CrosshairHitResult, OutBeanLocation)};
 
     if (bCrosshairHit)
         // Tentative beam location - still need to trace from gun
@@ -591,29 +603,25 @@ bool AShooterCharacter::GetBeanEndLocation(
     // Object between barrel and BeanEndPoint?
     if (WeaponTraceHit.bBlockingHit) {
 
-        if (BulletHoleDecalMat) {
-            if (BulletHoleDecal) {
+        if (BulletHoleDecalMat && BulletHoleDecal) {
+            
+            const FVector BulletHoleDecalSize {10.f, 10.f, 10.f};
 
-                FVector BulletHoleDecalSize {10.f, 10.f, 10.f};
-
-                BulletHoleDecal = UGameplayStatics::SpawnDecalAtLocation(GetWorld(),
-                  BulletHoleDecalMat, BulletHoleDecalSize, WeaponTraceHit.ImpactPoint,
-                  WeaponTraceHit.ImpactNormal.Rotation(), 5.f);
-            }
+            BulletHoleDecal = UGameplayStatics::SpawnDecalAtLocation(GetWorld(),
+                BulletHoleDecalMat, BulletHoleDecalSize, WeaponTraceHit.ImpactPoint,
+                WeaponTraceHit.ImpactNormal.Rotation(), 5.f);            
         }
 
-        float ImpulseStrength {20'000.f};
+        constexpr float ImpulseStrength {20'000.f};
 
         if (WeaponTraceHit.GetComponent() && WeaponTraceHit.GetComponent()->IsSimulatingPhysics()) {
 
-            FVector Impulse = WeaponTraceHit.ImpactNormal * -1.0f * ImpulseStrength;
+            const FVector Impulse = WeaponTraceHit.ImpactNormal * -1.0f * ImpulseStrength;
 
             WeaponTraceHit.GetComponent()->AddImpulseAtLocation(
               Impulse, WeaponTraceHit.ImpactPoint);
         }
-
         OutBeanLocation = WeaponTraceHit.Location;
-
         return true;
     }
     return false;
@@ -622,74 +630,56 @@ bool AShooterCharacter::GetBeanEndLocation(
 void AShooterCharacter::Relative_ControllerRotationYaw(float DeltaTime) {
 
     // Obtém a velocidade atual do personagem
-    float CurrentSpeed = GetVelocity().Size();
+    const double CurrentSpeed {GetVelocity().Size()};
 
     // Define um limite de velocidade mínima para considerar que o personagem
     // está se movendo
-    float MovementThreshold = 10.0f; // Ajuste conforme necessário
+    constexpr float MovementThreshold {10.0f}; // Ajuste conforme necessário
 
     // Verifica se o personagem está se movendo
-    bool bIsMoving = CurrentSpeed > MovementThreshold;
+    const bool bIsMoving {CurrentSpeed > MovementThreshold};
 
-    // Agora você pode usar bIsMoving conforme necessário
-    if (bIsMoving && !bIsFiringWeapon) {
+    bUseControllerRotationYaw = (bIsMoving && !bIsFiringWeapon) ? true : false;
 
-        bUseControllerRotationYaw = true;
+    if (!((bIsFiringWeapon && !bIsMoving && bDidFire) || bAiming)) return;
 
-        // O personagem está se movendo, você pode fazer algo aqui
-    } else {
+    // Obtém a rotação atual do controlador
+    const FRotator ControllerRotation = Controller->GetControlRotation();
 
-        bUseControllerRotationYaw = false;
+    // Armazene o yaw atual do controlador
+    const float CurrentYaw = ControllerRotation.Yaw;
 
-        // O personagem não está se movendo, você pode fazer algo aqui
-    }
+    FVector MoveDirection = ControllerRotation.Vector();
 
-    if ((bIsFiringWeapon && !bIsMoving && bDidFire) || bAiming) {
+    // Normaliza a direção para ter comprimento 1 (para manter uma
+    // velocidade de movimento constante)
+    MoveDirection.Normalize();
 
-        // Obtém a rotação atual do controlador
-        const FRotator ControllerRotation = Controller->GetControlRotation();
+    // Ajuste a velocidade de movimento conforme necessário
+    constexpr float MoveSpeed {1.0f}; // Ajuste conforme necessário
 
-        // Armazene o yaw atual do controlador
-        float CurrentYaw = ControllerRotation.Yaw;
+    // Calcule o vetor de movimento multiplicando a direção pela velocidade
+    const FVector MovementVector = MoveDirection * MoveSpeed;
 
-        FVector MoveDirection = ControllerRotation.Vector();
+    //&& CurrentYaw != PreviousYaw
 
-        // Normaliza a direção para ter comprimento 1 (para manter uma
-        // velocidade de movimento constante)
-        MoveDirection.Normalize();
+    if (!(bAiming || FMath::Abs(CurrentYaw))) return;
 
-        // Ajuste a velocidade de movimento conforme necessário
-        float MoveSpeed = 1.0f; // Ajuste conforme necessário
+    bUseControllerRotationYaw = true;
 
-        // Calcule o vetor de movimento multiplicando a direção pela velocidade
-        FVector MovementVector = MoveDirection * MoveSpeed;
+    // Chame uma função para mover o personagem apenas quando o yaw for
+    // maior que 40 graus
+    if (GetCharacterMovement()) GetCharacterMovement()->AddForce(MovementVector);
 
-        //&& CurrentYaw != PreviousYaw
-
-        if (bAiming || FMath::Abs(CurrentYaw)) {
-
-            bUseControllerRotationYaw = true;
-
-            // Chame uma função para mover o personagem apenas quando o yaw for
-            // maior que 40 graus
-            if (GetCharacterMovement()) GetCharacterMovement()->AddForce(MovementVector);
-
-            PreviousYaw = CurrentYaw;
-        }
-    }
+    PreviousYaw = CurrentYaw;     
 }
 
 void AShooterCharacter::SetupFollowCamera() {
 
-    if (FollowCamera) {
+    CheckPtr(FollowCamera);
 
-        CameraDefaultAimFOV = GetFollowCamera()->FieldOfView;
-        CameraCurrentAimFOV = CameraDefaultAimFOV;
-
-    } else {
-
-        ExitGameErr("AShooterCharacter::SetupFollowCamera(): Follow Camera is nullptr");
-    }
+    CameraDefaultAimFOV = GetFollowCamera()->FieldOfView;
+    CameraCurrentAimFOV = CameraDefaultAimFOV;  
 }
 
 // Called to bind functionality to input
@@ -824,34 +814,28 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent *PlayerInputCo
 
 void AShooterCharacter::DefaultConstructor_SetupMesh() {
 
-    const static TCHAR *SkeletalMeshContainerPath {
+    constexpr const static TCHAR *SkeletalMeshContainerPath =
       L"/Script/Engine.SkeletalMesh'/Game/ParagonLtBelica/Characters/Heroes/"
-      L"Belica/Meshes/Belica.Belica'"};
+      L"Belica/Meshes/Belica.Belica'";
 
     SkeletalMeshContainer
       = MakeUnique<ConstructorHelpers::FObjectFinder<USkeletalMesh>>(SkeletalMeshContainerPath);
 
     PlayerMesh = GetMesh();
 
-    if (PlayerMesh) {
+    CheckPtr(PlayerMesh);
+       
+    if (!SkeletalMeshContainer->Succeeded())
+        ExitGameErr("AShooterCharacter::DefaultConstructor_SetupMesh(): "
+                    "SkeletalMeshContainer failed");
 
-        if (SkeletalMeshContainer->Succeeded()) {
+    PlayerMesh->SetSkeletalMesh(SkeletalMeshContainer->Object);
 
-            PlayerMesh->SetSkeletalMesh(SkeletalMeshContainer->Object);
+    PlayerMesh->SetRelativeLocationAndRotation(
+        FVector(0.f, 0.f, -90.f), FRotator(0.f, -90.f, 0.f));
 
-            PlayerMesh->SetRelativeLocationAndRotation(
-              FVector(0.f, 0.f, -90.f), FRotator(0.f, -90.f, 0.f));
-
-            PlayerMesh->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-            PlayerMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-        } else {
-            ExitGameErr("AShooterCharacter::DefaultConstructor_SetupMesh(): "
-                        "SkeletalMeshContainer failed");
-        }
-    } else {
-        ExitGameErr("AShooterCharacter::DefaultConstructor_SetupMesh(): PlayerMesh "
-                    "is nullptr");
-    }
+    PlayerMesh->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+    PlayerMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);   
 }
 
 void AShooterCharacter::DefaultConstructor_SetCombatCues() {
@@ -860,11 +844,11 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
 
         HipFireMontage = CDSubObj<UAnimMontage>(L"HipFireMontage");
 
-        const static TCHAR *HipFireMontagePath {
+        constexpr const static TCHAR *HipFireMontagePath =
           L"/Script/Engine.AnimMontage'/Game/_Game/Character/Animations/"
-          L"HipFireMontage.HipFireMontage'"};
+          L"HipFireMontage.HipFireMontage'";
 
-        const auto static M_Animation_HipFireMontage {
+        auto const static M_Animation_HipFireMontage {
           ConstructorHelpers::FObjectFinder<UAnimMontage>(HipFireMontagePath)};
 
         if (M_Animation_HipFireMontage.Succeeded())
@@ -879,11 +863,11 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
 
         ImpactParticles = CDSubObj<UParticleSystem>(L"ImpactParticles");
 
-        const static TCHAR *ImpactParticlesPath {
+        constexpr const static TCHAR *ImpactParticlesPath =
           L"/Script/Engine.ParticleSystem'/Game/ParagonLtBelica/FX/Particles/"
-          L"Belica/Abilities/Primary/FX/P_BelicaHitWorld.P_BelicaHitWorld'"};
+          L"Belica/Abilities/Primary/FX/P_BelicaHitWorld.P_BelicaHitWorld'";
 
-        const auto static M_ImpactParticle {
+        auto const static M_ImpactParticle {
           ConstructorHelpers::FObjectFinder<UParticleSystem>(ImpactParticlesPath)};
 
         if (M_ImpactParticle.Succeeded()) ImpactParticles = M_ImpactParticle.Object;
@@ -897,9 +881,9 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
 
         BeamParticles = CDSubObj<UParticleSystem>(L"BeamParticles");
 
-        const static TCHAR *BeamParticlesPath {
+        constexpr const static TCHAR *BeamParticlesPath =
           L"/Script/Engine.ParticleSystem'/Game/_Game/Assets/FX/SmokeBean/"
-          L"P_SmokeTrail_Faded.P_SmokeTrail_Faded'"};
+          L"P_SmokeTrail_Faded.P_SmokeTrail_Faded'";
 
         const auto static M_BeamParticle {
           ConstructorHelpers::FObjectFinder<UParticleSystem>(BeamParticlesPath)};
@@ -927,7 +911,7 @@ void AShooterCharacter::DefaultConstructor_SetCharacter() {
       = false; // Character moves in the direction of input...
     GetCharacterMovement()->RotationRate  = FRotator(0.f, 540.f, 0.f); //... at this rotation rate
     GetCharacterMovement()->JumpZVelocity = 600.f;
-    GetCharacterMovement()->AirControl    = 0.2f;
+    GetCharacterMovement()->AirControl    = 0.2f; 
     GetCharacterMovement()->MaxWalkSpeed  = 1500.f;
     GetCharacterMovement()->MaxWalkSpeedCrouched       = 150.f;
     GetCharacterMovement()->MaxAcceleration            = 1020.f;
@@ -938,24 +922,31 @@ void AShooterCharacter::DefaultConstructor_SetCharacter() {
 void AShooterCharacter::DefaultConstructor_InterpComponents() {
 
     WeaponInterpComp = CDSubObj<USceneComponent>(L"Weapon Interpolation Component");
+    CheckPtr(WeaponInterpComp);
     WeaponInterpComp->SetupAttachment(GetFollowCamera());
 
     InterpComp1 = CDSubObj<USceneComponent>(L"Interpolation Component 1");
+    CheckPtr(InterpComp1);
     InterpComp1->SetupAttachment(GetFollowCamera());
 
     InterpComp2 = CDSubObj<USceneComponent>(L"Interpolation Component 2");
+    CheckPtr(InterpComp2);
     InterpComp2->SetupAttachment(GetFollowCamera());
 
     InterpComp3 = CDSubObj<USceneComponent>(L"Interpolation Component 3");
+    CheckPtr(InterpComp3);
     InterpComp3->SetupAttachment(GetFollowCamera());
 
     InterpComp4 = CDSubObj<USceneComponent>(L"Interpolation Component 4");
+    CheckPtr(InterpComp4);
     InterpComp4->SetupAttachment(GetFollowCamera());
 
     InterpComp5 = CDSubObj<USceneComponent>(L"Interpolation Component 5");
+    CheckPtr(InterpComp5);
     InterpComp5->SetupAttachment(GetFollowCamera());
 
     InterpComp6 = CDSubObj<USceneComponent>(L"Interpolation Component 6");
+    CheckPtr(InterpComp6);
     InterpComp6->SetupAttachment(GetFollowCamera());
 }
 
@@ -1044,7 +1035,7 @@ void AShooterCharacter::DisableCameraLagWhenMovingRight(float DeltaTime) {
 
         const static double NewSocketOffsetY {CameraBoom->SocketOffset.Y + ExtraRightSocket};
 
-        Fvc NewSocketOffset {
+        const Fvc NewSocketOffset {
           Fvc(CameraBoom->SocketOffset.X, NewSocketOffsetY, CameraBoom->SocketOffset.Z)};
 
         CameraBoom->SocketOffset
@@ -1056,7 +1047,7 @@ void AShooterCharacter::DisableCameraLagWhenMovingRight(float DeltaTime) {
         CameraBoom->CameraLagMaxDistance
           = FMath::FInterpTo(CameraBoom->CameraLagMaxDistance, 200.f, DeltaTime, 50.f);
 
-        Fvc NewSocketOffset {(CameraBoom->SocketOffset.X,
+        const Fvc NewSocketOffset {(CameraBoom->SocketOffset.X,
           CameraBoom->SocketOffset.Y - ExtraRightSocket, CameraBoom->SocketOffset.Z)};
 
         CameraBoom->SocketOffset
@@ -1111,30 +1102,29 @@ void AShooterCharacter::CinematicCameraOff() {
 
 void AShooterCharacter::MoveForward(float Value) {
 
-    if (Controller && Value != 0.0f) {
+    if (!(Controller && Value != 0.0f)) return;
 
-        // find which way is forward
-        const FRotator Rotation {Controller->GetControlRotation()};
-        const FRotator YawRotation {0, Rotation.Yaw, 0};
+    // find which way is forward
+    const FRotator Rotation {Controller->GetControlRotation()};
+    const FRotator YawRotation {0, Rotation.Yaw, 0};
+    const FVector     X {FRotationMatrix {YawRotation}.GetUnitAxis(EAxis::X)};
 
-        const FVector Direction {FRotationMatrix {YawRotation}.GetUnitAxis(EAxis::X)};
+    const FVector Direction {X};
 
-        AddMovementInput(Direction, Value);
-    }
+    AddMovementInput(Direction, Value);    
 }
 
 void AShooterCharacter::MoveRight(float Value) {
 
-    if (Controller && Value != 0.0f) {
+    if (!(Controller && Value != 0.0f)) return;
 
-        // find which way is right
-        const FRotator Rotation {Controller->GetControlRotation()};
-        const FRotator YawRotation {0, Rotation.Yaw, 0};
+    // find which way is right
+    const FRotator Rotation {Controller->GetControlRotation()};
+    const FRotator YawRotation {0, Rotation.Yaw, 0};
+    const FVector  Y {FRotationMatrix {YawRotation}.GetUnitAxis(EAxis::Y)};
+    const FVector Direction {Y};
 
-        const FVector Direction {FRotationMatrix {YawRotation}.GetUnitAxis(EAxis::Y)};
-
-        AddMovementInput(Direction, Value);
-    }
+    AddMovementInput(Direction, Value);    
 }
 
 void AShooterCharacter::DefaultConstructor_CustomCamera() {
@@ -1165,20 +1155,14 @@ void AShooterCharacter::LookUpAtRate(float Rate) {
 
 void AShooterCharacter::Turn(float Value) {
 
-    float TurnScaleFactor {};
-
-    if (bAiming) TurnScaleFactor = MouseAimingTurnRate;
-    else TurnScaleFactor = MouseHipTurnRate;
+    const float TurnScaleFactor {(bAiming) ? MouseAimingTurnRate : MouseHipTurnRate};
 
     AddControllerYawInput(Value * TurnScaleFactor);
 }
 
 void AShooterCharacter::LookUp(float Value) {
 
-    float LookUpScaleFactor {};
-
-    if (bAiming) LookUpScaleFactor = MouseAimingLookUpRate;
-    else LookUpScaleFactor = MouseHipLookUpRate;
+    const float LookUpScaleFactor {(bAiming) ? MouseAimingLookUpRate : MouseHipLookUpRate};
 
     AddControllerPitchInput(Value * LookUpScaleFactor);
 }
@@ -1232,17 +1216,18 @@ void AShooterCharacter::AutoFireReset() {
 bool AShooterCharacter::TraceUnderCrosshairs(FHitResult &OutHitResult, FVector &OutHitlocation) {
 
     // Get Viewport Size
-    FVector2D ViewPortSize;
+    FVector2D ViewPortSize {};
+
     if (GEngine && GEngine->GameViewport) GEngine->GameViewport->GetViewportSize(ViewPortSize);
 
     // Get Screen Space of Crosshair Location
     FVector2D CrosshairLocation(ViewPortSize.X / 2.f, ViewPortSize.Y / 2.f);
     CrosshairLocation.Y -= CrosshairHeight;
-    FVector CrosshairWorldPosition;
-    FVector CrosshairWorldDirection;
+    FVector CrosshairWorldPosition {};
+    FVector CrosshairWorldDirection {};
 
     // Get World position and direction of Crosshair
-    bool bScreenToWorld {
+    const bool bScreenToWorld {
       UGameplayStatics::DeprojectScreenToWorld(UGameplayStatics::GetPlayerController(this, 0),
         CrosshairLocation, CrosshairWorldPosition, CrosshairWorldDirection)};
 
@@ -1353,49 +1338,44 @@ AWeapon *AShooterCharacter::SpawnDefaultWeapon() {
 
 void AShooterCharacter::EquipWeapon(AWeapon *WeaponToEquip, bool bSwapping) {
 
-    if (WeaponToEquip) {
+    CheckPtr(WeaponToEquip) 
 
-        // Get the Hand Socket
-        const USkeletalMeshSocket *HandSocket
-          = GetMesh()->GetSocketByName(FName(L"RightHandSocket"));
+    // Get the Hand Socket
+    const USkeletalMeshSocket *HandSocket
+        = GetMesh()->GetSocketByName(FName(L"RightHandSocket"));
 
-        if (HandSocket) {
+    CheckPtr(HandSocket);      
 
-            // Attach the Weapon to the hand socket RightHandSocket
-            HandSocket->AttachActor(WeaponToEquip, GetMesh());
-        }
+    // Attach the Weapon to the hand socket RightHandSocket
+    HandSocket->AttachActor(WeaponToEquip, GetMesh());
 
-        if (EquippedWeapon == nullptr) {
+    if (EquippedWeapon == nullptr) {
 
-            // -1 == no EquippedWeapon yet. No need to reverse the icon animation
-            EquipItemDelegate.Broadcast(-1, WeaponToEquip->GetSlotIndex());
+        // -1 == no EquippedWeapon yet. No need to reverse the icon animation
+        EquipItemDelegate.Broadcast(-1, WeaponToEquip->GetSlotIndex());
 
-        } else if (!bSwapping) {
+    } else if (!bSwapping) {
 
-            EquipItemDelegate.Broadcast(
-              EquippedWeapon->GetSlotIndex(), WeaponToEquip->GetSlotIndex());
-        }
-
-        // Set EquippedWeapon to the newly spawned Weapon
-        EquippedWeapon = WeaponToEquip;
-        EquippedWeapon->SetItemState(EItemState::EIS_Equipped);
-
-    } else {
-        ExitGameErr("AShooterCharacter::EquipWeapon(): WeaponToEquip is nullptr");
+        EquipItemDelegate.Broadcast(
+            EquippedWeapon->GetSlotIndex(), WeaponToEquip->GetSlotIndex());
     }
+
+    // Set EquippedWeapon to the newly spawned Weapon
+    EquippedWeapon = WeaponToEquip;
+    EquippedWeapon->SetItemState(EItemState::EIS_Equipped);
 }
 
 void AShooterCharacter::DropWeapon() {
 
-    if (EquippedWeapon) {
+    CheckPtr(EquippedWeapon);
 
-        FDetachmentTransformRules DetachmentTransformRules(EDetachmentRule::KeepWorld, true);
+    FDetachmentTransformRules DetachmentTransformRules(EDetachmentRule::KeepWorld, true);
 
-        EquippedWeapon->GetItemMesh()->DetachFromComponent(DetachmentTransformRules);
+    EquippedWeapon->GetItemMesh()->DetachFromComponent(DetachmentTransformRules);
 
-        EquippedWeapon->SetItemState(EItemState::EIS_Falling);
-        EquippedWeapon->ThrowWeapon();
-    }
+    EquippedWeapon->SetItemState(EItemState::EIS_Falling);
+    EquippedWeapon->ThrowWeapon();
+    
 }
 
 void AShooterCharacter::SwapWeapon(AWeapon *WeaponToSwap) {
@@ -1453,29 +1433,28 @@ void AShooterCharacter::SendBullet() {
     FVector BeamEnd {};
 
     // Get Beam End Location
-    bool bBeanEnd {GetBeanEndLocation(SocketTransform.GetLocation(), BeamEnd)};
+    const bool bBeanEnd {GetBeanEndLocation(SocketTransform.GetLocation(), BeamEnd)};
 
-    if (bBeanEnd) {
+    if (bBeanEnd) return;
 
-        if (ImpactParticles)
-            UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, BeamEnd);
+    if (ImpactParticles)
+        UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, BeamEnd);
 
-        UParticleSystemComponent *Beam {
-          UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BeamParticles, SocketTransform)};
+    UParticleSystemComponent *Beam {
+        UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BeamParticles, SocketTransform)};
 
-        if (Beam) Beam->SetVectorParameter(FName("Target"), BeamEnd);
-    }
+    if (Beam) Beam->SetVectorParameter(FName("Target"), BeamEnd);
 }
 
 void AShooterCharacter::PlayGunFireMontage() {
 
     UAnimInstance *AnimInstance {GetMesh()->GetAnimInstance()};
 
-    if (AnimInstance && HipFireMontage) {
+    CheckPtr(AnimInstance);
+    CheckPtr(HipFireMontage);  
 
-        AnimInstance->Montage_Play(HipFireMontage);
-        AnimInstance->Montage_JumpToSection(FName("StartFire"));
-    }
+    AnimInstance->Montage_Play(HipFireMontage);
+    AnimInstance->Montage_JumpToSection(FName("StartFire"));    
 }
 
 void AShooterCharacter::ReloadButtonPressed() { ReloadWeapon(); }
@@ -1487,20 +1466,18 @@ void AShooterCharacter::ReloadWeapon() {
         return;
 
     // Do we have ammo of the correct type?
-    if ((CarryingAmmo()) && (!EquippedWeapon->ClipIsFull())) {
+    if (!((CarryingAmmo()) && (!EquippedWeapon->ClipIsFull()))) return;
 
-        if (bAiming) StopAiming();
+    if (bAiming) StopAiming();
 
-        CombatState = ECombatState::ECS_Reloading;
-        UAnimInstance *AnimInstance {GetMesh()->GetAnimInstance()};
+    CombatState = ECombatState::ECS_Reloading;
+    UAnimInstance *AnimInstance {GetMesh()->GetAnimInstance()};
 
-        if (ReloadMontage && AnimInstance) {
+    CheckPtr(ReloadMontage);
+    CheckPtr(AnimInstance);
 
-            AnimInstance->Montage_Play(ReloadMontage);
-
-            AnimInstance->Montage_JumpToSection(EquippedWeapon->GetReloadMontageSection());
-        }
-    }
+    AnimInstance->Montage_Play(ReloadMontage);
+    AnimInstance->Montage_JumpToSection(EquippedWeapon->GetReloadMontageSection());
 }
 
 void AShooterCharacter::FinishReloading() {
@@ -1515,32 +1492,29 @@ void AShooterCharacter::FinishReloading() {
     const auto AmmoType {EquippedWeapon->GetAmmoType()};
 
     // Update the ammo map
-    if (AmmoMap.Contains(AmmoType)) {
+    if (!(AmmoMap.Contains(AmmoType))) return;
 
-        // Amount of ammo the character is carrying of the equipped weapons type
-        int32 CarriedAmmo {AmmoMap [AmmoType]};
+    // Amount of ammo the character is carrying of the equipped weapons type
+    int32 CarriedAmmo {AmmoMap [AmmoType]};
 
-        // Space left in the magazine of the equipped weapon
-        const int32 MagEmptySpace {
-          EquippedWeapon->GetMagazineCapacity() - EquippedWeapon->GetAmmo()};
+    // Space left in the magazine of the equipped weapon
+    const int32 MagEmptySpace {
+        EquippedWeapon->GetMagazineCapacity() - EquippedWeapon->GetAmmo()};
 
-        if (MagEmptySpace > CarriedAmmo) {
+    if (MagEmptySpace > CarriedAmmo) {
 
-            // Reload the Magazine with all the ammo we are caring
-            EquippedWeapon->ReloadAmmo(CarriedAmmo);
-            CarriedAmmo = 0;
+        // Reload the Magazine with all the ammo we are caring
+        EquippedWeapon->ReloadAmmo(CarriedAmmo);
+        CarriedAmmo = 0;
+        AmmoMap.Add(AmmoType, CarriedAmmo);
 
-            AmmoMap.Add(AmmoType, CarriedAmmo);
+    } else {
 
-        } else {
-
-            // Fill the magazine
-            EquippedWeapon->ReloadAmmo(MagEmptySpace);
-            CarriedAmmo -= MagEmptySpace;
-
-            AmmoMap.Add(AmmoType, CarriedAmmo);
-        }
-    }
+        // Fill the magazine
+        EquippedWeapon->ReloadAmmo(MagEmptySpace);
+        CarriedAmmo -= MagEmptySpace;
+        AmmoMap.Add(AmmoType, CarriedAmmo);
+    }    
 }
 
 void AShooterCharacter::FinishEquipping() {
@@ -1554,11 +1528,10 @@ bool AShooterCharacter::CarryingAmmo() {
 
     if (EquippedWeapon == nullptr) return false;
 
-    EAmmoType AmmoType {EquippedWeapon->GetAmmoType()};
+    const EAmmoType AmmoType {EquippedWeapon->GetAmmoType()};
 
-    if (AmmoMap.Contains(AmmoType)) {
-        return AmmoMap [AmmoType] > 0;
-    }
+    if (AmmoMap.Contains(AmmoType)) return AmmoMap [AmmoType] > 0;
+    
     return false;
 }
 
@@ -1567,18 +1540,16 @@ void AShooterCharacter::GrabClip() {
     if ((EquippedWeapon == nullptr) || (HandSceneComponent == nullptr)) return;
 
     // Index for the clip bone on the EquippedWeapon
-    int32 ClipBoneIndex {
+    const int32 ClipBoneIndex {
       EquippedWeapon->GetItemMesh()->GetBoneIndex(EquippedWeapon->GetClipBoneName())};
 
     // Store the transform of the clip bone
     ClipTransform = EquippedWeapon->GetItemMesh()->GetBoneTransform(ClipBoneIndex);
 
-    FAttachmentTransformRules AttachmentRules(EAttachmentRule::KeepRelative, true);
+    const FAttachmentTransformRules AttachmentRules {EAttachmentRule::KeepRelative, true};
 
     HandSceneComponent->AttachToComponent(GetMesh(), AttachmentRules, FName(L"Hand_L"));
-
     HandSceneComponent->SetWorldTransform(ClipTransform);
-
     EquippedWeapon->SetMovingClip(true);
 }
 
@@ -1643,13 +1614,10 @@ void AShooterCharacter::SelectButtonReleased() {}
 
 void AShooterCharacter::GetOriginalCameraLagOffset() {
 
-    if (OriginalCameraSocketOffset == FVector::ZeroVector) {
-
+    if (OriginalCameraSocketOffset == FVector::ZeroVector)
         OriginalCameraSocketOffset = CameraBoom->SocketOffset;
-    }
-
+    
     OriginalCameraLagSpeed = CameraBoom->CameraLagSpeed;
-
     OriginalCameraLagMaxDistance = CameraBoom->CameraLagMaxDistance;
 }
 
@@ -1690,9 +1658,9 @@ FVector AShooterCharacter::GetCameraInterpLocation() {
 
     const FVector CameraWorldLocation {FollowCamera->GetComponentLocation()};
     const FVector CameraForward {FollowCamera->GetForwardVector()};
+    const FVector CameraInterp {FVector(0.f, 0.f, CameraInterpElevation)};
 
-    return CameraWorldLocation + CameraForward * CameraInterpDistance
-         + FVector(0.f, 0.f, CameraInterpElevation);
+    return CameraWorldLocation + CameraForward * CameraInterpDistance + CameraInterp;
 }
 
 void AShooterCharacter::GetPickupItem(AItem *Item) {
@@ -1715,33 +1683,31 @@ void AShooterCharacter::GetPickupItem(AItem *Item) {
             SwapWeapon(Weapon);
         }
     }
-    auto Ammo = Cast<AAmmo>(Item);
-    if (Ammo) {
-        PickupAmmo(Ammo);
-    }
+    const auto Ammo = Cast<AAmmo>(Item);
+    if (Ammo) PickupAmmo(Ammo);    
 }
 
 void AShooterCharacter::InitializeInterpLocations() {
 
-    FInterpLocation WeaponLocation {WeaponInterpComp, 0};
+    const FInterpLocation WeaponLocation {WeaponInterpComp, 0};
     InterpLocations.Add(WeaponLocation);
 
-    FInterpLocation InterpLoc1 {InterpComp1, 0};
+    const FInterpLocation InterpLoc1 {InterpComp1, 0};
     InterpLocations.Add(InterpLoc1);
 
-    FInterpLocation InterpLoc2 {InterpComp2, 0};
+    const FInterpLocation InterpLoc2 {InterpComp2, 0};
     InterpLocations.Add(InterpLoc2);
 
-    FInterpLocation InterpLoc3 {InterpComp3, 0};
+    const FInterpLocation InterpLoc3 {InterpComp3, 0};
     InterpLocations.Add(InterpLoc3);
 
-    FInterpLocation InterpLoc4 {InterpComp4, 0};
+    const FInterpLocation InterpLoc4 {InterpComp4, 0};
     InterpLocations.Add(InterpLoc4);
 
-    FInterpLocation InterpLoc5 {InterpComp5, 0};
+    const FInterpLocation InterpLoc5 {InterpComp5, 0};
     InterpLocations.Add(InterpLoc5);
 
-    FInterpLocation InterpLoc6 {InterpComp6, 0};
+    const FInterpLocation InterpLoc6 {InterpComp6, 0};
     InterpLocations.Add(InterpLoc6);
 }
 
@@ -1915,45 +1881,37 @@ void AShooterCharacter::EquipWeapon() {
 
 void AShooterCharacter::ScrollUp() {
 
-    if (EquippedWeapon) {
+    CheckPtr(EquippedWeapon) 
 
-        UpdateSlotsItens();
+    UpdateSlotsItens();
 
-        if (InventoryCount == 1) return;
+    if (InventoryCount == 1) return;
 
-        // Go to the first slot index
-        else if ((CurrentSlotIndex >= EquippedWeapon->GetMaxSlotNumber())
-                 || ((CurrentSlotIndex + 1) == InventoryCount))
-            ExchangeInventoryItens(CurrentSlotIndex, 0);
+    // Go to the first slot index
+    else if ((CurrentSlotIndex >= EquippedWeapon->GetMaxSlotNumber())
+                || ((CurrentSlotIndex + 1) == InventoryCount))
+        ExchangeInventoryItens(CurrentSlotIndex, 0);
 
-        // advance the slot index
-        else if ((InventoryCount - 1) > CurrentSlotIndex)
-            ExchangeInventoryItens(CurrentSlotIndex, (CurrentSlotIndex + 1));
-
-    } else {
-        ExitPrintErr("AShooterCharacter::ScrollUp(): EquippedWeapon is nullptr");
-    }
+    // advance the slot index
+    else if ((InventoryCount - 1) > CurrentSlotIndex)
+        ExchangeInventoryItens(CurrentSlotIndex, (CurrentSlotIndex + 1));   
 }
 
 void AShooterCharacter::ScrollDown() {
 
-    if (EquippedWeapon) {
+    CheckPtr(EquippedWeapon); 
 
-        UpdateSlotsItens();
+    UpdateSlotsItens();
 
-        if (InventoryCount == 1) return;
+    if (InventoryCount == 1) return;
 
-        // Go to the last slot index
-        else if (CurrentSlotIndex <= 0)
-            return ExchangeInventoryItens(CurrentSlotIndex, (InventoryCount - 1));
+    // Go to the last slot index
+    else if (CurrentSlotIndex <= 0)
+        return ExchangeInventoryItens(CurrentSlotIndex, (InventoryCount - 1));
 
-        // Go back the slot index
-        else if ((InventoryCount - 1) >= CurrentSlotIndex)
-            return ExchangeInventoryItens(CurrentSlotIndex, (CurrentSlotIndex - 1));
-
-    } else {
-        ExitPrintErr("AShooterCharacter::ScrollDown(): EquippedWeapon is nullptr");
-    }
+    // Go back the slot index
+    else if ((InventoryCount - 1) >= CurrentSlotIndex)
+        return ExchangeInventoryItens(CurrentSlotIndex, (CurrentSlotIndex - 1));   
 }
 
 void AShooterCharacter::KEY_DKey_D_Pressed() { KeyMethodDKey(); }
@@ -2031,82 +1989,53 @@ void AShooterCharacter::KeyMethodAKeyReleased() {
 void AShooterCharacter::KEY_FkeyPressed() { KeyMethodFKey(); }
 void AShooterCharacter::KeyMethodFKey() {
 
-    if (EquippedWeapon) {
+    CheckPtr(EquippedWeapon) 
 
-        UpdateSlotsItens();
-
-        if (CurrentSlotIndex == 0) return;
-
-        return ExchangeInventoryItens(CurrentSlotIndex, 0);
-
-    } else {
-
-        ExitPrintErr("AShooterCharacter::KEY_FkeyPressed(): EquippedWeapon is nullptr");
-    }
+    UpdateSlotsItens();
+    if (CurrentSlotIndex == 0) return;
+    return ExchangeInventoryItens(CurrentSlotIndex, 0);
 }
 
 void AShooterCharacter::KEY_1_OneKeyPressed() { KeyMethod1Key(); }
 void AShooterCharacter::KeyMethod1Key() {
 
-    if (EquippedWeapon) {
+    CheckPtr(EquippedWeapon);
 
-        UpdateSlotsItens();
+    UpdateSlotsItens();
 
-        if (CurrentSlotIndex == 1) return;
-        return ExchangeInventoryItens(CurrentSlotIndex, 1);
-
-    } else {
-
-        ExitPrintErr("AShooterCharacter::KeyMethod1Key(): EquippedWeapon is nullptr");
-    }
+    if (CurrentSlotIndex == 1) return;
+    return ExchangeInventoryItens(CurrentSlotIndex, 1);    
 }
 
 void AShooterCharacter::KEY_2_TwoKeyPressed() { KeyMethod2Key(); }
 void AShooterCharacter::KeyMethod2Key() {
 
-    if (EquippedWeapon) {
+    CheckPtr(EquippedWeapon);
 
-        UpdateSlotsItens();
 
-        if (CurrentSlotIndex == 2) return;
-        return ExchangeInventoryItens(CurrentSlotIndex, 2);
-
-    } else {
-
-        ExitPrintErr("AShooterCharacter::KeyMethod2Key(): EquippedWeapon is nullptr");
-    }
+    UpdateSlotsItens();
+    if (CurrentSlotIndex == 2) return;
+    return ExchangeInventoryItens(CurrentSlotIndex, 2);
 }
 
 void AShooterCharacter::KEY_3_ThreeKeyPressed() { KeyMethod3Key(); }
 void AShooterCharacter::KeyMethod3Key() {
 
-    if (EquippedWeapon) {
+    CheckPtr(EquippedWeapon);
 
-        UpdateSlotsItens();
-
-        if (CurrentSlotIndex == 3) return;
-        return ExchangeInventoryItens(CurrentSlotIndex, 3);
-
-    } else {
-
-        ExitPrintErr("AShooterCharacter::KeyMethod3Key(): EquippedWeapon is nullptr");
-    }
+    UpdateSlotsItens();
+    if (CurrentSlotIndex == 3) return;
+    return ExchangeInventoryItens(CurrentSlotIndex, 3);
 }
 
 void AShooterCharacter::KEY_4_FourKeyPressed() { KeyMethod4Key(); }
 void AShooterCharacter::KeyMethod4Key() {
 
-    if (EquippedWeapon) {
+    CheckPtr(EquippedWeapon);
 
-        UpdateSlotsItens();
-
-        if (CurrentSlotIndex == 4) return;
-        return ExchangeInventoryItens(CurrentSlotIndex, 4);
-
-    } else {
-
-        ExitPrintErr("AShooterCharacter::KeyMethod4Key(): EquippedWeapon is nullptr");
-    }
+    UpdateSlotsItens();
+    if (CurrentSlotIndex == 4) return;
+    return ExchangeInventoryItens(CurrentSlotIndex, 4);    
 }
 
 void AShooterCharacter::KEY_5_FiveKeyPressed() { KeyMethod5Key(); }
@@ -2157,62 +2086,67 @@ void AShooterCharacter::SetMovingDirection() {
     bool bMovingDiagonalCrouchAim {};
 
     bool bAimingStill {};
-    bool bMovingForward {bWKey_Pressed && !bWKey_Released && !bAiming && !bCrouching};
-    bool bMovingBackward {bSKey_Pressed && !bSKey_Released && !bAiming && !bCrouching};
-    bool bMovingRight {bDKey_Pressed && !bDKey_Released && !bAiming && !bCrouching};
-    bool bMovingLeft {bAKey_Pressed && !bAKey_Released && !bAiming && !bCrouching};
-    bool bMovingForwardRight {bMovingForward && bMovingRight && !bAiming && !bCrouching};
-    bool bMovingForwardLeft {bMovingForward && bMovingLeft && !bAiming && !bCrouching};
-    bool bMovingBackwardRight {bMovingBackward && bMovingRight && !bAiming && !bCrouching};
-    bool bMovingBackwardLeft {bMovingBackward && bMovingLeft && !bAiming && !bCrouching};
 
-    bool bForwardAim {bWKey_Pressed && !bWKey_Released && bAiming && !bCrouching};
-    bool bBackwardAim {bSKey_Pressed && !bSKey_Released && bAiming && !bCrouching};
-    bool bRightAim {bDKey_Pressed && !bDKey_Released && bAiming && !bCrouching};
-    bool bLeftAim {bAKey_Pressed && !bAKey_Released && bAiming && !bCrouching};
-    bool bForwardRightAim {bForwardAim && bRightAim && bAiming && !bCrouching};
-    bool bForwardLeftAim {bForwardAim && bLeftAim && bAiming && !bCrouching};
-    bool bBackwardRightAim {bBackwardAim && bRightAim && bAiming && !bCrouching};
-    bool bBackwardLeftAim {bBackwardAim && bLeftAim && bAiming && !bCrouching};
+    const bool bMovingForward {bWKey_Pressed && !bWKey_Released && !bAiming && !bCrouching};
+    const bool bMovingBackward {bSKey_Pressed && !bSKey_Released && !bAiming && !bCrouching};
+    const bool bMovingRight {bDKey_Pressed && !bDKey_Released && !bAiming && !bCrouching};
+    const bool bMovingLeft {bAKey_Pressed && !bAKey_Released && !bAiming && !bCrouching};
+    const bool bMovingForwardRight {bMovingForward && bMovingRight && !bAiming && !bCrouching};
+    const bool bMovingForwardLeft {bMovingForward && bMovingLeft && !bAiming && !bCrouching};
+    const bool bMovingBackwardRight {bMovingBackward && bMovingRight && !bAiming && !bCrouching};
+    const bool bMovingBackwardLeft {bMovingBackward && bMovingLeft && !bAiming && !bCrouching};
 
-    bool bForwardCrouch {bWKey_Pressed && !bWKey_Released && !bAiming && bCrouching};
-    bool bBackwardCrouch {bSKey_Pressed && !bSKey_Released && !bAiming && bCrouching};
-    bool bRightCrouch {bDKey_Pressed && !bDKey_Released && !bAiming && bCrouching};
-    bool bLeftCrouch {bAKey_Pressed && !bAKey_Released && !bAiming && bCrouching};
-    bool bForwardRightCrouch {bForwardCrouch && bRightCrouch && !bAiming && bCrouching};
-    bool bForwardLeftCrouch {bForwardCrouch && bLeftCrouch && !bAiming && bCrouching};
-    bool bBackwardRightCrouch {bBackwardCrouch && bRightCrouch && !bAiming && bCrouching};
-    bool bBackwardLeftCrouch {bBackwardCrouch && bLeftCrouch && !bAiming && bCrouching};
+    const bool bForwardAim {bWKey_Pressed && !bWKey_Released && bAiming && !bCrouching};
+    const bool bBackwardAim {bSKey_Pressed && !bSKey_Released && bAiming && !bCrouching};
+    const bool bRightAim {bDKey_Pressed && !bDKey_Released && bAiming && !bCrouching};
+    const bool bLeftAim {bAKey_Pressed && !bAKey_Released && bAiming && !bCrouching};
+    const bool bForwardRightAim {bForwardAim && bRightAim && bAiming && !bCrouching};
+    const bool bForwardLeftAim {bForwardAim && bLeftAim && bAiming && !bCrouching};
+    const bool bBackwardRightAim {bBackwardAim && bRightAim && bAiming && !bCrouching};
+    const bool bBackwardLeftAim {bBackwardAim && bLeftAim && bAiming && !bCrouching};
 
-    bool bForwardCrouchAim {bWKey_Pressed && !bWKey_Released && bAiming && bCrouching};
-    bool bBackwardCrouchAim {bSKey_Pressed && !bSKey_Released && bAiming && bCrouching};
-    bool bRightCrouchAim {bDKey_Pressed && !bDKey_Released && bAiming && bCrouching};
-    bool bLeftCrouchAim {bAKey_Pressed && !bAKey_Released && bAiming && bCrouching};
-    bool bForwardRightCrouchAim {bForwardCrouchAim && bRightCrouchAim && bAiming && bCrouching};
-    bool bForwardLeftCrouchAim {bForwardCrouchAim && bLeftCrouchAim && bAiming && bCrouching};
-    bool bBackwardRightCrouchAim {bBackwardCrouchAim && bRightCrouchAim && bAiming && bCrouching};
-    bool bBackwardLeftCrouchAim {bBackwardCrouchAim && bLeftCrouchAim && bAiming && bCrouching};
+    const bool bForwardCrouch {bWKey_Pressed && !bWKey_Released && !bAiming && bCrouching};
+    const bool bBackwardCrouch {bSKey_Pressed && !bSKey_Released && !bAiming && bCrouching};
+    const bool bRightCrouch {bDKey_Pressed && !bDKey_Released && !bAiming && bCrouching};
+    const bool bLeftCrouch {bAKey_Pressed && !bAKey_Released && !bAiming && bCrouching};
+    const bool bForwardRightCrouch {bForwardCrouch && bRightCrouch && !bAiming && bCrouching};
+    const bool bForwardLeftCrouch {bForwardCrouch && bLeftCrouch && !bAiming && bCrouching};
+    const bool bBackwardRightCrouch {bBackwardCrouch && bRightCrouch && !bAiming && bCrouching};
+    const bool bBackwardLeftCrouch {bBackwardCrouch && bLeftCrouch && !bAiming && bCrouching};
 
-    bool bStraightDirections {bMovingForward || bMovingBackward || bMovingRight || bMovingLeft};
+    const bool bForwardCrouchAim {bWKey_Pressed && !bWKey_Released && bAiming && bCrouching};
+    const bool bBackwardCrouchAim {bSKey_Pressed && !bSKey_Released && bAiming && bCrouching};
+    const bool bRightCrouchAim {bDKey_Pressed && !bDKey_Released && bAiming && bCrouching};
+    const bool bLeftCrouchAim {bAKey_Pressed && !bAKey_Released && bAiming && bCrouching};
+    const bool bForwardRightCrouchAim {
+      bForwardCrouchAim && bRightCrouchAim && bAiming && bCrouching};
+    const bool bForwardLeftCrouchAim {bForwardCrouchAim && bLeftCrouchAim && bAiming && bCrouching};
+    const bool bBackwardRightCrouchAim {
+      bBackwardCrouchAim && bRightCrouchAim && bAiming && bCrouching};
+    const bool bBackwardLeftCrouchAim {
+      bBackwardCrouchAim && bLeftCrouchAim && bAiming && bCrouching};
 
-    bool bDiagonalDirections {
+    const bool bStraightDirections {
+      bMovingForward || bMovingBackward || bMovingRight || bMovingLeft};
+
+    const bool bDiagonalDirections {
       bMovingForwardRight || bMovingForwardLeft || bMovingBackwardRight || bMovingBackwardLeft};
 
-    bool bStraightDirectionsAim {bForwardAim || bBackwardAim || bRightAim || bLeftAim};
+    const bool bStraightDirectionsAim {bForwardAim || bBackwardAim || bRightAim || bLeftAim};
 
-    bool bDiagonalDirectionsAim {
+    const bool bDiagonalDirectionsAim {
       bForwardRightAim || bForwardLeftAim || bBackwardRightAim || bBackwardLeftAim};
 
-    bool bStraightDirectionsCrouch {
+    const bool bStraightDirectionsCrouch {
       bForwardCrouch || bBackwardCrouch || bRightCrouch || bLeftCrouch};
 
-    bool bDiagonalDirectionsCrouch {
+    const bool bDiagonalDirectionsCrouch {
       bForwardRightCrouch || bForwardLeftCrouch || bBackwardRightCrouch || bBackwardLeftCrouch};
 
-    bool bStraightDirectionsCrouchAim {
+    const bool bStraightDirectionsCrouchAim {
       bForwardCrouchAim || bBackwardCrouchAim || bRightCrouchAim || bLeftCrouchAim};
 
-    bool bDiagonalDirectionsCrouchAim {bForwardRightCrouchAim || bForwardLeftCrouchAim
+    const bool bDiagonalDirectionsCrouchAim {bForwardRightCrouchAim || bForwardLeftCrouchAim
                                        || bBackwardRightCrouchAim || bBackwardLeftCrouchAim};
 
     bMovingStraight = (bStraightDirections && !bDiagonalDirections && !bAiming);
@@ -2380,8 +2314,8 @@ void AShooterCharacter::SetMovingDirectionActions(float &DeltaTime) {
                   Jump_interpTime, "EMovingDirection::Jump");
 
             case EMovingDirection::EMD_None :
-                return AdjustCameraLag(OriginalCameraSocketOffset, OriginalCameraLagMaxDistance,
-                  5.f, DeltaTime, "EMovingDirection::EMD_None");
+                return AdjustCameraLag(OffsetIdle, CameraLagMaxDistance_Idle, 5.f,
+              DeltaTime, "EMovingDirection::EMD_None");
         }
 
     } else if (bAiming && !bCrouching) {
@@ -2430,8 +2364,8 @@ void AShooterCharacter::SetMovingDirectionActions(float &DeltaTime) {
                   DeltaTime, "EMovingDirection::Jump");
 
             case EMovingDirection::EMD_None :
-                return AdjustCameraLag(OriginalCameraSocketOffset, OriginalCameraLagMaxDistance,
-                  5.f, DeltaTime, "EMovingDirection::EMD_None");
+                return AdjustCameraLag(OffsetIdle, CameraLagMaxDistance_Idle, 5.f,
+              DeltaTime, "EMovingDirection::EMD_None");
         }
 
     } else if (!bAiming && bCrouching) {
@@ -2530,21 +2464,15 @@ void AShooterCharacter::SetMovingDirectionActions(float &DeltaTime) {
                   Jump_interpTime, "EMovingDirection::Jump");
 
             case EMovingDirection::EMD_None :
-                return AdjustCameraLag(OriginalCameraSocketOffset, OriginalCameraLagMaxDistance,
-                  5.f, DeltaTime, "EMovingDirection::EMD_None");
+                return AdjustCameraLag(OffsetIdle, CameraLagMaxDistance_Idle, 5.f,
+              DeltaTime, "EMovingDirection::EMD_None");
         }
 
     } else if (bIsJumping) {
 
         return AdjustCameraLag(OffsetJump, CameraLagMaxDistance_Jump, DeltaTime, Jump_interpTime,
           "EMovingDirection::Jump");
-
-    } else if (bNotMoving) {
-
-        return AdjustCameraLag(OriginalCameraSocketOffset, OriginalCameraLagMaxDistance, 5.f,
-          DeltaTime, "EMovingDirection::EMD_None");
     }
-
 }
 
 void AShooterCharacter::EMovingDirection_None(float DeltaTime) {
@@ -2552,10 +2480,10 @@ void AShooterCharacter::EMovingDirection_None(float DeltaTime) {
     CustomCameraLagMaxDistance = OriginalCameraLagMaxDistance;
     CustomCameraSocketOffset   = OriginalCameraSocketOffset;
 
-    double GetInterpMaxDistance {FMath::FInterpTo(
+    const double GetInterpMaxDistance {FMath::FInterpTo(
       CameraBoom->CameraLagMaxDistance, CustomCameraLagMaxDistance, DeltaTime, 5.f)};
 
-    FVector GetInterpSocket {
+    const FVector GetInterpSocket {
       FMath::VInterpTo(CameraBoom->SocketOffset, OriginalCameraSocketOffset, DeltaTime, 5.f)};
 
     CameraBoom->CameraLagMaxDistance = GetInterpMaxDistance;
@@ -2577,10 +2505,10 @@ void AShooterCharacter::AdjustCameraLag(const FVector &Offset, const double &Cam
 
     CustomCameraSocketOffset = CustomSocket;
 
-    double GetInterpMaxDistance {FMath::FInterpTo(
+    const double GetInterpMaxDistance {FMath::FInterpTo(
       CameraBoom->CameraLagMaxDistance, CameraLagMaxDistance, DeltaTime, InterpTime)};
 
-    FVector GetInterpSocket {
+    const FVector GetInterpSocket {
       FMath::VInterpTo(CameraBoom->SocketOffset, CustomCameraSocketOffset, DeltaTime, InterpTime)};
 
     CameraBoom->CameraLagMaxDistance = GetInterpMaxDistance;

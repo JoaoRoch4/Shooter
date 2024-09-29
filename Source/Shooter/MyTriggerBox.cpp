@@ -14,6 +14,12 @@
 #include <Kismet/GameplayStatics.h>
 #include <Kismet/KismetSystemLibrary.h>
 #include <Sound/SoundCue.h>
+#include "Custom.h"
+#include "Delegates/Delegate.h"
+#include "DrawDebugHelpers.h"
+#include "Engine/TimerHandle.h"
+#include "HAL/Platform.h"
+#include "Math/Color.h"
 
 AMyTriggerBox::AMyTriggerBox()
  : DebugSounds(nullptr)
@@ -85,13 +91,13 @@ void AMyTriggerBox::OverlapBeginHappened(AActor *OverlappedActor, AActor *OtherA
 
     PrintClearScreen();
     PrintOnScr("OverlapBeginHappened");
-    PrintOnScrFS("By: %s", *OtherActor->GetName());
+    PrintOnScrFS("By: %hs", *OtherActor->GetName());
     
     DrawDebugBox(GetWorld(), GetActorLocation(), GetComponentsBoundingBox().GetExtent(),
       FColor::Red, true, -1, 0, 10.f);
 
     int32 RandomInt {DefaultRandom->GenerateRandomInt32()};   
-        PrintOnScrFS("RandomInt: %s", *FString::FromInt(RandomInt));
+        PrintOnScrFS("RandomInt: %hs", *FString::FromInt(RandomInt));
 }
 
 void AMyTriggerBox::OverlapEndHappened(AActor *OverlappedActor, AActor *OtherActor) {
@@ -99,14 +105,14 @@ void AMyTriggerBox::OverlapEndHappened(AActor *OverlappedActor, AActor *OtherAct
     PrintClearScreen();
 
     PrintOnScr("OverlapEndHappened");
-    PrintOnScrFS("By: %s", *OtherActor->GetName());
+    PrintOnScrFS("By: %hs", *OtherActor->GetName());
 
     DrawDebugBox(GetWorld(), GetActorLocation(), GetComponentsBoundingBox().GetExtent(),
       FColor::Purple, true, -1, 0, 10.f);
 
     int64 RandomInt64 {DefaultRandom->GenerateRandomInt64()};
 
-    PrintOnScrFS("RandomInt: %s", *FString::FromInt(RandomInt64));
+    PrintOnScrFS("RandomInt: %hs", *FString::FromInt(RandomInt64));
 
    
     // ExitEngine();

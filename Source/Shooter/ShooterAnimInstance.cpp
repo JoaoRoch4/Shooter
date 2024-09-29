@@ -7,6 +7,9 @@
 
 #include <GameFramework\CharacterMovementComponent.h>
 #include <Kismet\KismetMathLibrary.h>
+#include "GenericPlatform/GenericPlatformMath.h"
+#include "Math/UnrealMathUtility.h"
+#include "Templates/Casts.h"
 
 UShooterAnimInstance::UShooterAnimInstance()
  : ShooterCharacter(nullptr)
@@ -58,8 +61,8 @@ void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime) {
     bIsAccelerating
       = (ShooterCharacter->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.f) ? true : false;
 
-    FRotator AimRotation {ShooterCharacter->GetBaseAimRotation()};
-    FRotator MovementRotation {UKismetMathLibrary::MakeRotFromX(ShooterCharacter->GetVelocity())};
+    const FRotator AimRotation {ShooterCharacter->GetBaseAimRotation()};
+    const FRotator MovementRotation {UKismetMathLibrary::MakeRotFromX(ShooterCharacter->GetVelocity())};
 
     MovementOffsetYaw
       = UKismetMathLibrary::NormalizedDeltaRotator(MovementRotation, AimRotation).Yaw;
@@ -68,20 +71,19 @@ void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime) {
 
     bAiming = ShooterCharacter->GetAiming();
 
-    if (bReloading) {
+    if (bReloading) 
         OffsetState = EOffsetState::EOS_Reloading;
-    } else if (bIsInAir) {
+    else if (bIsInAir) 
         OffsetState = EOffsetState::EOS_InAir;
-    } else if (ShooterCharacter->GetAiming()) {
+    else if (ShooterCharacter->GetAiming()) 
         OffsetState = EOffsetState::EOS_Aiming;
-    } else {
+    else 
         OffsetState = EOffsetState::EOS_Hip;
-    }
+    
     // Check if ShooterCharacter has a valid EquippedWeapon
-    if (ShooterCharacter->GetEquippedWeapon()) {
+    if (ShooterCharacter->GetEquippedWeapon())
         WeaponType = ShooterCharacter->GetEquippedWeapon()->GetWeaponType();
-    }
-
+    
     TurnInPlace();
     Lean(DeltaTime);
 }
@@ -114,13 +116,13 @@ void UShooterAnimInstance::TurnInPlace() {
         RootYawOffset = UKismetMathLibrary::NormalizeAxis(RootYawOffset - TIPYawDelta);
 
         // 1.0 if turning, 0.0 if not
-        const float Turning {GetCurveValue(TEXT("Turning"))};
+        const float Turning {GetCurveValue(L"Turning")};
 
         if (Turning > 0) {
 
             bTurningInPlace        = true;
             RotationCurveLastFrame = RotationCurve;
-            RotationCurve          = GetCurveValue(TEXT("Rotation"));
+            RotationCurve          = GetCurveValue(L"Rotation");
             const float DeltaRotation {RotationCurve - RotationCurveLastFrame};
 
             // RootYawOffset > 0, -> Turning Left. RootYawOffset < 0, -> Turning Right.
@@ -145,20 +147,19 @@ void UShooterAnimInstance::TurnInPlace() {
         } else {
             RecoilWeight = 0.f;
         }
-    } else // not turning in place
-    {
+    } else { // not turning in place
+    
         if (bCrouching) {
-            if (bReloading || bEquipping) {
+            if (bReloading || bEquipping) 
                 RecoilWeight = 1.f;
-            } else {
+            else 
                 RecoilWeight = 0.1f;
-            }
+            
         } else {
-            if (bAiming || bReloading || bEquipping) {
+            if (bAiming || bReloading || bEquipping) 
                 RecoilWeight = 1.f;
-            } else {
-                RecoilWeight = 0.5f;
-            }
+            else 
+                RecoilWeight = 0.5f;            
         }
     }
 }
@@ -173,7 +174,9 @@ void UShooterAnimInstance::Lean(float DeltaTime) {
     const FRotator Delta {
       UKismetMathLibrary::NormalizedDeltaRotator(CharacterRotation, CharacterRotationLastFrame)};
 
-    const float Target = Delta.Yaw / DeltaTime;
+    const float DeltaYaw {static_cast<const float>(Delta.Yaw)};
+
+    const float Target {DeltaYaw / DeltaTime};
 
     const float Interp {FMath::FInterpTo(YawDelta, Target, DeltaTime, 6.f)};
 
