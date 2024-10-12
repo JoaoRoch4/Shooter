@@ -8,8 +8,6 @@
 
 #include "Item.generated.h"
 
-using namespace UnrealBasic;
-
 UENUM(BlueprintType, Category = "UEnums|EItemRarity")
 enum class EItemRarity : uint8 {
 
@@ -306,7 +304,7 @@ private:
     /**  Material instance used with the Dynamic Material instance. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Materials",
       meta = (AllowPrivateAccess = "true"))
-    UMaterialInstance *MaterialInstance;
+    class UMaterialInstance *MaterialInstance;
 
     bool bCanChangeCustomDepth;
 
@@ -463,7 +461,7 @@ public:
      */
     FORCEINLINE void SetAmmoIcon(UTexture2D *AmmoIcon) { AmmoItem = AmmoIcon; }
 
-    FORCEINLINE void SetMaterialInstance(UMaterialInstance *Material) {
+    FORCEINLINE void SetMaterialInstance(class UMaterialInstance *Material) {
         MaterialInstance = Material;
     }
     FORCEINLINE UMaterialInstance *GetMaterialInstance() const { return MaterialInstance; }

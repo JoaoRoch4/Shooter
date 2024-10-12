@@ -4,8 +4,8 @@
  * Code
  * \author João Rocha
  * \date   December 2023 -
- * January 2024             
-*********************************************************************/
+ * January 2024
+ *********************************************************************/
 
 #include "ShooterCharacter.h"
 
@@ -89,7 +89,7 @@ AShooterCharacter::AShooterCharacter()
  , CameraArmLengthEnd(300.f)
  , TransitionDuration(0.2f)
  , PreviousYaw(NULL)
- , LerpedArmLength(NULL)
+ , LeapedArmLength(NULL)
  , CurrentTime(NULL)
  , BaseTurnRate(45.f)
  , BaseLookUpRate(45.f)
@@ -313,14 +313,14 @@ AShooterCharacter::AShooterCharacter()
 void AShooterCharacter::BeginPlay() {
 
     Super::BeginPlay();
-
     SetupFollowCamera();
     EquipWeapon();
     InitializeAmmoMap();
     InitializeInterpLocations();
-    UpdateSlotsItens();
+    UpdateSlotsItems();
     GetOriginalCameraLagOffset();
     AdjustVectors();
+    SetMovingDirection();
 }
 
 void AShooterCharacter::Tick(float DeltaTime) {
@@ -342,7 +342,7 @@ void AShooterCharacter::Tick(float DeltaTime) {
     // Interpolate capsule half height based on crouching/standing
     InterpCapsuleHalfHeight(DeltaTime);
 
-    if (bDebugSlotMessages) DebugSlotsItens();
+    if (bDebugSlotMessages) DebugSlotsItems();
 
     // DisableCameraLagWhenMovingRight(DeltaTime);
 
@@ -354,7 +354,7 @@ void AShooterCharacter::InterpCapsuleHalfHeight(float DeltaTime) {
     const float TargetCapsuleHalfHeight {
       bCrouching ? CrouchingCapsuleHalfHeight : StandingCapsuleHalfHeight};
 
-    const float GetScaledCapsule {GetCapsuleComponent()->GetScaledCapsuleHalfHeight()};
+    const float     GetScaledCapsule {GetCapsuleComponent()->GetScaledCapsuleHalfHeight()};
     constexpr float InterpSpeed {20.f};
 
     const float InterpHalfHeight {
@@ -383,25 +383,22 @@ void AShooterCharacter::StartCameraLerp(float &DeltaTime) {
     // Bezier Curve
     const float BezierCurve {FMath::InterpEaseInOut(0.0f, 1.0f, Alpha, 2.0f)};
 
-    LerpedArmLength = ((bUseBezierCurve)
-        ?
-        ((bCinematicCameraSwitch) ?
-                         FMath::Lerp(CameraArmLengthStart, CameraArmLengthEnd, BezierCurve) :
-                         FMath::Lerp(CameraArmLengthEnd, CameraArmLengthStart, BezierCurve)) 
-        :
-        ((bCinematicCameraSwitch) ?
-                         FMath::Lerp(CameraArmLengthStart, CameraArmLengthEnd, CurrTmDivTransDur) :
-                         FMath::Lerp(CameraArmLengthEnd, CameraArmLengthStart, CurrTmDivTransDur))
-    );    
+    LeapedArmLength
+      = ((bUseBezierCurve) ?
+           ((bCinematicCameraSwitch) ?
+               FMath::Lerp(CameraArmLengthStart, CameraArmLengthEnd, BezierCurve) :
+               FMath::Lerp(CameraArmLengthEnd, CameraArmLengthStart, BezierCurve)) :
+           ((bCinematicCameraSwitch) ?
+               FMath::Lerp(CameraArmLengthStart, CameraArmLengthEnd, CurrTmDivTransDur) :
+               FMath::Lerp(CameraArmLengthEnd, CameraArmLengthStart, CurrTmDivTransDur)));
 
     // Configures the length of the camera arm
-    CameraBoom->TargetArmLength = LerpedArmLength;
+    CameraBoom->TargetArmLength = LeapedArmLength;
 
     // Verifies if the transition is finished
     if (CurrentTime >= TransitionDuration) {
 
-        (bCinematicCameraSwitch) ? CinematicCameraOn()
-        : CinematicCameraOff();
+        (bCinematicCameraSwitch) ? CinematicCameraOn() : CinematicCameraOff();
 
         bIsTransitioning = false;
     }
@@ -480,8 +477,9 @@ void AShooterCharacter::AimingCameraZoom(float DeltaTime) {
 float AShooterCharacter::BezierCurve_Interp(const float &CurrentFov, const float &TargetFov,
   float DeltaTime, float InterpSpeed, bool bReturnToOriginal) {
 
-    auto BezierInterpolation
-      = [&](const float &Alpha) -> const float { return (3 * Alpha * Alpha - 2 * Alpha * Alpha * Alpha); };
+    auto BezierInterpolation = [&](const float &Alpha) -> const float {
+        return (3 * Alpha * Alpha - 2 * Alpha * Alpha * Alpha);
+    };
 
     const float CurrentFOVCopy {CurrentFov};
     const float TargetFOVCopy {TargetFov};
@@ -510,8 +508,8 @@ void AShooterCharacter::CalculateCrosshairSpread(const float &DeltaTime) {
     Velocity.Z = 0.f;
 
     // Calculate crosshair velocity factor
-    CrosshairVelocityFactor = FMath::GetMappedRangeValueClamped(WalkSpeedRange,
-          VelocityMultiplierRange, Velocity.Size());
+    CrosshairVelocityFactor
+      = FMath::GetMappedRangeValueClamped(WalkSpeedRange, VelocityMultiplierRange, Velocity.Size());
 
     // Calculate crosshair in air factor
     if (GetCharacterMovement()->IsFalling()) { // is in air?
@@ -585,7 +583,7 @@ bool AShooterCharacter::GetBeanEndLocation(
 
     // Check for Crosshair Trace Hit
     FHitResult CrosshairHitResult;
-    const bool       bCrosshairHit {TraceUnderCrosshairs(CrosshairHitResult, OutBeanLocation)};
+    const bool bCrosshairHit {TraceUnderCrosshairs(CrosshairHitResult, OutBeanLocation)};
 
     if (bCrosshairHit)
         // Tentative beam location - still need to trace from gun
@@ -604,12 +602,12 @@ bool AShooterCharacter::GetBeanEndLocation(
     if (WeaponTraceHit.bBlockingHit) {
 
         if (BulletHoleDecalMat && BulletHoleDecal) {
-            
+
             const FVector BulletHoleDecalSize {10.f, 10.f, 10.f};
 
-            BulletHoleDecal = UGameplayStatics::SpawnDecalAtLocation(GetWorld(),
-                BulletHoleDecalMat, BulletHoleDecalSize, WeaponTraceHit.ImpactPoint,
-                WeaponTraceHit.ImpactNormal.Rotation(), 5.f);            
+            BulletHoleDecal = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), BulletHoleDecalMat,
+              BulletHoleDecalSize, WeaponTraceHit.ImpactPoint,
+              WeaponTraceHit.ImpactNormal.Rotation(), 5.f);
         }
 
         constexpr float ImpulseStrength {20'000.f};
@@ -671,7 +669,7 @@ void AShooterCharacter::Relative_ControllerRotationYaw(float DeltaTime) {
     // maior que 40 graus
     if (GetCharacterMovement()) GetCharacterMovement()->AddForce(MovementVector);
 
-    PreviousYaw = CurrentYaw;     
+    PreviousYaw = CurrentYaw;
 }
 
 void AShooterCharacter::SetupFollowCamera() {
@@ -679,7 +677,7 @@ void AShooterCharacter::SetupFollowCamera() {
     CheckPtr(FollowCamera);
 
     CameraDefaultAimFOV = GetFollowCamera()->FieldOfView;
-    CameraCurrentAimFOV = CameraDefaultAimFOV;  
+    CameraCurrentAimFOV = CameraDefaultAimFOV;
 }
 
 // Called to bind functionality to input
@@ -814,9 +812,9 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent *PlayerInputCo
 
 void AShooterCharacter::DefaultConstructor_SetupMesh() {
 
-    constexpr const static TCHAR *SkeletalMeshContainerPath =
-      L"/Script/Engine.SkeletalMesh'/Game/ParagonLtBelica/Characters/Heroes/"
-      L"Belica/Meshes/Belica.Belica'";
+    constexpr const static TCHAR *SkeletalMeshContainerPath
+      = L"/Script/Engine.SkeletalMesh'/Game/ParagonLtBelica/Characters/Heroes/"
+        L"Belica/Meshes/Belica.Belica'";
 
     SkeletalMeshContainer
       = MakeUnique<ConstructorHelpers::FObjectFinder<USkeletalMesh>>(SkeletalMeshContainerPath);
@@ -824,18 +822,17 @@ void AShooterCharacter::DefaultConstructor_SetupMesh() {
     PlayerMesh = GetMesh();
 
     CheckPtr(PlayerMesh);
-       
+
     if (!SkeletalMeshContainer->Succeeded())
         ExitGameErr("AShooterCharacter::DefaultConstructor_SetupMesh(): "
                     "SkeletalMeshContainer failed");
 
     PlayerMesh->SetSkeletalMesh(SkeletalMeshContainer->Object);
 
-    PlayerMesh->SetRelativeLocationAndRotation(
-        FVector(0.f, 0.f, -90.f), FRotator(0.f, -90.f, 0.f));
+    PlayerMesh->SetRelativeLocationAndRotation(FVector(0.f, 0.f, -90.f), FRotator(0.f, -90.f, 0.f));
 
     PlayerMesh->SetAnimationMode(EAnimationMode::AnimationBlueprint);
-    PlayerMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);   
+    PlayerMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AShooterCharacter::DefaultConstructor_SetCombatCues() {
@@ -844,11 +841,11 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
 
         HipFireMontage = CDSubObj<UAnimMontage>(L"HipFireMontage");
 
-        constexpr const static TCHAR *HipFireMontagePath =
-          L"/Script/Engine.AnimMontage'/Game/_Game/Character/Animations/"
-          L"HipFireMontage.HipFireMontage'";
+        constexpr const static TCHAR *HipFireMontagePath
+          = L"/Script/Engine.AnimMontage'/Game/_Game/Character/Animations/"
+            L"HipFireMontage.HipFireMontage'";
 
-        auto const static M_Animation_HipFireMontage {
+        const auto static M_Animation_HipFireMontage {
           ConstructorHelpers::FObjectFinder<UAnimMontage>(HipFireMontagePath)};
 
         if (M_Animation_HipFireMontage.Succeeded())
@@ -863,11 +860,11 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
 
         ImpactParticles = CDSubObj<UParticleSystem>(L"ImpactParticles");
 
-        constexpr const static TCHAR *ImpactParticlesPath =
-          L"/Script/Engine.ParticleSystem'/Game/ParagonLtBelica/FX/Particles/"
-          L"Belica/Abilities/Primary/FX/P_BelicaHitWorld.P_BelicaHitWorld'";
+        constexpr const static TCHAR *ImpactParticlesPath
+          = L"/Script/Engine.ParticleSystem'/Game/ParagonLtBelica/FX/Particles/"
+            L"Belica/Abilities/Primary/FX/P_BelicaHitWorld.P_BelicaHitWorld'";
 
-        auto const static M_ImpactParticle {
+        const auto static M_ImpactParticle {
           ConstructorHelpers::FObjectFinder<UParticleSystem>(ImpactParticlesPath)};
 
         if (M_ImpactParticle.Succeeded()) ImpactParticles = M_ImpactParticle.Object;
@@ -881,9 +878,9 @@ void AShooterCharacter::DefaultConstructor_SetCombatCues() {
 
         BeamParticles = CDSubObj<UParticleSystem>(L"BeamParticles");
 
-        constexpr const static TCHAR *BeamParticlesPath =
-          L"/Script/Engine.ParticleSystem'/Game/_Game/Assets/FX/SmokeBean/"
-          L"P_SmokeTrail_Faded.P_SmokeTrail_Faded'";
+        constexpr const static TCHAR *BeamParticlesPath
+          = L"/Script/Engine.ParticleSystem'/Game/_Game/Assets/FX/SmokeBean/"
+            L"P_SmokeTrail_Faded.P_SmokeTrail_Faded'";
 
         const auto static M_BeamParticle {
           ConstructorHelpers::FObjectFinder<UParticleSystem>(BeamParticlesPath)};
@@ -911,7 +908,7 @@ void AShooterCharacter::DefaultConstructor_SetCharacter() {
       = false; // Character moves in the direction of input...
     GetCharacterMovement()->RotationRate  = FRotator(0.f, 540.f, 0.f); //... at this rotation rate
     GetCharacterMovement()->JumpZVelocity = 600.f;
-    GetCharacterMovement()->AirControl    = 0.2f; 
+    GetCharacterMovement()->AirControl    = 0.2f;
     GetCharacterMovement()->MaxWalkSpeed  = 1500.f;
     GetCharacterMovement()->MaxWalkSpeedCrouched       = 150.f;
     GetCharacterMovement()->MaxAcceleration            = 1020.f;
@@ -985,17 +982,21 @@ void AShooterCharacter::Toggle_bIsFiringWeapon_Off() {
 
 void AShooterCharacter::AimingButtonPressed() {
 
+    bAiming              = true;
     bAimingButtonPressed = true;
 
-    if (CombatState != ECombatState::ECS_Reloading && CombatState != ECombatState::ECS_Equipping) Aim();
+    if (CombatState != ECombatState::ECS_Reloading && CombatState != ECombatState::ECS_Equipping)
+        Aim();
 
     SetMovingDirection();
 }
 
 void AShooterCharacter::AimingButtonReleased() {
 
+    bAiming              = false;
     bAimingButtonPressed = false;
     StopAiming();
+    SetMovingDirection();
 }
 
 void AShooterCharacter::SetsLookRates() {
@@ -1107,11 +1108,11 @@ void AShooterCharacter::MoveForward(float Value) {
     // find which way is forward
     const FRotator Rotation {Controller->GetControlRotation()};
     const FRotator YawRotation {0, Rotation.Yaw, 0};
-    const FVector     X {FRotationMatrix {YawRotation}.GetUnitAxis(EAxis::X)};
+    const FVector  X {FRotationMatrix {YawRotation}.GetUnitAxis(EAxis::X)};
 
     const FVector Direction {X};
 
-    AddMovementInput(Direction, Value);    
+    AddMovementInput(Direction, Value);
 }
 
 void AShooterCharacter::MoveRight(float Value) {
@@ -1122,9 +1123,9 @@ void AShooterCharacter::MoveRight(float Value) {
     const FRotator Rotation {Controller->GetControlRotation()};
     const FRotator YawRotation {0, Rotation.Yaw, 0};
     const FVector  Y {FRotationMatrix {YawRotation}.GetUnitAxis(EAxis::Y)};
-    const FVector Direction {Y};
+    const FVector  Direction {Y};
 
-    AddMovementInput(Direction, Value);    
+    AddMovementInput(Direction, Value);
 }
 
 void AShooterCharacter::DefaultConstructor_CustomCamera() {
@@ -1181,9 +1182,13 @@ void AShooterCharacter::FireButtonPressed() {
 
     bFireButtonPressed = true;
     FireWeapon();
+    SetMovingDirection();
 }
 
-void AShooterCharacter::FireButtonReleased() { bFireButtonPressed = false; }
+void AShooterCharacter::FireButtonReleased() {
+    bFireButtonPressed = false;
+    SetMovingDirection();
+}
 
 void AShooterCharacter::StartFireTimer() {
 
@@ -1338,16 +1343,21 @@ AWeapon *AShooterCharacter::SpawnDefaultWeapon() {
 
 void AShooterCharacter::EquipWeapon(AWeapon *WeaponToEquip, bool bSwapping) {
 
-    CheckPtr(WeaponToEquip) 
+    CheckPtr(WeaponToEquip)
 
-    // Get the Hand Socket
-    const USkeletalMeshSocket *HandSocket
-        = GetMesh()->GetSocketByName(FName(L"RightHandSocket"));
+      // Get the Hand Socket
+      const USkeletalMeshSocket *HandSocket
+      = GetMesh()->GetSocketByName(FName(L"RightHandSocket"));
 
-    CheckPtr(HandSocket);      
+    CheckPtr(HandSocket);
 
-    // Attach the Weapon to the hand socket RightHandSocket
-    HandSocket->AttachActor(WeaponToEquip, GetMesh());
+    if (HandSocket)
+        // Attach the Weapon to the hand socket RightHandSocket
+        HandSocket->AttachActor(WeaponToEquip, GetMesh());
+    else {
+        ExitGame();
+        return;
+    }
 
     if (EquippedWeapon == nullptr) {
 
@@ -1356,8 +1366,7 @@ void AShooterCharacter::EquipWeapon(AWeapon *WeaponToEquip, bool bSwapping) {
 
     } else if (!bSwapping) {
 
-        EquipItemDelegate.Broadcast(
-            EquippedWeapon->GetSlotIndex(), WeaponToEquip->GetSlotIndex());
+        EquipItemDelegate.Broadcast(EquippedWeapon->GetSlotIndex(), WeaponToEquip->GetSlotIndex());
     }
 
     // Set EquippedWeapon to the newly spawned Weapon
@@ -1375,7 +1384,6 @@ void AShooterCharacter::DropWeapon() {
 
     EquippedWeapon->SetItemState(EItemState::EIS_Falling);
     EquippedWeapon->ThrowWeapon();
-    
 }
 
 void AShooterCharacter::SwapWeapon(AWeapon *WeaponToSwap) {
@@ -1441,7 +1449,7 @@ void AShooterCharacter::SendBullet() {
         UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, BeamEnd);
 
     UParticleSystemComponent *Beam {
-        UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BeamParticles, SocketTransform)};
+      UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BeamParticles, SocketTransform)};
 
     if (Beam) Beam->SetVectorParameter(FName("Target"), BeamEnd);
 }
@@ -1451,10 +1459,10 @@ void AShooterCharacter::PlayGunFireMontage() {
     UAnimInstance *AnimInstance {GetMesh()->GetAnimInstance()};
 
     CheckPtr(AnimInstance);
-    CheckPtr(HipFireMontage);  
+    CheckPtr(HipFireMontage);
 
     AnimInstance->Montage_Play(HipFireMontage);
-    AnimInstance->Montage_JumpToSection(FName("StartFire"));    
+    AnimInstance->Montage_JumpToSection(FName("StartFire"));
 }
 
 void AShooterCharacter::ReloadButtonPressed() { ReloadWeapon(); }
@@ -1498,8 +1506,7 @@ void AShooterCharacter::FinishReloading() {
     int32 CarriedAmmo {AmmoMap [AmmoType]};
 
     // Space left in the magazine of the equipped weapon
-    const int32 MagEmptySpace {
-        EquippedWeapon->GetMagazineCapacity() - EquippedWeapon->GetAmmo()};
+    const int32 MagEmptySpace {EquippedWeapon->GetMagazineCapacity() - EquippedWeapon->GetAmmo()};
 
     if (MagEmptySpace > CarriedAmmo) {
 
@@ -1514,7 +1521,7 @@ void AShooterCharacter::FinishReloading() {
         EquippedWeapon->ReloadAmmo(MagEmptySpace);
         CarriedAmmo -= MagEmptySpace;
         AmmoMap.Add(AmmoType, CarriedAmmo);
-    }    
+    }
 }
 
 void AShooterCharacter::FinishEquipping() {
@@ -1531,7 +1538,7 @@ bool AShooterCharacter::CarryingAmmo() {
     const EAmmoType AmmoType {EquippedWeapon->GetAmmoType()};
 
     if (AmmoMap.Contains(AmmoType)) return AmmoMap [AmmoType] > 0;
-    
+
     return false;
 }
 
@@ -1616,8 +1623,8 @@ void AShooterCharacter::GetOriginalCameraLagOffset() {
 
     if (OriginalCameraSocketOffset == FVector::ZeroVector)
         OriginalCameraSocketOffset = CameraBoom->SocketOffset;
-    
-    OriginalCameraLagSpeed = CameraBoom->CameraLagSpeed;
+
+    OriginalCameraLagSpeed       = CameraBoom->CameraLagSpeed;
     OriginalCameraLagMaxDistance = CameraBoom->CameraLagMaxDistance;
 }
 
@@ -1684,7 +1691,7 @@ void AShooterCharacter::GetPickupItem(AItem *Item) {
         }
     }
     const auto Ammo = Cast<AAmmo>(Item);
-    if (Ammo) PickupAmmo(Ammo);    
+    if (Ammo) PickupAmmo(Ammo);
 }
 
 void AShooterCharacter::InitializeInterpLocations() {
@@ -1715,12 +1722,12 @@ inline void AShooterCharacter::ResetPickupSoundTimer() { bShouldPlayPickupSound 
 
 inline void AShooterCharacter::ResetEquipSoundTimer() { bShouldPlayEquipSound = true; }
 
-void AShooterCharacter::ExchangeInventoryItens(int32 CurrentItemindex, int32 NewItemIndex) {
+void AShooterCharacter::ExchangeInventoryItems(int32 CurrentItemindex, int32 NewItemIndex) {
 
-    const bool CanExchange {
-        ((CurrentItemindex != NewItemIndex) && (NewItemIndex < Inventory.Num())
-         && ((CombatState == ECombatState::ECS_Unoccupied) || (CombatState == ECombatState::ECS_Equipping))
-         && (bExchangeInventoryItensEnabled))};
+    const bool CanExchange {((CurrentItemindex != NewItemIndex) && (NewItemIndex < Inventory.Num())
+                             && ((CombatState == ECombatState::ECS_Unoccupied)
+                                 || (CombatState == ECombatState::ECS_Equipping))
+                             && (bExchangeInventoryItensEnabled))};
 
     if (!CanExchange) return;
 
@@ -1751,14 +1758,14 @@ void AShooterCharacter::ExchangeInventoryItens(int32 CurrentItemindex, int32 New
     AnimInstance->Montage_JumpToSection(FName(L"Equip"));
 
     GetWorld()->GetTimerManager().SetTimer(ExchangeInventoryItensTimer, this,
-      &AShooterCharacter::EnableExchangeInventoryItens, ExchangeInventoryItensTime, false);
+      &AShooterCharacter::EnableExchangeInventoryItems, ExchangeInventoryItensTime, false);
 
     NewWeapon->PlayEquipSound(true);
 }
 
-void AShooterCharacter::PreviousSlot() { ExchangeInventoryItens(LastLastSlotIndex, LastSlotIndex); }
+void AShooterCharacter::PreviousSlot() { ExchangeInventoryItems(LastLastSlotIndex, LastSlotIndex); }
 
-void AShooterCharacter::EnableExchangeInventoryItens() { bExchangeInventoryItensEnabled = true; }
+void AShooterCharacter::EnableExchangeInventoryItems() { bExchangeInventoryItensEnabled = true; }
 
 void AShooterCharacter::StartPickupSoundTimer() {
 
@@ -1849,9 +1856,9 @@ void AShooterCharacter::HandleMouseWheel(float Value) {
     }
 }
 
-void AShooterCharacter::DebugSlotsItens() {
+void AShooterCharacter::DebugSlotsItems() {
 
-    UpdateSlotsItens();
+    UpdateSlotsItems();
 
     if (GEngine) {
 
@@ -1862,7 +1869,7 @@ void AShooterCharacter::DebugSlotsItens() {
     }
 }
 
-void AShooterCharacter::UpdateSlotsItens() {
+void AShooterCharacter::UpdateSlotsItems() {
 
     CurrentSlotIndex = EquippedWeapon->GetSlotIndex();
     InventoryCount   = Inventory.Num();
@@ -1881,37 +1888,37 @@ void AShooterCharacter::EquipWeapon() {
 
 void AShooterCharacter::ScrollUp() {
 
-    CheckPtr(EquippedWeapon) 
+    CheckPtr(EquippedWeapon);
 
-    UpdateSlotsItens();
+    UpdateSlotsItems();
 
     if (InventoryCount == 1) return;
 
     // Go to the first slot index
     else if ((CurrentSlotIndex >= EquippedWeapon->GetMaxSlotNumber())
-                || ((CurrentSlotIndex + 1) == InventoryCount))
-        ExchangeInventoryItens(CurrentSlotIndex, 0);
+             || ((CurrentSlotIndex + 1) == InventoryCount))
+        ExchangeInventoryItems(CurrentSlotIndex, 0);
 
     // advance the slot index
     else if ((InventoryCount - 1) > CurrentSlotIndex)
-        ExchangeInventoryItens(CurrentSlotIndex, (CurrentSlotIndex + 1));   
+        ExchangeInventoryItems(CurrentSlotIndex, (CurrentSlotIndex + 1));
 }
 
 void AShooterCharacter::ScrollDown() {
 
-    CheckPtr(EquippedWeapon); 
+    CheckPtr(EquippedWeapon);
 
-    UpdateSlotsItens();
+    UpdateSlotsItems();
 
     if (InventoryCount == 1) return;
 
     // Go to the last slot index
     else if (CurrentSlotIndex <= 0)
-        return ExchangeInventoryItens(CurrentSlotIndex, (InventoryCount - 1));
+        return ExchangeInventoryItems(CurrentSlotIndex, (InventoryCount - 1));
 
     // Go back the slot index
     else if ((InventoryCount - 1) >= CurrentSlotIndex)
-        return ExchangeInventoryItens(CurrentSlotIndex, (CurrentSlotIndex - 1));   
+        return ExchangeInventoryItems(CurrentSlotIndex, (CurrentSlotIndex - 1));
 }
 
 void AShooterCharacter::KEY_DKey_D_Pressed() { KeyMethodDKey(); }
@@ -1989,11 +1996,11 @@ void AShooterCharacter::KeyMethodAKeyReleased() {
 void AShooterCharacter::KEY_FkeyPressed() { KeyMethodFKey(); }
 void AShooterCharacter::KeyMethodFKey() {
 
-    CheckPtr(EquippedWeapon) 
+    CheckPtr(EquippedWeapon)
 
-    UpdateSlotsItens();
+      UpdateSlotsItems();
     if (CurrentSlotIndex == 0) return;
-    return ExchangeInventoryItens(CurrentSlotIndex, 0);
+    return ExchangeInventoryItems(CurrentSlotIndex, 0);
 }
 
 void AShooterCharacter::KEY_1_OneKeyPressed() { KeyMethod1Key(); }
@@ -2001,10 +2008,10 @@ void AShooterCharacter::KeyMethod1Key() {
 
     CheckPtr(EquippedWeapon);
 
-    UpdateSlotsItens();
+    UpdateSlotsItems();
 
     if (CurrentSlotIndex == 1) return;
-    return ExchangeInventoryItens(CurrentSlotIndex, 1);    
+    return ExchangeInventoryItems(CurrentSlotIndex, 1);
 }
 
 void AShooterCharacter::KEY_2_TwoKeyPressed() { KeyMethod2Key(); }
@@ -2012,10 +2019,9 @@ void AShooterCharacter::KeyMethod2Key() {
 
     CheckPtr(EquippedWeapon);
 
-
-    UpdateSlotsItens();
+    UpdateSlotsItems();
     if (CurrentSlotIndex == 2) return;
-    return ExchangeInventoryItens(CurrentSlotIndex, 2);
+    return ExchangeInventoryItems(CurrentSlotIndex, 2);
 }
 
 void AShooterCharacter::KEY_3_ThreeKeyPressed() { KeyMethod3Key(); }
@@ -2023,9 +2029,9 @@ void AShooterCharacter::KeyMethod3Key() {
 
     CheckPtr(EquippedWeapon);
 
-    UpdateSlotsItens();
+    UpdateSlotsItems();
     if (CurrentSlotIndex == 3) return;
-    return ExchangeInventoryItens(CurrentSlotIndex, 3);
+    return ExchangeInventoryItems(CurrentSlotIndex, 3);
 }
 
 void AShooterCharacter::KEY_4_FourKeyPressed() { KeyMethod4Key(); }
@@ -2033,9 +2039,9 @@ void AShooterCharacter::KeyMethod4Key() {
 
     CheckPtr(EquippedWeapon);
 
-    UpdateSlotsItens();
+    UpdateSlotsItems();
     if (CurrentSlotIndex == 4) return;
-    return ExchangeInventoryItens(CurrentSlotIndex, 4);    
+    return ExchangeInventoryItems(CurrentSlotIndex, 4);
 }
 
 void AShooterCharacter::KEY_5_FiveKeyPressed() { KeyMethod5Key(); }
@@ -2043,10 +2049,10 @@ void AShooterCharacter::KeyMethod5Key() {
 
     if (EquippedWeapon) {
 
-        UpdateSlotsItens();
+        UpdateSlotsItems();
 
         if (CurrentSlotIndex == 5) return;
-        return ExchangeInventoryItens(CurrentSlotIndex, 5);
+        return ExchangeInventoryItems(CurrentSlotIndex, 5);
 
     } else {
 
@@ -2069,7 +2075,14 @@ void AShooterCharacter::KeyMethod9Key() { return; }
 void AShooterCharacter::KEY_0_ZeroKeyPressed() { KeyMethod0Key(); }
 void AShooterCharacter::KeyMethod0Key() { return; }
 
+void AShooterCharacter::SetMovingLogic() {
+
+
+}
+
 void AShooterCharacter::SetMovingDirection() {
+
+    SetMovingLogic();
 
     bNotMoving = false;
 
@@ -2127,10 +2140,10 @@ void AShooterCharacter::SetMovingDirection() {
       bBackwardCrouchAim && bLeftCrouchAim && bAiming && bCrouching};
 
     const bool bStraightDirections {
-      bMovingForward || bMovingBackward || bMovingRight || bMovingLeft};
+      (bMovingForward || bMovingBackward || bMovingRight || bMovingLeft) && !bAiming};
 
     const bool bDiagonalDirections {
-      bMovingForwardRight || bMovingForwardLeft || bMovingBackwardRight || bMovingBackwardLeft};
+      (bMovingForwardRight || bMovingForwardLeft || bMovingBackwardRight || bMovingBackwardLeft) && !bAiming};
 
     const bool bStraightDirectionsAim {bForwardAim || bBackwardAim || bRightAim || bLeftAim};
 
@@ -2147,7 +2160,7 @@ void AShooterCharacter::SetMovingDirection() {
       bForwardCrouchAim || bBackwardCrouchAim || bRightCrouchAim || bLeftCrouchAim};
 
     const bool bDiagonalDirectionsCrouchAim {bForwardRightCrouchAim || bForwardLeftCrouchAim
-                                       || bBackwardRightCrouchAim || bBackwardLeftCrouchAim};
+                                             || bBackwardRightCrouchAim || bBackwardLeftCrouchAim};
 
     bMovingStraight = (bStraightDirections && !bDiagonalDirections && !bAiming);
     bMovingDiagonal = (!bMovingStraight && bDiagonalDirections && !bAiming);
@@ -2162,116 +2175,144 @@ void AShooterCharacter::SetMovingDirection() {
       = (bCrouching && bAiming && bStraightDirectionsCrouchAim && !bDiagonalDirectionsCrouchAim);
 
     bMovingDiagonalCrouchAim = (bCrouching && bAiming && !bMovingStraightCrouchAim);
-
     bNotMoving = !(bMovingStraight && bMovingDiagonal && bMovingStraightAim && bMovingDiagonalAim);
-
     bAimingStill = (bNotMoving && bAiming);
 
-    if (bIsJumping) {
-        MovingDirection = EMovingDirection::EMD_Jump;
-        return;
+    const bool bOnlyMovingStraight {
+      !bAiming && bMovingStraight && !bMovingDiagonal && !bCrouching && !bIsJumping};
+    const bool bOnlyMovingDioganaly {
+      !bAiming && bMovingDiagonal && !bMovingStraight && !bCrouching && !bIsJumping};
+
+    const bool bOnlyMovingStraightJump {
+      !bAiming && bMovingStraight && !bMovingDiagonal && !bCrouching && bIsJumping};
+    const bool bOnlyMovingDioganalyJump {
+      !bAiming && bMovingDiagonal && !bMovingStraight && !bCrouching && bIsJumping};
+
+    const bool bOnlyMovingStraightAim {
+      bMovingStraightAim && !bMovingDiagonalAim && !bCrouching && !bIsJumping};
+    const bool bOnlyMovingDiagonalAim {
+      !bMovingStraightAim && bMovingDiagonalAim && !bCrouching && !bIsJumping};
+
+    const bool bOnlyMovingStraighCrouch {
+      bMovingStraightCrouch && !bMovingDiagonalCrouch && bCrouching && !bIsJumping};
+    const bool bOnlyMovingDiagonalyCrouch {
+      !bMovingStraightCrouch && bMovingDiagonalCrouch && bCrouching && !bIsJumping};
+
+    const bool bOnlyMovingStraighCrouchnAim {bMovingStraightCrouchAim && !bMovingDiagonalCrouchAim
+                                             && bCrouching && bAiming && !bIsJumping};
+    const bool bOnlyMovingDiagonalyCrouchnAim {!bMovingStraightCrouchAim && bMovingDiagonalCrouchAim
+                                               && bCrouching && bAiming && !bIsJumping};
+
+    const bool bCrouch {!bAiming && bCrouching && !bIsJumping};
+    const bool bAim {bAiming && !bCrouching && !bIsJumping};
+    const bool bCrouchAim {bAiming && bCrouching && !bIsJumping};
+    const bool bJumping {!bAiming && !bCrouching && bIsJumping};
+    const bool bNotMove {!bAiming && !bCrouching && !bIsJumping};
+
+    const bool bSimpleActions {bCrouch || bAim || bCrouchAim || bJumping || bNotMove};
+
+    if (bSimpleActions) {
+
+        if (bCrouchAim) MovingDirection = EMovingDirection::EMD_CrouchAim;
+        if (bCrouch) MovingDirection = EMovingDirection::EMD_Crouch;
+        if (bAim) MovingDirection = EMovingDirection::EMD_Aim;
+        if (bJumping) MovingDirection = EMovingDirection::EMD_Jump;
+        if (bNotMove) MovingDirection = EMovingDirection::EMD_None;
     }
 
-    if (!bAiming && bMovingStraight && !bMovingDiagonal && !bCrouching) {
+    if (bOnlyMovingStraight) {
 
-        if (bMovingForward && !bAiming) MovingDirection = EMovingDirection::EMD_Forward;
-        else if (bMovingBackward && !bAiming) MovingDirection = EMovingDirection::EMD_Backward;
-        else if (bMovingRight && !bAiming) MovingDirection = EMovingDirection::EMD_Right;
-        else if (bMovingLeft && !bAiming) MovingDirection = EMovingDirection::EMD_Left;
-        return;
+        if (bMovingForward) MovingDirection = EMovingDirection::EMD_Forward;
+        if (bMovingBackward) MovingDirection = EMovingDirection::EMD_Backward;
+        if (bMovingRight) MovingDirection = EMovingDirection::EMD_Right;
+        if (bMovingLeft) MovingDirection = EMovingDirection::EMD_Left;
     }
 
-    if (!bAiming && bMovingDiagonal && !bMovingStraight && !bCrouching) {
+    if (bOnlyMovingDioganaly) {
 
-        if (bMovingForwardRight && !bAiming) MovingDirection = EMovingDirection::EMD_ForwardRight;
-        else if (bMovingForwardLeft && !bAiming)
-            MovingDirection = EMovingDirection::EMD_ForwardLeft;
-        else if (bMovingBackwardRight && !bAiming)
-            MovingDirection = EMovingDirection::EMD_BackwardRight;
-        else if (bMovingBackwardLeft && !bAiming)
-            MovingDirection = EMovingDirection::EMD_BackwardLeft;
-        return;
+        if (bMovingForwardRight) MovingDirection = EMovingDirection::EMD_ForwardRight;
+        if (bMovingForwardLeft) MovingDirection = EMovingDirection::EMD_ForwardLeft;
+        if (bMovingBackwardRight)MovingDirection = EMovingDirection::EMD_BackwardRight;
+        if (bMovingBackwardLeft)MovingDirection = EMovingDirection::EMD_BackwardLeft;
     }
 
-    if (bMovingStraightAim && !bMovingDiagonalAim && !bCrouching) {
+    if (bOnlyMovingStraightAim) {
 
         if (bForwardAim) MovingDirection = EMovingDirection::EMD_ForwardAim;
-        else if (bBackwardAim) MovingDirection = EMovingDirection::EMD_BackwardAim;
-        else if (bRightAim) MovingDirection = EMovingDirection::EMD_RightAim;
-        else if (bLeftAim) MovingDirection = EMovingDirection::EMD_LeftAim;
-        return;
+        if (bBackwardAim) MovingDirection = EMovingDirection::EMD_BackwardAim;
+        if (bRightAim) MovingDirection = EMovingDirection::EMD_RightAim;
+        if (bLeftAim) MovingDirection = EMovingDirection::EMD_LeftAim;
     }
 
-    if (!bMovingStraightAim && bMovingDiagonalAim && !bCrouching) {
+    if (bOnlyMovingDiagonalAim) {
 
         if (bForwardRightAim) MovingDirection = EMovingDirection::EMD_ForwardRightAim;
-        else if (bForwardLeftAim) MovingDirection = EMovingDirection::EMD_ForwardLeftAim;
-        else if (bBackwardRightAim) MovingDirection = EMovingDirection::EMD_BackwardRightAim;
-        else if (bBackwardLeftAim) MovingDirection = EMovingDirection::EMD_BackwardLeftAim;
-        return;
+        if (bForwardLeftAim) MovingDirection = EMovingDirection::EMD_ForwardLeftAim;
+        if (bBackwardRightAim) MovingDirection = EMovingDirection::EMD_BackwardRightAim;
+        if (bBackwardLeftAim) MovingDirection = EMovingDirection::EMD_BackwardLeftAim;
     }
 
-    if (bMovingStraightCrouch && !bMovingDiagonalCrouch && bCrouching) {
+    if (bOnlyMovingStraighCrouch) {
 
         if (bForwardCrouch) MovingDirection = EMovingDirection::EMD_ForwardCrouch;
-        else if (bBackwardCrouch) MovingDirection = EMovingDirection::EMD_BackwardCrouch;
-        else if (bRightCrouch) MovingDirection = EMovingDirection::EMD_RightCrouch;
-        else if (bLeftCrouch) MovingDirection = EMovingDirection::EMD_LeftCrouch;
-        return;
+        if (bBackwardCrouch) MovingDirection = EMovingDirection::EMD_BackwardCrouch;
+        if (bRightCrouch) MovingDirection = EMovingDirection::EMD_RightCrouch;
+        if (bLeftCrouch) MovingDirection = EMovingDirection::EMD_LeftCrouch;
     }
 
-    if (!bMovingStraightCrouch && bMovingDiagonalCrouch && bCrouching) {
+    if (bOnlyMovingDiagonalyCrouch) {
 
         if (bForwardRightCrouch) MovingDirection = EMovingDirection::EMD_ForwardRightCrouch;
-        else if (bForwardLeftCrouch) MovingDirection = EMovingDirection::EMD_ForwardLeftCrouch;
-        else if (bBackwardRightCrouch) MovingDirection = EMovingDirection::EMD_BackwardRightCrouch;
-        else if (bBackwardLeftCrouch) MovingDirection = EMovingDirection::EMD_BackwardLeftCrouch;
-        return;
+        if (bForwardLeftCrouch) MovingDirection = EMovingDirection::EMD_ForwardLeftCrouch;
+        if (bBackwardRightCrouch) MovingDirection = EMovingDirection::EMD_BackwardRightCrouch;
+        if (bBackwardLeftCrouch) MovingDirection = EMovingDirection::EMD_BackwardLeftCrouch;
     }
 
-    if (bMovingStraightCrouchAim && !bMovingDiagonalCrouchAim && bCrouching && bAiming) {
+    if (bOnlyMovingStraighCrouchnAim) {
 
         if (bForwardCrouchAim) MovingDirection = EMovingDirection::EMD_ForwardCrouchAim;
-        else if (bBackwardCrouchAim) MovingDirection = EMovingDirection::EMD_BackwardCrouchAim;
-        else if (bRightCrouchAim) MovingDirection = EMovingDirection::EMD_RightCrouchAim;
-        else if (bLeftCrouchAim) MovingDirection = EMovingDirection::EMD_LeftCrouchAim;
-        return;
+        if (bBackwardCrouchAim) MovingDirection = EMovingDirection::EMD_BackwardCrouchAim;
+        if (bRightCrouchAim) MovingDirection = EMovingDirection::EMD_RightCrouchAim;
+        if (bLeftCrouchAim) MovingDirection = EMovingDirection::EMD_LeftCrouchAim;
     }
 
-    if (!bMovingStraightCrouchAim && bMovingDiagonalCrouchAim && bCrouching && bAiming) {
+    if (bOnlyMovingDiagonalyCrouchnAim) {
 
         if (bForwardRightCrouchAim) MovingDirection = EMovingDirection::EMD_ForwardRightCrouchAim;
-        else if (bForwardLeftCrouchAim)
-            MovingDirection = EMovingDirection::EMD_ForwardLeftCrouchAim;
-        else if (bBackwardRightCrouchAim)
-            MovingDirection = EMovingDirection::EMD_BackwardRightCrouchAim;
-        else if (bBackwardLeftCrouchAim)
-            MovingDirection = EMovingDirection::EMD_BackwardLeftCrouchAim;
-        return;
+        if (bForwardLeftCrouchAim) MovingDirection = EMovingDirection::EMD_ForwardLeftCrouchAim;
+        if (bBackwardRightCrouchAim) MovingDirection = EMovingDirection::EMD_BackwardRightCrouchAim;
+        if (bBackwardLeftCrouchAim) MovingDirection = EMovingDirection::EMD_BackwardLeftCrouchAim;
     }
+    // TODO: finish
+    if (bJumping && bOnlyMovingStraightJump) {
 
-    if (bNotMoving && bCrouching && bAiming) {
-        MovingDirection = EMovingDirection::EMD_CrouchAim;
-        return;
-    }
-
-    if (bNotMoving && bCrouching && !bAiming) {
-        MovingDirection = EMovingDirection::EMD_Crouch;
-        return;
-    }
-
-    if (bAiming && bNotMoving && !bCrouching) {
-        MovingDirection = EMovingDirection::EMD_Aim;
-        return;
-    }
-
-    if (bNotMoving) {
-        MovingDirection = EMovingDirection::EMD_None;
-        return;
+        if (bMovingForward && bJumping) MovingDirection = EMovingDirection::EMD_Jump_Forward;
+        if (bMovingBackward && bJumping) MovingDirection = EMovingDirection::EMD_Jump_Backward;
+        if (bMovingRight && bJumping) MovingDirection = EMovingDirection::EMD_Jump_Right;
+        if (bMovingLeft && bJumping) MovingDirection = EMovingDirection::EMD_Jump_Left;
     }
 }
 
 void AShooterCharacter::SetMovingDirectionActions(float &DeltaTime) {
+
+    if (bDisableCameraLagWhenMoving) return;
+
+    static bool bCrouch {!bAiming && bCrouching && !bIsJumping};
+    static bool bAim {bAiming && !bCrouching && !bIsJumping};
+    static bool bCrouchAim {bAiming && bCrouching && !bIsJumping};
+    static bool bJumping {!bAiming && !bCrouching && bIsJumping};
+    static bool bNotMove {!bAiming && !bCrouching && !bIsJumping};
+
+    static bool bMovingForward {bWKey_Pressed && !bWKey_Released && !bAiming && !bCrouching};
+    static bool bMovingBackward {bSKey_Pressed && !bSKey_Released && !bAiming && !bCrouching};
+    static bool bMovingRight {bDKey_Pressed && !bDKey_Released && !bAiming && !bCrouching};
+    static bool bMovingLeft {bAKey_Pressed && !bAKey_Released && !bAiming && !bCrouching};
+    static bool bMovingForwardRight {bMovingForward && bMovingRight && !bAiming && !bCrouching};
+    static bool bMovingForwardLeft {bMovingForward && bMovingLeft && !bAiming && !bCrouching};
+    static bool bMovingBackwardRight {bMovingBackward && bMovingRight && !bAiming && !bCrouching};
+    static bool bMovingBackwardLeft {bMovingBackward && bMovingLeft && !bAiming && !bCrouching};
+
+
 
     if (!bAiming && !bCrouching) {
 
@@ -2314,8 +2355,8 @@ void AShooterCharacter::SetMovingDirectionActions(float &DeltaTime) {
                   Jump_interpTime, "EMovingDirection::Jump");
 
             case EMovingDirection::EMD_None :
-                return AdjustCameraLag(OffsetIdle, CameraLagMaxDistance_Idle, 5.f,
-              DeltaTime, "EMovingDirection::EMD_None");
+                return AdjustCameraLag(OffsetIdle, CameraLagMaxDistance_Idle, 5.f, DeltaTime,
+                  "EMovingDirection::EMD_None");
         }
 
     } else if (bAiming && !bCrouching) {
@@ -2364,8 +2405,8 @@ void AShooterCharacter::SetMovingDirectionActions(float &DeltaTime) {
                   DeltaTime, "EMovingDirection::Jump");
 
             case EMovingDirection::EMD_None :
-                return AdjustCameraLag(OffsetIdle, CameraLagMaxDistance_Idle, 5.f,
-              DeltaTime, "EMovingDirection::EMD_None");
+                return AdjustCameraLag(OffsetIdle, CameraLagMaxDistance_Idle, 5.f, DeltaTime,
+                  "EMovingDirection::EMD_None");
         }
 
     } else if (!bAiming && bCrouching) {
@@ -2464,8 +2505,8 @@ void AShooterCharacter::SetMovingDirectionActions(float &DeltaTime) {
                   Jump_interpTime, "EMovingDirection::Jump");
 
             case EMovingDirection::EMD_None :
-                return AdjustCameraLag(OffsetIdle, CameraLagMaxDistance_Idle, 5.f,
-              DeltaTime, "EMovingDirection::EMD_None");
+                return AdjustCameraLag(OffsetIdle, CameraLagMaxDistance_Idle, 5.f, DeltaTime,
+                  "EMovingDirection::EMD_None");
         }
 
     } else if (bIsJumping) {

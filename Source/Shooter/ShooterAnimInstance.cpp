@@ -93,6 +93,7 @@ void UShooterAnimInstance::NativeInitializeAnimation() {
 }
 
 void UShooterAnimInstance::TurnInPlace() {
+
     if (ShooterCharacter == nullptr) return;
 
     Pitch = ShooterCharacter->GetBaseAimRotation().Pitch;

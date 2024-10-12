@@ -102,6 +102,7 @@ void AWeapon::Construct_WeaponTableObject() {
 void AWeapon::SetWeaponTableObject(UDataTable *WeaponTableObject) {
 
     CheckPtr(WeaponTableObject);
+
     FWeaponDataTable *WeaponDataRow {};
 
     switch (WeaponType) {
@@ -120,7 +121,7 @@ void AWeapon::SetWeaponTableObject(UDataTable *WeaponTableObject) {
 
         } break;
 
-        case EWeaponType::EWT_Pistol: {
+        case EWeaponType::EWT_Pistol : {
 
             WeaponDataRow = WeaponTableObject->FindRow<FWeaponDataTable>(
               FName(L"Pistol"), TEXT(""), true);
@@ -144,6 +145,15 @@ void AWeapon::SetWeaponTableObject(UDataTable *WeaponTableObject) {
     CheckPtr(GetItemMesh());
     CheckPtr(GetMaterialInstance());
     CheckPtr(GetDynamicMaterialInstance());
+
+    Func_SetWeaponDataRow(WeaponDataRow);
+        
+    EnableGlowMaterial();
+}
+
+void AWeapon::Func_SetWeaponDataRow(FWeaponDataTable *WeaponDataRow) {
+
+    CheckPtr(WeaponDataRow);
 
     AmmoType         = WeaponDataRow->AmmoType;
     Ammo             = WeaponDataRow->WeaponAmmo;
@@ -175,10 +185,7 @@ void AWeapon::SetWeaponTableObject(UDataTable *WeaponTableObject) {
     BoneToHide       = WeaponDataRow->BoneToHide;
     GetItemMesh()->HideBoneByName(BoneToHide, EPhysBodyOp::PBO_None);
     bAutomatic = WeaponDataRow->bAutomatic;
-
-    EnableGlowMaterial();
 }
-
 void AWeapon::SyncItemMunition() {
 
     int32 ItemCapacity {};

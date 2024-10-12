@@ -96,8 +96,7 @@ typedef FVector2d Fvc2;
 
 #define ExitGame()                                                                                 \
     UKismetSystemLibrary::QuitGame(                                                                \
-      GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);           \
-    return 0;
+      GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, false);         
 
 #define ExitGameErr(X)                                                                             \
     if (APlayerController *PlayerController = GetWorld()->GetFirstPlayerController()) {            \
@@ -112,19 +111,29 @@ typedef FVector2d Fvc2;
     TEXT("%s"), TEXT("%s is nullptr: File: %s, Line: %d"),      \
           TEXT(#ptr), TEXT(__FILE__), (__LINE__)
 
-#define __localEnsureCheckPtr(ptr)                                                                 \
+#define __localEnsureCheckPtr(ptr)   \
+\
     if (!(ensureMsgf((ptr) != nullptr, __nullptrMsg(ptr)))) {                                           \
         UE_LOG(LogTemp, Error, __nullptrMsg(ptr));                                                      \
-        return ExitGame();                                                                         \
+        ExitGame();                                                                         \
     }
 
 #define __localCheckF_CheckPtr(ptr)                                                                \
-    const FString Msg {FString::Printf(                                                            \
-      TEXT("%s is nullptr: File: %s, Line: %d"), TEXT(#ptr), TEXT(__FILE__), __LINE__)};           \
-    checkf((ptr) != nullptr, TEXT("%s"), *Msg);
+    checkf((ptr) != nullptr, __nullptrMsg(ptr));
 
-#define CheckPtr(ptr) if (ptr == nullptr) {__localEnsureCheckPtr(ptr)};                                                               
-    
+#define CheckPtr(ptr) if (ptr == nullptr) { __localEnsureCheckPtr(ptr)}                           
+
+#define CheckPtrs(...) CheckPtrsImpl(__VA_ARGS__, nullptr)
+
+#define CheckPtrsImpl(...)                                                                         \
+    do {                                                                                           \
+        void *ptrs [] = {__VA_ARGS__};                                                             \
+        for (size_t i = 0; ptrs [i] != nullptr; ++i) {                                             \
+            if (ptrs [i] == nullptr) {                                                             \
+                __localEnsureCheckPtr(ptrs [i]);                                                   \
+            }                                                                                      \
+        }                                                                                          \
+    } while (0)
 
 #define CheckMsgPtr(ptr)                                                                           \
     if (ptr == nullptr) {                                                                          \

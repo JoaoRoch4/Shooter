@@ -26,21 +26,17 @@ public:
 protected:
 
     virtual void BeginPlay() override;
-
     virtual void OnConstruction(const FTransform &Transform) override;
-
     void Construct_WeaponTableObject();
-
     void SetWeaponTableObject(UDataTable *WeaponTableObject);
-
     void SyncItemMunition();
-
     void StopFalling();
-
     void FinishMovingSlide();
 
     // updates the slide displacement on pistol
     void UpdateSlideDisplacement();
+
+    void Func_SetWeaponDataRow(FWeaponDataTable *WeaponDataRow);
 
 private:
 

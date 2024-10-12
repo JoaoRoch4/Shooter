@@ -2,8 +2,8 @@
                                                                      * \file   ShooterCharacter.h
                                                                      * \brief  Main Character Class
                                                                      *
-                                                               * \author João Rocha
-                                                                           * \date   December 2023 -
+                                                                     * \author João Rocha
+                                                                     * \date   December 2023 -
                                                                      *January 2024
                                                                      *********************************************************************/
 
@@ -60,8 +60,8 @@ struct FInterpLocation {
 };
 
 /*
-* 
-*/
+ *
+ */
 UCLASS()
 class SHOOTER_API AShooterCharacter : public ACharacter {
 
@@ -116,33 +116,33 @@ protected:
     void MoveRight(float Value);
 
     /**
-	 * @brief Called via input to turn at given rate.
-	 *
+     * @brief Called via input to turn at given rate.
+     *
      * @param Rate This is a normalized rate, i.e. 1.0 means 100% of desired
      * turn rate.
-	 */
+     */
     void TurnAtRate(float Rate);
 
     /**
-	 * @brief Called via input to look up/down a given rate
+     * @brief Called via input to look up/down a given rate
 
      * * @param Rate This is a normalized rate, i.e. 1.0 means 100% of desired
      * turn rate.
-	 */
+     */
     void LookUpAtRate(float Rate);
 
     /**
-	 * @brief Rotate controller based on mouse X movement
-	 *
+     * @brief Rotate controller based on mouse X movement
+     *
      * @param Value The input value from mouse movement
-	 */
+     */
     void Turn(float Value);
 
     /**
-	 * @brief Rotate controller based on mouse Y movement
-	 *
+     * @brief Rotate controller based on mouse Y movement
+     *
      * @param Value The input value from mouse movement
-	 */
+     */
     void LookUp(float Value);
 
     bool IsMovingRight();
@@ -205,60 +205,60 @@ protected:
     void AutoFireReset();
 
     /**
-	 * @brief Line trace for itens under the crosshair.
-	 *
+     * @brief Line trace for itens under the crosshair.
+     *
      * @param OutHitResult First blocking hit found.
-	 * @param OutHitLocation
+     * @param OutHitLocation
      * if hit, the location of the hit.
-	 * @return true if hit
+     * @return true if hit
      * something. And false if not.
-	 */
+     */
     bool TraceUnderCrosshairs(FHitResult &OutHitResult, FVector &OutHitlocation);
 
     /**
-	 * @brief Trace for itens under the crosshair if Overlapped
+     * @brief Trace for itens under the crosshair if Overlapped
      * item
-	 *  count is > 0.
-	 */
+     *  count is > 0.
+     */
     void TraceForItems();
 
     /** @brief Spawns a default Weapon and equip it */
     class AWeapon *SpawnDefaultWeapon();
 
     /**
-	 * @brief Takes a weapon and attaches to the mesh
-	 *
+     * @brief Takes a weapon and attaches to the mesh
+     *
      * @param WeaponToEquip The weapon to equip
-	 */
+     */
     void EquipWeapon(AWeapon *WeaponToEquip, bool bSwapping = false);
 
     /**
-	 * @brief Detaches weapon, let it fall to the ground and sets
+     * @brief Detaches weapon, let it fall to the ground and sets
      * equipped
-	 *  weapon to null
-	 */
+     *  weapon to null
+     */
     void DropWeapon();
 
     void SelectButtonPressed();
     void SelectButtonReleased();
 
     /**
-	 * @brief Drops currently equipped weapon and equips
+     * @brief Drops currently equipped weapon and equips
      * TraceHitItem
-	 * @param WeaponToSwap The weapon to equip
-	 */
+     * @param WeaponToSwap The weapon to equip
+     */
     void SwapWeapon(AWeapon *WeaponToSwap);
 
     /**
-	 * @brief Initialize the Ammo Map with Ammo values.
-	 */
+     * @brief Initialize the Ammo Map with Ammo values.
+     */
     void InitializeAmmoMap();
 
     /**
-	 * @brief Check to make sure if our weapon has ammo.
-	 *
+     * @brief Check to make sure if our weapon has ammo.
+     *
      * @return True if has ammo
-	 */
+     */
     bool WeaponHasAmmo();
 
     /** Fire weapon functions */
@@ -267,14 +267,14 @@ protected:
     void PlayGunFireMontage();
 
     /**
-	 * @brief Bound to the R key and gamepad face button left.
+     * @brief Bound to the R key and gamepad face button left.
 
      */
     void ReloadButtonPressed();
 
     /**
-	 * @brief Handle the reloading of Weapon.
-	 */
+     * @brief Handle the reloading of Weapon.
+     */
     void ReloadWeapon();
 
     UFUNCTION(BlueprintCallable)
@@ -284,66 +284,55 @@ protected:
     void FinishEquipping();
 
     /**
-	 * @brief Check if we have ammo of the Equipped Weapons
+     * @brief Check if we have ammo of the Equipped Weapons
 
      * * ammo type.
-	 * @return true if has ammo
-	 */
+     * @return true if has ammo
+     */
     bool CarryingAmmo();
 
     /**
-	 * @brief Called from Animation Blueprint with GrabClip notify.
+     * @brief Called from Animation Blueprint with GrabClip notify.
 
      */
     UFUNCTION(BlueprintCallable)
     void GrabClip();
 
     /**
-	 * @brief Called from Animation Blueprint with ReleaseClip
+     * @brief Called from Animation Blueprint with ReleaseClip
      * notify.
-	 */
+     */
     UFUNCTION(BlueprintCallable)
     void ReleaseClip();
 
     void CrouchButtonPressed();
-
     virtual void Jump() override;
-
     virtual void StopJumping() override;
 
     /**
-	 * @brief Interps capsule half height when crouching/standing.
-
+     * @brief Interps capsule half height when crouching/standing.
+     *
      * * @param DeltaTime Called every frame
-	 */
+     */
     void InterpCapsuleHalfHeight(float DeltaTime);
 
     void Aim();
     void StopAiming();
-
     void PickupAmmo(class AAmmo *Ammo);
-
     void InitializeInterpLocations();
-
     FORCEINLINE void ResetPickupSoundTimer();
     FORCEINLINE void ResetEquipSoundTimer();
-
-    void ExchangeInventoryItens(int32 CurrentItemindex, int32 NewItemIndex);
-
+    void ExchangeInventoryItems(int32 CurrentItemindex, int32 NewItemIndex);
     void PreviousSlot();
 
     UFUNCTION(BlueprintCallable)
-    void EnableExchangeInventoryItens();
+    void EnableExchangeInventoryItems();
 
-    void DebugSlotsItens();
-    void UpdateSlotsItens();
-
+    void DebugSlotsItems();
+    void UpdateSlotsItems();
     void EquipWeapon();
-
     int32 GetEmptyInventorySlot();
-
     void HighlightInventorySlot();
-
     void HandleMouseWheel(float Value);
     void ScrollUp();
     void ScrollDown();
@@ -400,18 +389,17 @@ protected:
     void KeyMethod9Key();
     void KeyMethod0Key();
 
+    void SetMovingLogic();
     void SetMovingDirection();
-
     void SetMovingDirectionActions(float &DeltaTime);
 
     UFUNCTION(BlueprintCallable)
     void EMovingDirection_None(float DeltaTime);
 
     void GetOriginalCameraLagOffset();
-
     void AdjustVectors();
-
-    void AdjustCameraLag(const FVector &Offset, const double &CameraLagMaxDistance, const float &InterpTime,float &DeltaTime, const char *DebugMessage);
+    void AdjustCameraLag(const FVector &Offset, const double &CameraLagMaxDistance,
+      const float &InterpTime, float &DeltaTime, const char *DebugMessage);
 
     UFUNCTION(BlueprintCallable)
     EPhysicalSurface GetSurfaceType();
@@ -422,7 +410,7 @@ private:
       meta = (AllowPrivateAccess = "true"))
     class USkeletalMeshComponent *PlayerMesh;
 
-    class TUniquePtr<ConstructorHelpers::FObjectFinder<USkeletalMesh>> SkeletalMeshContainer;
+    class TUniquePtr<struct ConstructorHelpers::FObjectFinder<USkeletalMesh>> SkeletalMeshContainer;
 
     /* Camera boom positioning the camera behind the character */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly,
@@ -448,10 +436,10 @@ private:
     bool bUseCustomCamera;
 
     /**
-	 * @brief Is transitioning for cinematic camera to normal
+     * @brief Is transitioning for cinematic camera to normal
      * camera
-	 *  or vice versa.
-	 */
+     *  or vice versa.
+     */
     UPROPERTY()
     bool bIsTransitioning;
 
@@ -511,7 +499,7 @@ private:
     UPROPERTY(BlueprintReadOnly,
       Category = "My Custom Properties|My Custom Camera|Cinematic Camera",
       meta     = (AllowPrivateAccess = "true"))
-    float LerpedArmLength;
+    float LeapedArmLength;
 
     /** Current time of the transition */
     UPROPERTY(BlueprintReadOnly,
@@ -584,7 +572,7 @@ private:
     UPROPERTY(BlueprintReadOnly, Category = "My Custom Properties|Combat|Fire",
       meta = (AllowPrivateAccess = "true"))
     bool bDidFire;
-     
+
     /**  Particles spawned upon bullet impact. */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "My Custom Properties|Combat|Class",
       meta = (AllowPrivateAccess = "true"))
@@ -681,31 +669,31 @@ private:
     FTimerHandle AutoFireTimer;
 
     /**
-	 * @brief True when we can trace a line for items.
-	 */
+     * @brief True when we can trace a line for items.
+     */
     bool bShouldTraceForItems;
 
     /**
-	 * @brief Number of overlapped AItens.
-	 */
+     * @brief Number of overlapped AItens.
+     */
     int8 OverlappedItemCount;
 
     /**
-	 * @brief Last AItem traced.
-	 */
+     * @brief Last AItem traced.
+     */
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly,
       Category = "My Custom Properties|Combat|Class", meta = (AllowPrivateAccess = "true"))
     class AItem *TraceHitItemLastFrame;
 
     /**
-	 * @brief Currently equipped weapon.
-	 */
+     * @brief Currently equipped weapon.
+     */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Combat|Class",
       meta = (AllowPrivateAccess = "true"))
     class AWeapon *EquippedWeapon;
 
     /**
-	 * @brief Sets this in Blueprints for the default weapon class.
+     * @brief Sets this in Blueprints for the default weapon class.
 
      */
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "My Custom Properties|Combat|Class",
@@ -713,28 +701,28 @@ private:
     TSubclassOf<AWeapon> DefaultWeaponClass;
 
     /**
-	 * @brief Item currently hit by trace in TraceForItens. 
+     * @brief Item currently hit by trace in TraceForItens.
 
      * * (Could be null)
-	 */
+     */
     UPROPERTY(BlueprintReadOnly, Category = "My Custom Properties|Combat|Class",
       meta = (AllowPrivateAccess = "true"))
     AItem *TraceHitItem;
 
     /**
-	 * @brief Distance outward from the camera for the
-	 *
+     * @brief Distance outward from the camera for the
+     *
      * interp destination.
-	 */
+     */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Itens|Camera",
       meta = (AllowPrivateAccess = "true"))
     float CameraInterpDistance;
 
-    /** 
-	* @brief Distance Upward from the camera for the
-	* interp
-     * destination. 
-	*/
+    /**
+     * @brief Distance Upward from the camera for the
+     * interp
+     * destination.
+     */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My Custom Properties|Itens|Camera",
       meta = (AllowPrivateAccess = "true"))
     float CameraInterpElevation;
@@ -940,21 +928,20 @@ private:
       meta                = (AllowPrivateAccess = "true"))
     bool ShowEMovingDirection;
 
-     UPROPERTY(EditAnywhere, BlueprintReadWrite,
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
       Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Idle",
-      meta                = (AllowPrivateAccess = "true"))
+      meta     = (AllowPrivateAccess = "true"))
     FVector OffsetIdle;
 
-     UPROPERTY(EditAnywhere, BlueprintReadWrite,
-     Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Idle",
-      meta                = (AllowPrivateAccess = "true"))
-      double CameraLagMaxDistance_Idle;
-
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Idle",
+      meta     = (AllowPrivateAccess = "true"))
+    double CameraLagMaxDistance_Idle;
 
     FVector OriginalCameraSocketOffset;
 
-    float   OriginalCameraLagSpeed;
-    float   OriginalCameraLagMaxDistance;
+    float OriginalCameraLagSpeed;
+    float OriginalCameraLagMaxDistance;
 
     FVector CustomCameraSocketOffset;
     float   CustomCameraLagSpeed;
@@ -973,7 +960,7 @@ private:
     UPROPERTY(EditAnywhere, BlueprintReadWrite,
       Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Running",
       meta     = (AllowPrivateAccess = "true"))
-    float Froward_InterpTime;       
+    float Froward_InterpTime;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite,
       Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Running",
@@ -1214,15 +1201,15 @@ private:
       Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Aim",
       meta     = (AllowPrivateAccess = "true"))
     float BackwardLeftAim_interpTime;
-    
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite,
-      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Jump", 
-        meta = (AllowPrivateAccess = "true"))
+      Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Jump",
+      meta     = (AllowPrivateAccess = "true"))
     FVector OffsetJump;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite,
       Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Jump",
-        meta = (AllowPrivateAccess = "true"))
+      meta     = (AllowPrivateAccess = "true"))
     double CameraLagMaxDistance_Jump;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite,
@@ -1247,7 +1234,7 @@ private:
       meta     = (AllowPrivateAccess = "true"))
     float ForwardCrouch_interpTime;
 
-     UPROPERTY(EditAnywhere, BlueprintReadWrite,
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
       Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Crouch",
       meta     = (AllowPrivateAccess = "true"))
     FVector OffsetBackwardCrouch;
@@ -1262,7 +1249,7 @@ private:
       meta     = (AllowPrivateAccess = "true"))
     float BackwardCrouch_interpTime;
 
-     UPROPERTY(EditAnywhere, BlueprintReadWrite,
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
       Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Crouch",
       meta     = (AllowPrivateAccess = "true"))
     FVector OffsetRightCrouch;
@@ -1277,7 +1264,7 @@ private:
       meta     = (AllowPrivateAccess = "true"))
     float RightCrouch_interpTime;
 
-     UPROPERTY(EditAnywhere, BlueprintReadWrite,
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
       Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Crouch",
       meta     = (AllowPrivateAccess = "true"))
     FVector OffsetLeftCrouch;
@@ -1292,7 +1279,7 @@ private:
       meta     = (AllowPrivateAccess = "true"))
     float LeftCrouch_interpTime;
 
-     UPROPERTY(EditAnywhere, BlueprintReadWrite,
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
       Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Crouch",
       meta     = (AllowPrivateAccess = "true"))
     FVector OffsetForwardRightCrouch;
@@ -1307,7 +1294,7 @@ private:
       meta     = (AllowPrivateAccess = "true"))
     float ForwardRightCrouch_interpTime;
 
-     UPROPERTY(EditAnywhere, BlueprintReadWrite,
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
       Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Crouch",
       meta     = (AllowPrivateAccess = "true"))
     FVector OffsetForwardLeftCrouch;
@@ -1322,7 +1309,7 @@ private:
       meta     = (AllowPrivateAccess = "true"))
     float ForwardLeftCrouch_interpTime;
 
-     UPROPERTY(EditAnywhere, BlueprintReadWrite,
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
       Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Crouch",
       meta     = (AllowPrivateAccess = "true"))
     FVector OffsetBackwardRightCrouch;
@@ -1337,7 +1324,7 @@ private:
       meta     = (AllowPrivateAccess = "true"))
     float BackwardRightCrouch_interpTime;
 
-     UPROPERTY(EditAnywhere, BlueprintReadWrite,
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
       Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|Crouch",
       meta     = (AllowPrivateAccess = "true"))
     FVector OffsetBackwardLeftCrouch;
@@ -1357,7 +1344,7 @@ private:
       meta     = (AllowPrivateAccess = "true"))
     FVector OffsetCrouchAim;
 
-   UPROPERTY(EditAnywhere, BlueprintReadWrite,
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
       Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|CrouchAim",
       meta     = (AllowPrivateAccess = "true"))
     double CameraLagMaxDistance_CrouchAim;
@@ -1392,7 +1379,7 @@ private:
       meta     = (AllowPrivateAccess = "true"))
     double CameraLagMaxDistance_BackwardCrouchAim;
 
-   UPROPERTY(EditAnywhere, BlueprintReadWrite,
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
       Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|CrouchAim",
       meta     = (AllowPrivateAccess = "true"))
     float BackwardCrouchAim_interpTime;
@@ -1432,7 +1419,7 @@ private:
       meta     = (AllowPrivateAccess = "true"))
     FVector OffsetForwardRightCrouchAim;
 
-   UPROPERTY(EditAnywhere, BlueprintReadWrite,
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
       Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|CrouchAim",
       meta     = (AllowPrivateAccess = "true"))
     double CameraLagMaxDistance_ForwardRightCrouchAim;
@@ -1442,7 +1429,7 @@ private:
       meta     = (AllowPrivateAccess = "true"))
     float ForwardRightCrouchAim_interpTime;
 
-   UPROPERTY(EditAnywhere, BlueprintReadWrite,
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
       Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|CrouchAim",
       meta     = (AllowPrivateAccess = "true"))
     FVector OffsetForwardLeftCrouchAim;
@@ -1452,7 +1439,7 @@ private:
       meta     = (AllowPrivateAccess = "true"))
     double CameraLagMaxDistance_ForwardLeftCrouchAim;
 
-   UPROPERTY(EditAnywhere, BlueprintReadWrite,
+    UPROPERTY(EditAnywhere, BlueprintReadWrite,
       Category = "My Custom Properties|My Custom Camera|Custom Camera Lag|CrouchAim",
       meta     = (AllowPrivateAccess = "true"))
     float ForwardLeftCrouchAim_interpTime;
@@ -1491,8 +1478,8 @@ private:
 public:
 
     /**
-	 * @brief Returns CameraBoom subObject.
-	 */
+     * @brief Returns CameraBoom subObject.
+     */
     FORCEINLINE USpringArmComponent *GetCameraBoom() const { return CameraBoom; };
 
     /** Returns FollowCamera subObject */
@@ -1509,12 +1496,12 @@ public:
     FORCEINLINE int8 GetOverlappedItemCount() const { return OverlappedItemCount; }
 
     /**
-	 * @brief Adds/Subtract to/from OverlappedItemCount and updates
-     * 
-	 * bShouldTraceForItems
-	 * @param Amount The amount to
-     * change OverlappedItemCount 
-	 */
+     * @brief Adds/Subtract to/from OverlappedItemCount and updates
+     *
+     * bShouldTraceForItems
+     * @param Amount The amount to
+     * change OverlappedItemCount
+     */
     void IncrementOverlappedItemCount(int8 Amount);
 
     FVector GetCameraInterpLocation();
@@ -1528,10 +1515,10 @@ public:
     FInterpLocation GetInterpLocation(int32 Index);
 
     /**
-	 * @return the index in InterpLocations array
-	 * with the
+     * @return the index in InterpLocations array
+     * with the
      * lowest ItemCount
-	 */
+     */
     int32 GetInterpLocationIndex();
 
     void IncrementInterpLocItemCount(int32 Index, int32 Amount);

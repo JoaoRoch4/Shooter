@@ -1,5 +1,7 @@
 #include "Ammo.h"
+
 #include "Custom.h"
+#include "ErrorHandling.h"
 #include "ShooterCharacter.h"
 
 #include <Components/BoxComponent.h>
@@ -18,8 +20,11 @@
 #include "Item.h"
 #include "Templates/Casts.h"
 
-AAmmo::AAmmo() :
- AmmoMesh(nullptr), AmmoType(EAmmoType::EAT_9mm), AmmoIconTexture(nullptr), AmmoCollisionSphere(nullptr) {
+AAmmo::AAmmo()
+ : AmmoMesh(nullptr)
+ , AmmoType(EAmmoType::EAT_9mm)
+ , AmmoIconTexture(nullptr)
+ , AmmoCollisionSphere(nullptr) {
 
     // Construct the AmmoMesh component and set it as the root component.
     AmmoMesh = CDSubObj<UStaticMeshComponent>(L"AmmoMesh");
@@ -96,7 +101,8 @@ void AAmmo::SetItemProperties(EItemState State) {
 }
 
 void AAmmo::AmmoSphereOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor,
-  UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult) {
+  UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+  const FHitResult &SweepResult) {
 
     CheckPtr(OtherActor);
 
@@ -105,8 +111,7 @@ void AAmmo::AmmoSphereOverlap(UPrimitiveComponent *OverlappedComponent, AActor *
     CheckPtr(OverlappedCharacter);
 
     StartItemCurve(OverlappedCharacter);
-    AmmoCollisionSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);    
-
+    AmmoCollisionSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AAmmo::EnableCustomDepth() { AmmoMesh->SetRenderCustomDepth(true); }
