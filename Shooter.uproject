@@ -7,27 +7,13 @@
 		{
 			"Name": "Shooter",
 			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"AdditionalDependencies": [
-				"Engine"
-			]
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
 		{
 			"Name": "ModelingToolsEditorMode",
-			"Enabled": true,
-			"TargetAllowList": [
-				"Editor"
-			]
-		},
-		{
-			"Name": "VisualStudioTools",
-			"Enabled": true,
-			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/362651520df94e4fa65492dbcba44ae2",
-			"SupportedTargetPlatforms": [
-				"Win64"
-			]
+			"Enabled": true
 		},
 		{
 			"Name": "CodeView",
@@ -43,10 +29,7 @@
 		},
 		{
 			"Name": "WMFCodecs",
-			"Enabled": false,
-			"SupportedTargetPlatforms": [
-				"Win64"
-			]
+			"Enabled": false
 		},
 		{
 			"Name": "HDRIBackdrop",
@@ -302,11 +285,7 @@
 		},
 		{
 			"Name": "OnlineSubsystemIOS",
-			"Enabled": false,
-			"SupportedTargetPlatforms": [
-				"IOS",
-				"TVOS"
-			]
+			"Enabled": false
 		},
 		{
 			"Name": "PythonFoundationPackages",
@@ -359,6 +338,14 @@
 		{
 			"Name": "MediaMovieStreamer",
 			"Enabled": true
+		},
+		{
+			"Name": "VisualStudioTools",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/362651520df94e4fa65492dbcba44ae2",
+			"SupportedTargetPlatforms": [
+				"Win64"
+			]
 		}
 	],
 	"TargetPlatforms": [

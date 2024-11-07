@@ -6,7 +6,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugGame|arm64'">
     <DebuggerFlavor>WindowsRemoteDebugger</DebuggerFlavor>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win64_arm64ec_DebugGame|x64'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugGame|arm64ec'">
     <DebuggerFlavor>WindowsRemoteDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugGame_Editor|x64'">
@@ -17,7 +17,7 @@
     <RemoteDebuggerCommandArguments>"$(SolutionDir)Shooter.uproject" -skipcompile</RemoteDebuggerCommandArguments>
     <DebuggerFlavor>WindowsRemoteDebugger</DebuggerFlavor>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win64_arm64ec_DebugGame_Editor|x64'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugGame_Editor|arm64ec'">
     <RemoteDebuggerCommandArguments>"$(SolutionDir)Shooter.uproject" -skipcompile</RemoteDebuggerCommandArguments>
     <DebuggerFlavor>WindowsRemoteDebugger</DebuggerFlavor>
   </PropertyGroup>
@@ -27,32 +27,34 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Development|arm64'">
     <DebuggerFlavor>WindowsRemoteDebugger</DebuggerFlavor>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win64_arm64ec_Development|x64'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Development|arm64ec'">
     <DebuggerFlavor>WindowsRemoteDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Development_Editor|x64'">
-    <LocalDebuggerCommandArguments>"C:\Users\jubar\OneDrive\Programacao\Unreal Projects\Stephen Ulibarri\Shooter 5.4\Shooter.uproject" -skipcompile</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>
+    </LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <RemoteDebuggerCommandArguments>"C:\Users\jubar\OneDrive\Programacao\Unreal Projects\Stephen Ulibarri\Shooter 5.4\Shooter.uproject" -skipcompile</RemoteDebuggerCommandArguments>
+    <LocalDebuggerEnvironment />
+    <RemoteDebuggerCommandArguments />
+    <RemoteDebuggerEnvironment />
+    <LocalDebuggerDebuggerType>ManagedOnly</LocalDebuggerDebuggerType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Development_Editor|arm64'">
     <RemoteDebuggerCommandArguments>"$(SolutionDir)Shooter.uproject" -skipcompile</RemoteDebuggerCommandArguments>
     <DebuggerFlavor>WindowsRemoteDebugger</DebuggerFlavor>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win64_arm64ec_Development_Editor|x64'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Development_Editor|arm64ec'">
     <RemoteDebuggerCommandArguments>"$(SolutionDir)Shooter.uproject" -skipcompile</RemoteDebuggerCommandArguments>
     <DebuggerFlavor>WindowsRemoteDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|x64'">
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerDebuggerType>NativeOnly</LocalDebuggerDebuggerType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|arm64'">
     <DebuggerFlavor>WindowsRemoteDebugger</DebuggerFlavor>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Win64_arm64ec_Shipping|x64'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Shipping|arm64ec'">
     <DebuggerFlavor>WindowsRemoteDebugger</DebuggerFlavor>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ShowAllFiles>false</ShowAllFiles>
   </PropertyGroup>
 </Project>

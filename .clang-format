@@ -1,127 +1,30 @@
-# Format Style Options - Created with Clang Power Tools
+# Format Style Options
 ---
-AccessModifierOffset: -4
+#Language: Cpp
+#// TODO: undone
 
-AlignArrayOfStructures: Left
-
-AlignConsecutiveAssignments:
-    Enabled: true
-    AcrossEmptyLines: false
-    AcrossComments: true
-    AlignCompound: true
-    PadOperators: true
+ExperimentalAutoDetectBinPacking: false
 
 AlignConsecutiveMacros: 
     Enabled: true
-    AcrossEmptyLines: false
+    AcrossEmptyLines: true
     AcrossComments: true
     AlignCompound: true
     PadOperators: true
 
-AlignConsecutiveBitFields:
-    Enabled: true
-    AcrossEmptyLines: false
-    AcrossComments: true
-    AlignCompound: true
-    PadOperators: true
+AlignConsecutiveTableGenBreakingDAGArgColons:
+  Enabled: true
+  AcrossEmptyLines: true
+  AcrossComments: false
 
-AlignConsecutiveDeclarations:
-    Enabled: true
-    AcrossEmptyLines: false
-    AcrossComments: true
-    AlignCompound: true
-    PadOperators: true
+AttributeMacros:
+ - __capability
 
-# AllowShortLoopsOnASingleLine: true
-#AllowShortCompoundRequirementOnASingleLine: true
-AlignAfterOpenBracket: DontAlign
-AlignEscapedNewlines: Right
-AlignOperands: AlignAfterOperator   
-AlignTrailingComments: false
-
-AllowAllArgumentsOnNextLine: true 
-AllowAllConstructorInitializersOnNextLine: true
-AllowAllParametersOfDeclarationOnNextLine: true
-AllowShortBlocksOnASingleLine: Empty
-AllowShortCaseLabelsOnASingleLine: true
-AllowShortEnumsOnASingleLine: true
-AllowShortFunctionsOnASingleLine: true
-AllowShortIfStatementsOnASingleLine: AllIfsAndElse 
-AllowShortLambdasOnASingleLine: true
-
-AlwaysBreakAfterDefinitionReturnType: None
-AlwaysBreakAfterReturnType: None
-AlwaysBreakBeforeMultilineStrings: false
-AlwaysBreakTemplateDeclarations: No
-
-
-AttributeMacros: 
-  - __capability
-
-BasedOnStyle: LLVM
-BinPackArguments: true
-BinPackParameters: true
-BitFieldColonSpacing: Both
-
-BreakBeforeBraces: Custom
-BraceWrapping: 
-  AfterCaseLabel: false
-  AfterClass: false
-  AfterControlStatement: false
-  AfterEnum: false
-  AfterFunction: false
-  AfterNamespace: false
-  AfterObjCDeclaration: false
-  AfterStruct: false
-  AfterUnion: false
-  AfterExternBlock: false
-  BeforeCatch: false
-  BeforeElse: false
-  IndentBraces: false
-  SplitEmptyFunction: false
-  SplitEmptyRecord: false
-  SplitEmptyNamespace: false
-  BeforeLambdaBody: false
-  BeforeWhile: false
-
-BreakAfterAttributes: Never 
-BreakAfterJavaFieldAnnotations: false
-BreakArrays: false
-BreakBeforeBinaryOperators: All
-BreakBeforeConceptDeclarations: false
-BreakBeforeInheritanceComma: true
-BreakBeforeInlineASMColon: Never
-BreakBeforeTernaryOperators: false
-BreakConstructorInitializers: BeforeComma
-BreakInheritanceList: AfterColon
-BreakStringLiterals: false
-ConstructorInitializerAllOnOneLineOrOnePerLine: true
-ConstructorInitializerIndentWidth : 1
-ContinuationIndentWidth: 2
-Cpp11BracedListStyle: true
-DeriveLineEnding: true
-ColumnLimit: 100
-
-DerivePointerAlignment: false
-EmptyLineBeforeAccessModifier: Always
-EmptyLineAfterAccessModifier : Always
-ExperimentalAutoDetectBinPacking: false
-FixNamespaceComments: false
 
 ForEachMacros: 
   - foreach
   - Q_FOREACH
   - BOOST_FOREACH
-
-IncludeBlocks: Preserve
-IndentCaseBlocks: false
-IndentCaseLabels: true
-IndentExternBlock: NoIndent
-IndentGotoLabels: true
-IndentPPDirectives: None
-IndentRequires: true
-IndentWidth: 4
-IndentWrappedFunctionNames: true
 
 IntegerLiteralSeparator:
     Binary: 3
@@ -129,26 +32,6 @@ IntegerLiteralSeparator:
     DecimalMinDigits: 4
     Hex: 0
 
-Language: Cpp
-LineEnding: CRLF
-MaxEmptyLinesToKeep: 1
-NamespaceIndentation: All
-
-PointerAlignment: Right
-
-SortIncludes: false
-SortUsingDeclarations: false
-SpaceAfterCStyleCast: false
-SpaceAfterLogicalNot: false
-SpaceAfterTemplateKeyword: false
-SpaceAroundPointerQualifiers: After
-SpaceBeforeAssignmentOperators: true
-SpaceBeforeCaseColon: true
-SpaceBeforeCpp11BracedList: true
-SpaceBeforeCtorInitializerColon: true
-SpaceBeforeInheritanceColon: true
-
-SpaceBeforeParens: Custom
 SpaceBeforeParensOptions:
 
     AfterControlStatements: true
@@ -161,7 +44,671 @@ SpaceBeforeParensOptions:
     AfterRequiresInExpression: false
     BeforeNonEmptyParentheses: false
 
+#——————————————————————————————————————————————————————————————————————————————————————# 
+
+
+#AccessModifierOffset (int)
+
+#The extra indent or out-dent of access modifiers, e.g. public:.(int)
+
+AccessModifierOffset: -4
+#——————————————————————————————————————————————————————————————————————————————————————# 
+
+#AlignAfterOpenBracket (BracketAlignmentStyle)
+
+# If true, horizontally aligns arguments after an open bracket.
+# This applies to round brackets (parentheses), angle brackets and square brackets.
+# Possible values:
+# BAS_Align (in configuration: Align) Align parameters on the open bracket, e.g.:
+
+# someLongFunction(argument1,
+#                  argument2);
+
+# BAS_DontAlign (in configuration: DontAlign) Don’t align, instead use
+#   ContinuationIndentWidth, e.g.:
+
+# someLongFunction(argument1,
+#     argument2);
+
+# BAS_AlwaysBreak (in configuration: AlwaysBreak) Always break after an open
+#bracket, if the parameters don’t fit on a single line, e.g.:
+
+# someLongFunction(
+#     argument1, argument2);
+
+AlignAfterOpenBracket: DontAlign
+#——————————————————————————————————————————————————————————————————————————————————————# 
+
+#AlignConsecutiveAssignments (bool)
+
+# If true, aligns consecutive assignments.
+# This will align the assignment operators of consecutive lines. This will result in
+# formattings like
+
+# int aaaa = 12;
+# int b    = 23;
+# int ccc  = 23;
+
+AlignConsecutiveAssignments: AcrossEmptyLinesAndComments
+#——————————————————————————————————————————————————————————————————————————————————————# 
+
+# AlignConsecutiveDeclarations (bool)
+
+# If true, aligns consecutive declarations.
+# This will align the declaration names of consecutive lines. This will result in
+# formatting like
+
+# int         aaaa = 12;
+# float       b = 23;
+# std::string ccc = 23;
+
+AlignConsecutiveDeclarations: AcrossEmptyLinesAndComments
+#——————————————————————————————————————————————————————————————————————————————————————# 
+
+#AlignEscapedNewlines (EscapedNewlineAlignmentStyle)
+
+# Options for aligning backslashes in escaped newlines.
+# Possible values:
+
+# ENAS_DontAlign (in configuration: DontAlign) Don’t align escaped newlines.
+# #define A \
+#   int aaaa; \
+#   int b; \
+#   int dddddddddd;
+
+# ENAS_Left (in configuration: Left) Align escaped newlines as far left as possible.
+# true:
+# #define A   \
+#   int aaaa; \
+#   int b;    \
+#   int dddddddddd;
+
+# false:
+# ENAS_Right (in configuration: Right) Align escaped newlines in the right-most
+#column.
+# #define A                                                                      \
+#   int aaaa;                                                                    \
+#   int b;                                                                       \
+#   int dddddddddd;
+
+AlignEscapedNewlines: Right
+#——————————————————————————————————————————————————————————————————————————————————————# 
+
+# AlignOperands (bool)
+
+# If true, horizontally align operands of binary and ternary expressions.
+# Specifically, this aligns operands of a single expression that needs to be split
+# over multiple lines, e.g.:
+
+# int aaa = bbbbbbbbbbbbbbb +
+#           ccccccccccccccc;
+
+AlignOperands: true
+#——————————————————————————————————————————————————————————————————————————————————————# 
+
+
+# AlignTrailingComments (bool)
+
+# If true, aligns trailing comments.
+
+# true:                                   false:
+# int a;     // My comment a      vs.     int a; // My comment a
+# int b = 2; // comment  b                int b = 2; // comment about b
+
+AlignTrailingComments: true
+#——————————————————————————————————————————————————————————————————————————————————————# 
+
+# AllowAllParametersOfDeclarationOnNextLine (bool)
+
+# If the function declaration doesn’t fit on a line, allow putting all parameters of
+# a function declaration onto the next line even if BinPackParameters is false.
+
+# true:
+# void myFunction(
+#     int a, int b, int c, int d, int e);
+
+# false:
+# void myFunction(int a,
+#                 int b,
+#                 int c,
+#                 int d,
+#                 int e);
+
+AllowAllParametersOfDeclarationOnNextLine: false
+#——————————————————————————————————————————————————————————————————————————————————————# 
+
+# AllowShortBlocksOnASingleLine (bool)
+# Allows contracting simple braced statements to a single line.
+
+# E.g., this allows 
+
+    # if (a) { return; }
+
+    # to be put on a single line.
+
+AllowShortBlocksOnASingleLine: true
+#——————————————————————————————————————————————————————————————————————————————————————# 
+
+# AllowShortCaseLabelsOnASingleLine (bool)
+# If true, short case labels will be contracted to a single line.
+
+# true:                                   false:
+# switch (a) {                    vs.     switch (a) {
+# case 1: x = 1; break;                   case 1:
+# case 2: return;                           x = 1;
+# }                                         break;
+#                                         case 2:
+#                                           return;
+#                                         }
+
+AllowShortCaseLabelsOnASingleLine: true
+#——————————————————————————————————————————————————————————————————————————————————————# 
+
+# AllowShortFunctionsOnASingleLine (ShortFunctionStyle)
+
+# Dependent on the value, int f() { return 0; } can be put on a single line.
+# Possible values:
+
+# SFS_None (in configuration: None) Never merge functions into a single line.
+
+# SFS_InlineOnly (in configuration: InlineOnly) Only merge functions defined inside
+#a class. Same as “inline”, except it does not implies “empty”:
+#i.e. top level empty functions are not merged either.
+
+# class Foo {
+#   void f() { foo(); }
+# };
+# void f() {
+#   foo();
+# }
+# void f() {
+# }
+
+# SFS_Empty (in configuration: Empty) Only merge empty functions.
+# void f() {}
+# void f2() {
+#   bar2();
+# }
+
+# SFS_Inline (in configuration: Inline) Only merge functions defined inside a class.
+#Implies “empty”.
+# class Foo {
+#   void f() { foo(); }
+# };
+# void f() {
+#   foo();
+# }
+# void f() {}
+
+# SFS_All (in configuration: All) Merge all functions fitting on a single line.
+# class Foo {
+#   void f() { foo(); }
+# };
+# void f() { bar(); }
+
+AllowShortFunctionsOnASingleLine: All
+#——————————————————————————————————————————————————————————————————————————————————————# 
+
+# AllowShortIfStatementsOnASingleLine (bool)
+
+# If true, if (a) return; can be put on a single line.
+
+AllowShortIfStatementsOnASingleLine: true
+#——————————————————————————————————————————————————————————————————————————————————————# 
+
+# AllowShortLoopsOnASingleLine (bool)
+# If true, while (true) continue; can be put on a single line.
+
+AllowShortLoopsOnASingleLine: true
+#——————————————————————————————————————————————————————————————————————————————————————# 
+
+# Deprecated
+
+    # AlwaysBreakAfterDefinitionReturnType (DefinitionReturnTypeBreakingStyle)
+
+    # The function definition return type breaking style to use. This option is deprecated
+    # and is retained for backwards compatibility.
+
+    # Possible values:
+
+    # DRTBS_None (in configuration: None) Break after return type automatically.
+        # PenaltyReturnTypeOnItsOwnLine is taken into account.
+    # DRTBS_All (in configuration: All) Always break after the return type.
+    # DRTBS_TopLevel (in configuration: TopLevel) Always break after the return types of
+    #   top-level functions.
+
+#——————————————————————————————————————————————————————————————————————————————————————#
+
+# AlwaysBreakAfterReturnType (ReturnTypeBreakingStyle)
+
+# The function declaration return type breaking style to use.
+# Possible values:
+
+# RTBS_None (in configuration: None) Break after return type automatically.
+    # PenaltyReturnTypeOnItsOwnLine is taken into account.
+
+# class A {
+#   int f() { return 0; };
+# };
+# int f();
+# int f() { return 1; }
+
+# RTBS_All (in configuration: All) Always break after the return type.
+
+# class A {
+#   int
+#   f() {
+#     return 0;
+#   };
+# };
+# int
+# f();
+# int
+# f() {
+#   return 1;
+# }
+
+# RTBS_TopLevel (in configuration: TopLevel) Always break after the return types of
+#   top-level functions.
+
+# class A {
+#   int f() { return 0; };
+# };
+# int
+# f();
+# int
+# f() {
+#   return 1;
+# }
+
+# RTBS_AllDefinitions (in configuration: AllDefinitions) Always break after the return
+#   type of function definitions.
+
+# class A {
+#   int
+#   f() {
+#     return 0;
+#   };
+# };
+# int f();
+# int
+# f() {
+#   return 1;
+# }
+
+# RTBS_TopLevelDefinitions (in configuration: TopLevelDefinitions) Always break after
+#   the return type of top-level definitions.
+
+# class A {
+#   int f() { return 0; };
+# };
+# int f();
+# int
+# f() {
+#   return 1;
+# }
+
+AlwaysBreakAfterReturnType: None
+#——————————————————————————————————————————————————————————————————————————————————————#
+
+# AlwaysBreakBeforeMultilineStrings (bool)
+
+# If true, always break before multiline string literals.
+# This flag is mean to make cases where there are multiple multiline strings in a file
+# look more consistent. Thus, it will only take effect if wrapping the string at that
+# point leads to it being indented ContinuationIndentWidth spaces from the start of the
+#line.
+
+# true:                                  false:
+# aaaa =                         vs.     aaaa = "bbbb"
+#     "bbbb"                                    "cccc";
+#     "cccc";
+
+AlwaysBreakBeforeMultilineStrings: false
+#——————————————————————————————————————————————————————————————————————————————————————#
+
+# AlwaysBreakTemplateDeclarations (bool)
+
+# If true, always break after the template<...> of a template declaration.
+# # true:                                  false:
+# template <typename T>          vs.     template <typename T> class C {};
+# class C {};
+
+AlwaysBreakTemplateDeclarations: true
+#——————————————————————————————————————————————————————————————————————————————————————#
+
+# BinPackArguments (bool)
+
+# If false, a function call’s arguments will either be all on the same line or will
+# have one line each.
+
+# true:
+# void f() {
+#   f(aaaaaaaaaaaaaaaaaaaa, aaaaaaaaaaaaaaaaaaaa,
+#     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa);
+# }
+
+# false:
+# void f() {
+#   f(aaaaaaaaaaaaaaaaaaaa,
+#     aaaaaaaaaaaaaaaaaaaa,
+#     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa);
+# }
+
+BinPackArguments: true
+#——————————————————————————————————————————————————————————————————————————————————————#
+
+# BinPackParameters (bool)
+
+# If false, a function declaration’s or function definition’s parameters will either
+# all be on the same line or will have one line each.
+
+# true:
+# void f(int aaaaaaaaaaaaaaaaaaaa, int aaaaaaaaaaaaaaaaaaaa,
+#        int aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa) {}
+
+# false:
+# void f(int aaaaaaaaaaaaaaaaaaaa,
+#        int aaaaaaaaaaaaaaaaaaaa,
+#        int aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa) {}
+
+BinPackParameters: true
+#——————————————————————————————————————————————————————————————————————————————————————#
+
+# BraceWrapping (BraceWrappingFlags)
+
+# Control of individual brace wrapping cases.
+# If BreakBeforeBraces is set to BS_Custom, use this to specify how each
+# individual brace case
+# should be handled. Otherwise, this is ignored.
+
+# Example of usage:
+# BreakBeforeBraces: Custom
+# BraceWrapping:
+#   AfterEnum: true
+#   AfterStruct: false
+#   SplitEmptyFunction: false
+# Nested configuration flags:
+
+# bool AfterClass Wrap class definitions.
+
+# true:
+# class foo {};
+
+# false:
+# class foo
+# {};
+# bool AfterControlStatement Wrap control statements (if/for/while/switch/..).
+
+# true:
+# if (foo())
+# {
+# } else
+# {}
+# for (int i = 0; i < 10; ++i)
+# {}
+
+# false:
+# if (foo()) {
+# } else {
+# }
+# for (int i = 0; i < 10; ++i) {
+# }
+# bool AfterEnum Wrap enum definitions.
+
+# true:
+# enum X : int
+# {
+#   B
+# };
+
+# false:
+# enum X : int { B };
+# bool AfterFunction Wrap function definitions.
+
+# true:
+# void foo()
+# {
+#   bar();
+#   bar2();
+# }
+
+# false:
+# void foo() {
+#   bar();
+#   bar2();
+# }
+# bool AfterNamespace Wrap namespace definitions.
+
+# true:
+# namespace
+# {
+# int foo();
+# int bar();
+# }
+
+# false:
+# namespace {
+# int foo();
+# int bar();
+# }
+# bool AfterObjCDeclaration Wrap ObjC definitions (@autoreleasepool, interfaces, ..).
+
+# bool AfterStruct Wrap struct definitions.
+
+# true:
+# struct foo
+# {
+#   int x;
+# };
+
+# false:
+# struct foo {
+#   int x;
+# };
+# bool AfterUnion Wrap union definitions.
+
+# true:
+# union foo
+# {
+#   int x;
+# }
+
+# false:
+# union foo {
+#   int x;
+# }
+# bool AfterExternBlock Wrap extern blocks.
+
+# true:
+# extern "C"
+# {
+#   int foo();
+# }
+
+# false:
+# extern "C" {
+# int foo();
+# }
+# bool BeforeCatch Wrap before catch.
+
+# true:
+# try {
+#   foo();
+# }
+# catch () {
+# }
+
+# false:
+# try {
+#   foo();
+# } catch () {
+# }
+# bool BeforeElse Wrap before else.
+
+# true:
+# if (foo()) {
+# }
+# else {
+# }
+
+# false:
+# if (foo()) {
+# } else {
+# }
+BreakBeforeBraces: Attach
+# BraceWrapping:
+#   AfterClass: false
+#   AfterControlStatement: false
+#   AfterEnum: false
+#   AfterFunction: false
+#   AfterNamespace: false
+#   AfterObjCDeclaration: false
+#   AfterStruct: false
+#   AfterUnion: false
+#   AfterExternBlock: false
+#   BeforeCatch: false
+#   BeforeElse: false
+#   IndentBraces: false
+#   SplitEmptyFunction: false
+#   SplitEmptyRecord: false
+#   SplitEmptyNamespace: false
+#   BeforeLambdaBody: false
+#   BeforeWhile: false
+#   BeforeFor: false
+#——————————————————————————————————————————————————————————————————————————————————————#
+
+#UNUSED
+
+#not using Java
+
+# BreakAfterJavaFieldAnnotations (bool)
+
+# Break after each annotation on a field in Java files.
+
+# true:                                  false:
+# @Partial                       vs.     @Partial @Mock DataLoad loader;
+# @Mock
+# DataLoad loader;
+
+#——————————————————————————————————————————————————————————————————————————————————————#
+
+# BreakBeforeBinaryOperators (BinaryOperatorStyle)
+
+# The way to wrap binary operators.
+# Possible values:
+
+# BOS_None (in configuration: None) Break after operators.
+
+# LooooooooooongType loooooooooooooooooooooongVariable =
+#     someLooooooooooooooooongFunction();
+
+# bool value = aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa +
+#                      aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ==
+#                  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa &&
+#              aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa >
+#                  ccccccccccccccccccccccccccccccccccccccccc;
+
+# BOS_NonAssignment (in configuration: NonAssignment) Break before operators that
+# aren’t assignments.
+
+# LooooooooooongType loooooooooooooooooooooongVariable =
+#     someLooooooooooooooooongFunction();
+
+# bool value = aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+#                      + aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+#                  == aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+#              && aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+#                     > ccccccccccccccccccccccccccccccccccccccccc;
+
+# BOS_All (in configuration: All) Break before operators.
+
+# LooooooooooongType loooooooooooooooooooooongVariable
+#     = someLooooooooooooooooongFunction();
+
+# bool value = aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+#                      + aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+#                  == aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+#              && aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+#                     > ccccccccccccccccccccccccccccccccccccccccc;
+
+BreakBeforeBinaryOperators: None
+#——————————————————————————————————————————————————————————————————————————————————————#
+AlignArrayOfStructures: Left
+
+AlignConsecutiveTableGenCondOperatorColons: AcrossEmptyLines
+
+
+AlignConsecutiveBitFields:
+    Enabled: true
+    AcrossEmptyLines: false
+    AcrossComments: true
+    AlignCompound: true
+    PadOperators: true
+
+PenaltyBreakAssignment: 2
+PenaltyBreakComment: 300
+PenaltyBreakFirstLessLess: 120
+PenaltyBreakString: 1000
+PenaltyExcessCharacter: 1000000
+PenaltyReturnTypeOnItsOwnLine: 60
+PenaltyIndentedWhitespace: 15
+PenaltyBreakBeforeFirstCallParameter: 1000
+
+AllowAllArgumentsOnNextLine: true 
+AllowAllConstructorInitializersOnNextLine: true
+AllowShortCompoundRequirementOnASingleLine: true
+AllowShortEnumsOnASingleLine: true 
+AllowShortLambdasOnASingleLine: true
+BreakAfterAttributes: Never 
+BreakArrays: false
+BreakBeforeConceptDeclarations: false
+BreakBeforeInheritanceComma: true
+BreakBeforeInlineASMColon: Never
+BreakBeforeTernaryOperators: false
+BreakConstructorInitializers: BeforeComma
+BreakInheritanceList: AfterColon
+BreakStringLiterals: false
+ColumnLimit: 0
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+ConstructorInitializerIndentWidth : 1
+ContinuationIndentWidth: 3
+Cpp11BracedListStyle: true
+DeriveLineEnding: true
+DerivePointerAlignment: false
+EmptyLineAfterAccessModifier : Always
+EmptyLineBeforeAccessModifier: Always
+FixNamespaceComments: false
+IncludeBlocks: Preserve
+IndentCaseBlocks: false
+IndentCaseLabels: true
+IndentExternBlock: Indent
+IndentGotoLabels: true
+IndentPPDirectives: None
+IndentRequires: true
+IndentWidth: 4
+IndentWrappedFunctionNames: true
+Language: Cpp
+LineEnding: CRLF
+MaxEmptyLinesToKeep: 1
+NamespaceIndentation: All
+PackConstructorInitializers: NextLine
+PointerAlignment: Right
+QualifierAlignment : Left
 RequiresExpressionIndentation: OuterScope
+SortIncludes: true
+SortUsingDeclarations: LexicographicNumeric
+SpaceAfterCStyleCast: true
+SpaceAfterLogicalNot: false
+SpaceAfterTemplateKeyword: false
+SpaceAroundPointerQualifiers: After
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCaseColon: true
+SpaceBeforeCpp11BracedList: true
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+SpaceBeforeJsonColon: true
+SpaceBeforeParens: Custom
 SpaceBeforeRangeBasedForLoopColon: true
 SpaceBeforeSquareBrackets: true
 SpaceInEmptyBlock: false
@@ -172,14 +719,18 @@ SpacesInContainerLiterals: false
 SpacesInCStyleCastParentheses: false
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
-Standard: c++20
-PackConstructorInitializers: NextLine
-PenaltyBreakAssignment: 2
-
-QualifierAlignment : Left
-
+Standard: Latest
 TabWidth : 4
-UseCRLF: true
-UseTab: Never
+TableGenBreakingDAGArgOperators: [ins, outs]
+TypenameMacros: [STACK_OF, LIST, pure_virtual]
+KeepEmptyLinesAtTheStartOfBlocks: true
+#TypeNames:
+#TypenameMacros:
+# Deprecated UseCRLF: true
+UseTab: Always
+VerilogBreakBetweenInstancePorts: true
+WhitespaceSensitiveMacros: [STRINGIZE, 
+    PP_STRINGIZE, UCLASS, UPROPERTY, UENUM]
+
 
 ...

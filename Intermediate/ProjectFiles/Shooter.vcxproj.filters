@@ -167,5 +167,8 @@
     <ClInclude Include="..\..\Source\Shooter\WeaponType.h">
       <Filter>Source\Shooter</Filter>
     </ClInclude>
+    <None Include="C:\Users\jubar\OneDrive\Cursos\Programacao\C++\Learn Advanced C++ Programming\38. Functors\.clang-format">
+      <Filter>Source</Filter>
+    </None>
   </ItemGroup>
 </Project>
