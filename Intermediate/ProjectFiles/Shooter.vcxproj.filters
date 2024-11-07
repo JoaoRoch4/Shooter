@@ -16,6 +16,8 @@
     <None Include="..\..\.gitattributes" />
     <None Include="..\..\.gitignore" />
     <None Include="..\..\.vsconfig" />
+    <None Include="..\..\document1.pdf" />
+    <None Include="..\..\extensibility.settings.VisualStudio.json" />
     <None Include="..\..\shadertoolsconfig.json" />
     <Filter Include="Config">
       <UniqueIdentifier>{FA535FFB-25E1-3D20-B416-52F9BE21E06E}</UniqueIdentifier>
@@ -167,8 +169,5 @@
     <ClInclude Include="..\..\Source\Shooter\WeaponType.h">
       <Filter>Source\Shooter</Filter>
     </ClInclude>
-    <None Include="C:\Users\jubar\OneDrive\Cursos\Programacao\C++\Learn Advanced C++ Programming\38. Functors\.clang-format">
-      <Filter>Source</Filter>
-    </None>
   </ItemGroup>
 </Project>

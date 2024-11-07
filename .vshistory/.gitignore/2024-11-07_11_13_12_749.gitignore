@@ -3,7 +3,6 @@
 /Saved
 /Download
 /_ReSharper.Caches
-.ideia
 # Ignore everything in the Content directory
 
 # Ignorar tudo na pasta Content
@@ -25,8 +24,6 @@ Content/*
 *.suo
 *.xcworkspace
 *.jar
-*.pdf
-
 /EPMasterMaterials.png
 /Untitled-1.txt
 
